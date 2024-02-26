@@ -1,0 +1,196 @@
+
+import sequelize from "../models";
+import futurePositionDal from "../models/dal/futurePosition.dal";
+import futurePositionDto from "../models/dto/futurePoistion.dto";
+import futurePositionModel, { futurePositionOuput } from "../models/model/future_position.model";
+import service from "./service";
+
+class futurePositionServices {
+
+    /**
+     * 
+     * @returns return all published token 
+     */
+    async all(userid: string): Promise<any> {
+        return await futurePositionDal.all(userid);
+    }
+
+    /**
+     * Get position order by limit and offset for pagination
+     * @param offset 
+     * @param limit 
+     * @returns 
+     */
+    async allByLimit(offset: any, limit: any): Promise<any> {
+        return await futurePositionDal.allByLimit(offset, limit);
+    }
+
+    /**
+     * 
+     * @param payload 
+     * @returns 
+     */
+    async create(payload: futurePositionDto): Promise<futurePositionOuput> {
+        return await futurePositionDal.createPosition(payload)
+    }
+
+    /**
+     * 
+     * @param payload 
+     * @returns 
+     */
+    async edit(payload: futurePositionDto): Promise<futurePositionOuput> {
+        return await futurePositionDal.editPosition(payload)
+    }
+
+    /**
+     * Cron position trading order and execute on price update
+     * @returns 
+     */
+    async positionCron(): Promise<any> {
+        try {
+
+            let allTokens = await service.token.all();
+            let positions = await futurePositionModel.findAll({ where: { status: false, queue: false }, raw: true });
+
+            if (positions) {
+                for await (let ps of positions) {
+
+                    await futurePositionModel.update({ queue: true }, { where: { id: ps?.id } });
+                    let token = allTokens.filter((t: any) => {
+                        return t?.dataValues?.id === ps?.coin_id
+                    })
+
+                    let tt = token[0]?.dataValues;
+
+                    if (ps?.direction === 'long') {
+                        //=====================================
+                        //=========== Coin PnL ================
+                        //=====================================
+                        let coin_pnl: any = (((1 / ps?.entry_price) - (1 / tt?.price)) * ps?.size).toFixed(5);
+
+                        //=====================================
+                        //=========== USDT PnL ================
+                        //=====================================
+                        let usdt_pnl: any = (coin_pnl * tt?.price).toFixed(5);
+
+                        // check if loss equal to position margin(user USDT assets) or less than margin than close position 
+                        if (usdt_pnl < 0) {
+                            let remainingMargin = ps.margin + usdt_pnl;
+                            if (remainingMargin < 0 || remainingMargin === 0) {
+                                await futurePositionModel.update({ status: true }, { where: { id: ps?.id } });
+                                await futurePositionModel.destroy({ where: { id: ps.id } });
+                                return;
+                            }
+                        }
+
+                        if (tt.price < ps.liq_price || tt.price === ps.liq_price) {
+                            await futurePositionModel.update({ status: true }, { where: { id: ps?.id } });
+                            await futurePositionModel.destroy({ where: { id: ps.id } });
+                            return;
+                        }
+
+                        await futurePositionModel.update({ pnl: ps?.order_type === 'value' ? usdt_pnl : coin_pnl, queue: false }, { where: { id: ps?.id } });
+                    }
+                    else if (ps?.direction === 'short') {
+
+                        //=====================================
+                        //=========== Coin PnL ================
+                        //=====================================
+                        let coin_pnl: any = (((1 / ps?.entry_price) - (1 / tt?.price)) * (ps?.size * -1)).toFixed(5);
+
+                        //=====================================
+                        //=========== USDT PnL ================
+                        //=====================================
+                        let usdt_pnl: any = (coin_pnl * tt?.price).toFixed(5);
+
+                        // check if loss equal to position margin(user USDT assets) or less than margin than close position 
+                        if (usdt_pnl < 0) {
+                            let remainingMargin = ps.margin + usdt_pnl;
+                            if (remainingMargin < 0 || remainingMargin === 0) {
+                                await futurePositionModel.update({ status: true }, { where: { id: ps?.id } });
+                                await futurePositionModel.destroy({ where: { id: ps.id } });
+                                return;
+                            }
+                        }
+
+                        if (tt.price > ps.liq_price || tt.price === ps.liq_price) {
+                            await futurePositionModel.update({ status: true }, { where: { id: ps?.id } });
+                            await futurePositionModel.destroy({ where: { id: ps.id } });
+                            return;
+                        }
+
+                        await futurePositionModel.update({ pnl: ps?.order_type === 'value' ? usdt_pnl : coin_pnl, queue: false }, { where: { id: ps?.id } });
+
+                    }
+
+                }
+            }
+
+        } catch (error: any) {
+            throw new Error(error);
+        }
+    }
+
+    /**
+     * Close position by user and position id
+     * @param payload 
+     * @param userId 
+     * @returns 
+     */
+    async closePositionById(payload: string, userId: string): Promise<futurePositionOuput | any> {
+        return await futurePositionDal.closePosition(payload, userId);
+    }
+
+    /**
+     * Close all position by user id
+     * @param userId 
+     * @returns 
+     */
+    async closeAllPositionByUser(userId: string): Promise<futurePositionOuput | any> {
+        return await futurePositionDal.closeAllPosition(userId);
+    }
+
+    async positionHistory(userId:string): Promise<futurePositionOuput | any>{
+        return await futurePositionDal.positionHistory(userId);
+    }
+
+    async coinLastData(coinid: string): Promise<any> {
+        try {
+
+            if (coinid === undefined) return
+
+            let data = await sequelize.query(`SELECT DATE(current_date()) AS time, max(entry_price) AS high, min(entry_price) AS low,SUM(margin) as volume,
+          CAST(SUBSTRING_INDEX(MIN(CONCAT(createdAt, '_', entry_price)), '_', -1) as double)  as open,
+            CAST( SUBSTRING_INDEX(MAX(CONCAT(createdAt, '_', entry_price)), '_', -1)as double) AS close
+          FROM exchanage.futurepositions AS marketorder where  coin_id='${coinid}' GROUP BY time`);
+
+            if (data[0].length > 0) {
+                return data[0][0];
+            }
+            else {
+                return {
+                    time: new Date(),
+                    high: 0.00,
+                    low: 0.00,
+                    open: 0.00,
+                    close: 0.00,
+                    volume: 0.00
+                };
+            }
+
+        } catch (error: any) {
+            console.log(error)
+            throw new Error(error.message)
+        }
+    }
+
+    // trades order book
+
+    async orderbook(coinid: string): Promise<any> {
+        return await futurePositionDal.orderbook(coinid);
+    }
+}
+
+export default futurePositionServices;
+

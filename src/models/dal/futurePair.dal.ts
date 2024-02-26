@@ -1,0 +1,119 @@
+
+import futureTradePairModel, { futureTradePairOuput } from "../model/futuretrade.model";
+import futureTradePairDto from "../dto/futurePair.dto";
+import { updateFuturePairStatus } from "../../utils/interface";
+import tokensModel from "../model/tokens.model";
+import globalTokensModel from "../model/global_token.model";
+import service from "../../services/service";
+
+class futureTradePairDal {
+
+    /**
+     * return all tokens data
+     * @returns
+     */
+    async all(): Promise<any> {
+        try {
+            let trades = await futureTradePairModel.findAll({
+                where: { status: true }, include: [
+                    {
+                        model: tokensModel
+                    },
+                    {
+                        model: globalTokensModel
+                    }
+                ],
+
+            });
+
+            let newCoin = []
+            for await (const coin of trades) {
+                let token: any = coin?.dataValues;
+                if (coin.dataValues?.coin_id !== undefined) {
+                    let hloc = await service.position.coinLastData(coin.dataValues?.coin_id);
+                    token.hloc = hloc;
+                    newCoin.push(token);
+                }
+            }
+
+            return newCoin;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async allByLimit(offset: any, limit: any): Promise<any> {
+        try {
+            let offsets = parseInt(offset);
+            let limits = parseInt(limit);
+            let trades = await futureTradePairModel.findAll({
+                limit: limits, offset: offsets, include: [
+                    {
+                        model: tokensModel
+                    },
+                    {
+                        model: globalTokensModel
+                    }
+                ]
+            },);
+            return trades;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    /**
+     * 
+     * @param payload if contract already register
+     * @returns 
+     */
+    async pairIfExist(payload: futureTradePairDto): Promise<futureTradePairOuput | any> {
+        try {
+            let trades = await futureTradePairModel.findOne({ where: { id: payload?.id }, raw: true });
+            if (trades) {
+                return trades;
+            }
+        } catch (error: any) {
+            throw new Error(error?.message);
+        }
+
+    }
+
+    /**
+     * create new token
+     * @param payload
+     * @returns
+     */
+
+    async createPair(payload: futureTradePairDto): Promise<futureTradePairOuput | any> {
+        try {
+            return await futureTradePairModel.create(payload);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async editPair(payload: futureTradePairDto): Promise<futureTradePairOuput | any> {
+        try {
+
+            return await futureTradePairModel.update(payload, { where: { id: payload.id } });
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+    async changeStatus(payload: updateFuturePairStatus): Promise<any> {
+        try {
+            let pair: any = await futureTradePairModel.findOne({ where: { id: payload?.id } });
+            let apiStatus;
+            apiStatus = await pair.update({ status: pair?.dataValues?.status == true ? false : true });
+            return apiStatus;
+        } catch (error: any) {
+            throw new Error(error);
+        }
+    }
+}
+
+export default new futureTradePairDal();

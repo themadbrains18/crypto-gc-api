@@ -1,0 +1,211 @@
+
+import futurePositionModel, { futurePositionOuput } from "../model/future_position.model";
+import futurePositionDto from "../dto/futurePoistion.dto";
+import tokensModel from "../model/tokens.model";
+import globalTokensModel from "../model/global_token.model";
+import futureOpenOrderModel from "../model/future_open_order.model";
+import assetModel from "../model/assets.model";
+
+class futurePositionDal {
+
+    /**
+     * return all tokens data
+     * @returns
+     */
+    async all(userid: string): Promise<any> {
+        try {
+            let trades = await futurePositionModel.findAll({
+                where: { user_id: userid, isDeleted: false }, include: [
+                    {
+                        model: tokensModel
+                    },
+                    {
+                        model: globalTokensModel
+                    },
+                    {
+                        model: futureOpenOrderModel
+                    }
+                ]
+            });
+            return trades;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async allByLimit(offset: any, limit: any): Promise<any> {
+        try {
+            let offsets = parseInt(offset);
+            let limits = parseInt(limit);
+            let trades = await futurePositionModel.findAll({
+                where: { isDeleted: false },
+                limit: limits, offset: offsets, include: [
+                    {
+                        model: tokensModel
+                    },
+                    {
+                        model: globalTokensModel
+                    }
+                ]
+            });
+            return trades;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    /**
+     * create new Position
+     * @param payload
+     * @returns
+     */
+
+    async createPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
+        try {
+
+            //================================================
+            //=================== Get Token =================
+            //================================================
+            let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
+
+            if (payload?.order_type !== 'value') {
+                global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+                if (global_token === null) {
+                    global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+                }
+            }
+
+            if (global_token) {
+
+                //================================================
+                //=================== Get Assets =================
+                //================================================
+                let asset: any = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
+                let margin_price: any = payload?.margin;
+                if (asset?.balance > 0 && asset?.balance > margin_price) {
+
+                    //================================================
+                    //===============Create Position =================
+                    //================================================
+                    let res = await futurePositionModel.create(payload);
+                    if (res) {
+
+                        //================================================
+                        //================ Update Assets =================
+                        //================================================
+                        let newbal: any = asset?.balance - margin_price;
+                        await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
+                    }
+                    return res;
+                }
+                else {
+                    throw new Error('Insufficiant Balance');
+                }
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * Edit Position
+     * @param payload 
+     * @returns 
+     */
+    async editPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
+        try {
+
+            return await futurePositionModel.update(payload, { where: { id: payload.id } });
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    /**
+     * close Position
+     */
+
+    async closePosition(id: string, userId: string): Promise<futurePositionOuput | any> {
+        try {
+            let position = await futurePositionModel.findOne({ where: { id: id }, raw: true });
+
+            if (position) {
+                let closeResponse = await futurePositionModel.update({ status: true, queue: true }, { where: { id: id } });
+                let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
+                if (global_token) {
+                    let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
+                    if (asset) {
+                        let newBal = 0;
+                        newBal = asset?.balance + position?.margin + position?.pnl;
+                        let updateAsset = await assetModel.update({ balance: newBal }, { where: { id: asset?.id } });
+                        await futurePositionModel.update({ isDeleted: true }, { where: { id: id } });
+                        return position;
+                    }
+                }
+            }
+            else {
+                return { "data": null, "message": 'This position order record not found.' }
+            }
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async closeAllPosition(userId: string): Promise<futurePositionOuput | any> {
+        try {
+            let data = [];
+            let allPosition = await futurePositionModel.findAll({ where: { user_id: userId, status: false, queue: false }, raw: true });
+            for await (let ps of allPosition) {
+                let response = await this.closePosition(ps?.id, userId);
+                data.push(response);
+            }
+            if (data.length === allPosition.length) {
+                return allPosition;
+            }
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    /**
+     * Get user position history
+     * @param userid 
+     * @returns 
+     */
+    async positionHistory(userid: string): Promise<any> {
+        try {
+            let trades = await futurePositionModel.findAll({
+                where: { user_id: userid }, include: [
+                    {
+                        model: tokensModel
+                    },
+                    {
+                        model: globalTokensModel
+                    },
+                    {
+                        model: futureOpenOrderModel
+                    }
+                ]
+            });
+            return trades;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+    async orderbook(coinid: string): Promise<futurePositionOuput | any> {
+        try {
+            let trades = await futurePositionModel.findAll({
+                where: { coin_id: coinid, status: false, isDeleted: false }, raw: true
+            });
+            return trades;
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+    }
+
+}
+
+export default new futurePositionDal();

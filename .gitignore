@@ -1,0 +1,10 @@
+### Format1  ###
+node_modules/
+node/
+
+### Format2  ###
+**/frontend/node_modules/**
+**/frontend/node/**
+/src/access.log
+
+public/kyc

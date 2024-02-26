@@ -1,0 +1,61 @@
+//* validators/token.validator.js
+// schemas.js
+import Joi from "joi";
+
+const futureOpenOrderSchema = {
+    // trigger when list new a exchange
+    create: Joi.object().keys({
+        position_id: Joi.string().optional(),
+        symbol: Joi.string().required(),
+        user_id: Joi.string().required(),
+        side: Joi.string().required(),
+        type: Joi.string().required(),
+        time: Joi.date().optional(),
+        amount: Joi.string().required(),
+        price_usdt: Joi.number().required(),
+        trigger: Joi.string().required(),
+        reduce_only: Joi.string().required(),
+        post_only: Joi.string().required(),
+        status: Joi.boolean().default("false"),
+        leverage: Joi.number().optional(),
+        market_price: Joi.number().positive().required(),
+        margin: Joi.number().optional(),
+        liq_price: Joi.number().optional(),
+        order_type: Joi.string().optional(),
+        leverage_type : Joi.string().optional(),
+        coin_id :Joi.string().required(),
+        isDeleted:Joi.boolean().default("false"),
+        qty : Joi.number().required(),
+        isTrigger:Joi.boolean().default("false"),
+    }),
+
+    edit: Joi.object().keys({
+        id: Joi.string().required(),
+        position_id: Joi.string().optional(),
+        symbol: Joi.string().required(),
+        user_id: Joi.string().required(),
+        side: Joi.string().required(),
+        type: Joi.string().required(),
+        time: Joi.date().required(),
+        amount: Joi.string().required(),
+        price_usdt: Joi.number().required(),
+        trigger: Joi.string().required(),
+        reduce_only: Joi.string().required(),
+        post_only: Joi.string().required(),
+        status: Joi.boolean().default("false"),
+        leverage: Joi.number().optional(),
+        market_price: Joi.number().positive().required(),
+        margin: Joi.number().optional(),
+        liq_price: Joi.number().optional(),
+        order_type: Joi.string().optional(),
+        leverage_type : Joi.string().optional(),
+        coin_id :Joi.string().required(),
+        isDeleted:Joi.boolean().default("false"),
+        qty : Joi.number().required(),
+        isTrigger:Joi.boolean().default("false"),
+    }),
+
+
+};
+
+export default futureOpenOrderSchema;
