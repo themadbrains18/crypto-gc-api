@@ -26,6 +26,7 @@ const config = () => {
         sync: {
           force: true,
         },
+        dialectModule: require('mysql2')
       },
     },
     // email config add here 
