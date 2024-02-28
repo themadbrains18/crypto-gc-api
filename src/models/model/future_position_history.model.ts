@@ -100,7 +100,7 @@ class futurePositionHistoryModel
             {
                 timestamps: true,
                 sequelize: sequelize,
-                modelName: "futurePositionHistory",
+                modelName: "futurepositionhistory",
                 paranoid: true,
             }
         );

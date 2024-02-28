@@ -88,7 +88,7 @@ class futureTradePairModel
       {
         timestamps: true,
         sequelize: sequelize,
-        modelName: "futureTradePair",
+        modelName: "futuretradepair",
         paranoid: true,
       }
     );

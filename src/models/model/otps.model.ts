@@ -53,7 +53,7 @@ class userOtpModel extends Model<UserOtpAttributes, UserInputOtp> {
         {
             timestamps: true,
             sequelize: sequelize,
-            modelName : "UsersOtp",
+            modelName : "usersotp",
             paranoid: true,
           });
     }

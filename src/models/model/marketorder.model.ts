@@ -116,7 +116,7 @@ class marketOrderModel
       {
         timestamps: true,
         sequelize: sequelize,
-        modelName: "marketOrder",
+        modelName: "marketorder",
         paranoid: true,
       }
     );

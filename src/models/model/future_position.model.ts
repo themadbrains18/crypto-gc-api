@@ -179,7 +179,7 @@ class futurePositionModel
       {
         timestamps: true,
         sequelize: sequelize,
-        modelName: "futurePosition",
+        modelName: "futureposition",
         paranoid: true,
       }
     );

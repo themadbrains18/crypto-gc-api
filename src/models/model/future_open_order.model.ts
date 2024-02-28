@@ -172,7 +172,7 @@ class futureOpenOrderModel
             {
                 timestamps: true,
                 sequelize: sequelize,
-                modelName: "futureOpenOrder",
+                modelName: "futureopenorder",
                 paranoid: true,
             }
         );

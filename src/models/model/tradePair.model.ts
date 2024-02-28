@@ -89,7 +89,7 @@ class tradePairModel
       {
         timestamps: true,
         sequelize: sequelize,
-        modelName: "tradePair",
+        modelName: "tradepair",
         paranoid: true,
       }
     );

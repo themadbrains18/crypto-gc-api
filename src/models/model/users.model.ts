@@ -162,7 +162,7 @@ class userModel
       {
         timestamps: true,
         sequelize: sequelize,
-        modelName: "Users",
+        modelName: "users",
         paranoid: true,
       }
     );
