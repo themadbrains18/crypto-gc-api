@@ -10,7 +10,7 @@ import { Application } from "express";
 import Server from "./app";
 import cron from "node-cron";
 import service from "./services/service";
-import { cerrorHandler } from "./exceptions/errorHandler";
+// import { cerrorHandler } from "./exceptions/errorHandler";
 import orderController from './controllers/order.controller';
 import postController from "./controllers/post.controller";
 import userNotificationController from "./controllers/user_notification.controller";
@@ -120,15 +120,15 @@ httpServer
     }
   });
 
-process.on("unhandledRejection", (reason: Error, promise: Promise<any>) => {
-  throw reason;
-});
+// process.on("unhandledRejection", (reason: Error, promise: Promise<any>) => {
+//   throw reason;
+// });
 
-process.on("uncaughtException", (error: Error) => {
-  cerrorHandler.handleError(error);
-  if (!cerrorHandler.isTrustedError(error)) {
-    process.exit(1);
-  }
-});
+// process.on("uncaughtException", (error: Error) => {
+//   cerrorHandler.handleError(error);
+//   if (!cerrorHandler.isTrustedError(error)) {
+//     process.exit(1);
+//   }
+// });
 
 module.exports = app;
