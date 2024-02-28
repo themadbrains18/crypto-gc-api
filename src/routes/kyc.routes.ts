@@ -18,28 +18,28 @@ class kycRoutes extends BaseController {
     let kyc = new kycController();
     let middleware = new authController();
 
-    this.router.post(
-      "/create",
-      service.upload.upload("kyc", ["jpg", "png", "jpeg"], 5, [
-        {
-          name: "idfront",
-          maxCount: 1,
-        },
-        {
-          name: "idback",
-          maxCount: 1,
-        },
-        {
-          name: "statement",
-          maxCount: 1,
-        },
-      ]),
-      middleware.auth,
-      function(req, res){
-        kyc.create
-      }
+    // this.router.post(
+    //   "/create",
+    //   service.upload.upload("kyc", ["jpg", "png", "jpeg"], 5, [
+    //     {
+    //       name: "idfront",
+    //       maxCount: 1,
+    //     },
+    //     {
+    //       name: "idback",
+    //       maxCount: 1,
+    //     },
+    //     {
+    //       name: "statement",
+    //       maxCount: 1,
+    //     },
+    //   ]),
+    //   middleware.auth,
+    //   function(req, res){
+    //     kyc.create
+    //   }
       
-    );
+    // );
     // this.router.post("/create",service.upload.upload("../upload",['pdf','png','jpg']), super.Validator(kycSchema.create),auth, kyc.create);
     this.router.post("/institute/create", middleware.auth, kyc.institutecreate);
     this.router.get("/:id", middleware.auth, kyc.kycById);
