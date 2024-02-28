@@ -115,7 +115,7 @@ models.forEach((model) => model.initialize(sequelize));
 
 (async function (): Promise<void> {
   try {
-    return
+    // return
     if (!isAlter) {
       /**
        * Assets table associate with token table
@@ -334,7 +334,7 @@ models.forEach((model) => model.initialize(sequelize));
   }
 })().catch((err) => console.log(err));
 
-sequelize.sync({ alter: true });
+// sequelize.sync({ alter: true });
 // futurePositionModel.sync({ alter: true });
 
 

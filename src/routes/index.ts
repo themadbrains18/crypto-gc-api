@@ -44,9 +44,9 @@ class routes {
     app.use(`${apiBase}/`, express.static(process.cwd() + "/public"));
 
     // base url 
-    app.use(`${apiBase}/`,(req : Request , res : Response)=>{
-      res.status(200).send("Hello World..")
-    })
+    // app.use(`${apiBase}/`,(req : Request , res : Response)=>{
+    //   res.status(200).send("Hello World..")
+    // })
 
     app.use(`${apiBase}/user`, usersRoutes);
     app.use(`${apiBase}/assets`, assetsRoutes);
