@@ -17,12 +17,7 @@ class paymentMethodRoutes extends BaseController {
         let payment = new paymentController();
         let auth = new authController().auth;
 
-        this.router.post("/save",auth,service.upload.upload("payment_icon",['jpg','png','webp'],2,[
-            {
-              name: "icon",
-              maxCount: 1,
-            },
-          ]),super.Validator(p_methodSchema.create), payment.create); //Add new payment method from admin dashboard
+        this.router.post("/save",auth,super.Validator(p_methodSchema.create), payment.create); //Add new payment method from admin dashboard
 
         this.router.get("/list", payment.list);
         this.router.get("/method/:id", payment.single);
