@@ -107,7 +107,7 @@ const pusher = new Pusher({
 cron.schedule("*/10 * * * * *", async () => {
   const date = new Date();
   await service.token.updateGlobalTokenPrice();
-  pusher.trigger("my-channel", "my-event", {
+  pusher.trigger("price-channel", "price", {
     message: "hello world"
   });
 });
