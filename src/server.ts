@@ -30,6 +30,11 @@ let profile = new profileController();
 
 const wss = new WebSocketServer({ port: 3001 });
 
+wss.on('open', (ws:WebSocket)=> {
+  console.log('connected');
+  ws.send(Date.now());
+});
+
 wss.on('connection', (ws: WebSocket) => {
   // console.log('New client connected');
 
