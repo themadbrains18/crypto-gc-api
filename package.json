@@ -40,6 +40,7 @@
     "parse": "^4.2.0",
     "path": "^0.12.7",
     "process": "^0.11.10",
+    "pusher": "^5.2.0",
     "request-ip": "^3.3.0",
     "sequelize": "^6.32.1",
     "speakeasy": "^2.0.0",

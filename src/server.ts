@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 import http from 'http'
 import process from 'process'
-import WebSocket, { WebSocketServer } from 'ws';
+// import WebSocket, { WebSocketServer } from 'ws';
 
 import express from "express";
 import { Application } from "express";
-
+import Pusher from "pusher";
 import Server from "./app";
 import cron from "node-cron";
 import service from "./services/service";
@@ -28,83 +28,88 @@ let notify = new userNotificationController();
 let chat = new chatController();
 let profile = new profileController();
 
-const wss = new WebSocketServer({ port: 3001 });
-
-wss.on('open', (ws:WebSocket)=> {
-  console.log('connected');
-  ws.send(Date.now());
+const pusher = new Pusher({
+  appId: "1764567",
+  key: "b275b2f9e51725c09934",
+  secret: "623efdee5de58f6287ef",
+  cluster: "ap2",
+  useTLS: true
 });
 
-wss.on('connection', (ws: WebSocket) => {
-  // console.log('New client connected');
 
-  ws.on('message', async (message: any) => {
 
-    // console.log(`Received message: ${message}`);
+// const wss = new WebSocketServer({ port: 3001 });
 
-    let body = JSON.parse(message);
+// wss.on('connection', (ws: WebSocket) => {
+//   // console.log('New client connected');
 
-    if (body?.ws_type === 'order') {
-      order.socketOrder(wss, ws, body);
-    }
+//   ws.on('message', async (message: any) => {
 
-    if (body?.ws_type === 'buy') {
-      wss.clients.forEach(function e(client) {
-        client.send(JSON.stringify({ status: 200, message: 'order created', type: 'buy' }));
-      })
-    }
+//     // console.log(`Received message: ${message}`);
 
-    if (body?.ws_type === 'position') {
-      wss.clients.forEach(function e(client) {
-        client.send(JSON.stringify({ status: 200, message: 'position created', type: 'position' }));
-      })
-    }
+//     let body = JSON.parse(message);
 
-    if (body.ws_type === 'post') {
-      await post.socketPostAds(wss, ws);
-    }
+//     if (body?.ws_type === 'order') {
+//       order.socketOrder(wss, ws, body);
+//     }
 
-    if (body.ws_type === 'user_withdraw') {
+//     if (body?.ws_type === 'buy') {
+//       wss.clients.forEach(function e(client) {
+//         client.send(JSON.stringify({ status: 200, message: 'order created', type: 'buy' }));
+//       })
+//     }
 
-      await service.withdrawServices.releaseWithdrawAssets(body.data);
+//     if (body?.ws_type === 'position') {
+//       wss.clients.forEach(function e(client) {
+//         client.send(JSON.stringify({ status: 200, message: 'position created', type: 'position' }));
+//       })
+//     }
 
-      await notify.saveUserNotification(wss, ws, body);
-    }
+//     if (body.ws_type === 'post') {
+//       await post.socketPostAds(wss, ws);
+//     }
 
-    if (body?.ws_type === 'chat') {
-      chat.socketChat(wss, ws, body);
-    }
+//     if (body.ws_type === 'user_withdraw') {
 
-    if (body?.ws_type === 'profile') {
-      let profileData = await service.profile.getProfile(body.user_id);
+//       await service.withdrawServices.releaseWithdrawAssets(body.data);
 
-      wss.clients.forEach(function e(client) {
-        client.send(JSON.stringify({ status: 200, data: profileData, type: 'profile' }));
-      })
-    }
+//       await notify.saveUserNotification(wss, ws, body);
+//     }
 
-    if (body?.ws_type === 'market') {
-      wss.clients.forEach(function e(client) {
-        client.send(JSON.stringify({ status: 200, data: [], type: 'market' }));
-      })
-    }
+//     if (body?.ws_type === 'chat') {
+//       chat.socketChat(wss, ws, body);
+//     }
 
-  });
+//     if (body?.ws_type === 'profile') {
+//       let profileData = await service.profile.getProfile(body.user_id);
 
-  ws.on('close', () => {
-    console.log('Client disconnected');
-  });
-});
+//       wss.clients.forEach(function e(client) {
+//         client.send(JSON.stringify({ status: 200, data: profileData, type: 'profile' }));
+//       })
+//     }
 
-app.set("socket", wss);
+//     if (body?.ws_type === 'market') {
+//       wss.clients.forEach(function e(client) {
+//         client.send(JSON.stringify({ status: 200, data: [], type: 'market' }));
+//       })
+//     }
+
+//   });
+
+//   ws.on('close', () => {
+//     console.log('Client disconnected');
+//   });
+// });
+
+// app.set("socket", wss);
 
 
 cron.schedule("*/10 * * * * *", async () => {
   const date = new Date();
   await service.token.updateGlobalTokenPrice();
-  wss.clients.forEach(function e(client) {
-    client.send(JSON.stringify({ status: 200, message: 'Price change', type: 'price' }));
-  })
+  pusher.trigger("my-channel", "my-event", {
+    message: "hello world"
+  });
 });
 
 // cron.schedule("*/30 * * * * *", async () => {
