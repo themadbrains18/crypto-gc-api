@@ -37,9 +37,10 @@ let profile = new profileController();
 //   useTLS: true
 // });
 
-app.get('/',(req,res)=>{
-  res.status(200).send("API is running..")
-})
+app.get('/hello', (req, res)=>{ 
+  res.set('Content-Type', 'text/html'); 
+  res.status(200).send("<h1>Hello GFG Learner!</h1>"); 
+}); 
 
 
 const wss = new WebSocketServer({ port: 3001 });
