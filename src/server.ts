@@ -37,6 +37,10 @@ let profile = new profileController();
 //   useTLS: true
 // });
 
+app.get('/',(req,res)=>{
+  res.status(200).send("API is running..")
+})
+
 
 const wss = new WebSocketServer({ port: 3001 });
 
