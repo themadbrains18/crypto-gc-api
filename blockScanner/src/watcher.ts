@@ -1,6 +1,6 @@
 import Web3, { DataFormat, WebSocketProvider } from "web3";
 // const validateTransaction = require('./validate')
-import validateTransaction from "./validate";
+// import validateTransaction from "./validate";
 import confirmEtherTransaction from "./confirm";
 import { registeredSubscriptions } from "web3/lib/commonjs/eth.exports";
 
@@ -159,7 +159,7 @@ class MonitorEth {
         cronStatus: false,
         transferHash: "",
         tx_hash: receipt?.transactionHash,
-        gasFee: "",
+        gasFee: false,
         queue: false,
         ignore: false,
         blockHeight: `${Number(receipt?.blockNumber)}`,
@@ -255,7 +255,7 @@ class MonitorEth {
         cronStatus: false,
         transferHash: "",
         tx_hash: receipt?.transactionHash,
-        gasFee: "",
+        gasFee: false,
         queue: false,
         ignore: false,
         blockHeight: `${Number(receipt?.blockNumber)}`,
