@@ -223,7 +223,7 @@ class marketDal {
 
                     if (assets) {
                         await marketOrderHistoryModel.create(history);
-                        console.log(count[0].max + 1,'----after order cancel');
+                        // console.log(count[0].max + 1,'----after order cancel');
                         let assetUpdate = await assetModel.update({ balance: balance + mainBalance }, { where: { id: assets.id } });
                         await marketOrderModel.update({ isCanceled: true }, { where: { id: payload.order_id } });
                         return await marketOrderModel.findAll({ where: { user_id: payload.user_id, token_id: order.token_id, status: false, isCanceled: false } });

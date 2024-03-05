@@ -28,6 +28,7 @@ import futureTradePairRoutes from './futuretrade.routes';
 import futurePositionRoutes from "./futurePosition.routes";
 import futureOpenOrderRoutes from "./futureOpenOrder.routes";
 import watchlistRoutes from "./watchlist.routes";
+import pusher from "../utils/pusher";
 
 
 let apiBase = process.env.API_BASE;
@@ -44,9 +45,9 @@ class routes {
     app.use(`${apiBase}/`, express.static(process.cwd() + "/public"));
 
     // base url 
-    // app.use(`${apiBase}/`,(req : Request , res : Response)=>{
-    //   res.status(200).send("Hello World..")
-    // })
+    app.use(`${apiBase}/`, (req,res)=>{
+      res.status(200).send("Hello World API is running..")
+    })
 
     app.use(`${apiBase}/user`, usersRoutes);
     app.use(`${apiBase}/assets`, assetsRoutes);

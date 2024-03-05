@@ -3,6 +3,7 @@ import BaseController from "./main.controller";
 import { marketDto } from "../models/dto/market.dto";
 import service from "../services/service";
 import { marketCancel, marketPartialExecution } from "../utils/interface";
+import pusher from "../utils/pusher";
 
 class marketOrderController extends BaseController {
   protected async executeImpl(
@@ -24,8 +25,11 @@ class marketOrderController extends BaseController {
       let orderbody: marketDto = req.body;
 
       let marketResponsee = await service.market.create(orderbody);
-
+      pusher.trigger("crypto-channel", "market", {
+        message: "hello world"
+      })
       super.ok<any>(res, { message: "Order create successfully!.", result: marketResponsee });
+
     } catch (error: any) {
       super.fail(res, error.message);
     }
@@ -35,9 +39,9 @@ class marketOrderController extends BaseController {
    */
   async getAll(req: Request, res: Response) {
     try {
-      
+
       let orderListResponse = await service.market.getListByTokenId(req.params.token);
-      
+
       super.ok<any>(res, orderListResponse);
     } catch (error: any) {
       super.fail(res, error.message);
@@ -55,8 +59,10 @@ class marketOrderController extends BaseController {
 
       let order: marketPartialExecution = req.body;
       let marketReaponse = await service.market.marketPartialOrder(order);
-
-      super.ok<any>(res, {result : marketReaponse});
+      pusher.trigger("crypto-channel", "market", {
+        message: "hello world"
+      })
+      super.ok<any>(res, { result: marketReaponse });
     } catch (error: any) {
       super.fail(res, error.message);
     }
@@ -89,11 +95,11 @@ class marketOrderController extends BaseController {
    */
   async getordersByLimit(req: Request, res: Response) {
     try {
-      let {offset,limit} =req?.params
+      let { offset, limit } = req?.params
       let orderResponse = await service.market.getList(req.params.userid);
-      let orderPaginate = await service.market.getListByLimit(req.params.userid,offset,limit);
+      let orderPaginate = await service.market.getListByLimit(req.params.userid, offset, limit);
 
-      super.ok<any>(res, {data:orderPaginate,total:orderResponse.length});
+      super.ok<any>(res, { data: orderPaginate, total: orderResponse.length });
     } catch (error: any) {
       super.fail(res, error.message);
     }
@@ -106,7 +112,9 @@ class marketOrderController extends BaseController {
 
       let ord: marketCancel = req.body;
       let cancelResponse = await service.market.cancelOrder(ord);
-      
+      pusher.trigger("crypto-channel", "market", {
+        message: "hello world"
+      })
       super.ok<any>(res, { message: "Order create successfully!.", result: cancelResponse });
     } catch (error: any) {
       super.fail(res, error.message);
@@ -139,9 +147,9 @@ class marketOrderController extends BaseController {
    */
   async getAllMarketOrderListByLimit(req: Request, res: Response) {
     try {
-      let {offset,limit} = req?.params
+      let { offset, limit } = req?.params
       let orderListResponse = await service.market.getAllMarketOrder();
-      let orderListResponsePaginate = await service.market.getAllMarketOrderByLimit(offset,limit);
+      let orderListResponsePaginate = await service.market.getAllMarketOrderByLimit(offset, limit);
       super.ok<any>(res, { data: orderListResponsePaginate, total: orderListResponse?.length });
     } catch (error: any) {
       super.fail(res, error.message);

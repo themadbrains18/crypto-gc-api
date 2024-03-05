@@ -15,8 +15,7 @@ class chatRoutes extends BaseController {
     init(){
         let chat = new chatController();
         let auth = new authController().auth;
-
-        var router = require("express").Router();
+        
         this.router.post("/create",super.Validator(chatSchema.create),auth, chat.create);
         this.router.get("/all/:orderid", chat.getChat);
     }

@@ -19,10 +19,10 @@ export default class Server {
 
   private middlewares(app: Application) {
     // create a write stream (in append mode)
-    // var accessLogStream = fs.createWriteStream(
-    //   path.join(__dirname, "access.log"),
-    //   { flags: "a" }
-    // );
+    var accessLogStream = fs.createWriteStream(
+      path.join(__dirname, "access.log"),
+      { flags: "a" }
+    );
 
     /**
      *  App Configuration
@@ -35,14 +35,14 @@ export default class Server {
 
   
 
-    // app.use(
-    //   morgan("combined", {
-    //     stream: accessLogStream,
-    //     skip: function (req, res) {
-    //       return res.statusCode > 400;
-    //     },
-    //   })
-    // );
+    app.use(
+      morgan("combined", {
+        stream: accessLogStream,
+        skip: function (req, res) {
+          return res.statusCode > 400;
+        },
+      })
+    );
     app.use(urlencoded({ extended: true }));
     app.use(json());
     app.use(express.urlencoded({ extended: true }));
