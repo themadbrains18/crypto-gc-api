@@ -22,7 +22,7 @@ const app: Application = express();
 
 const server: Server = new Server(app);
 
-const port: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+const port: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 let order = new orderController();
 let post = new postController();
 let notify = new userNotificationController();
