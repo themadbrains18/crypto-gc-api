@@ -8,3 +8,4 @@ node/
 /src/access.log
 
 public/kyc
+build/

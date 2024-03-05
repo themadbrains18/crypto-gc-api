@@ -37,10 +37,10 @@ let profile = new profileController();
 //   useTLS: true
 // });
 
-app.get('/hello', (req, res)=>{ 
-  res.set('Content-Type', 'text/html'); 
-  res.status(200).send("<h1>Hello GFG Learner!</h1>"); 
-}); 
+// app.get('/hello', (req, res)=>{ 
+//   res.set('Content-Type', 'text/html'); 
+//   res.status(200).send("<h1>Hello GFG Learner!</h1>"); 
+// }); 
 
 
 const wss = new WebSocketServer({ port: 3001 });

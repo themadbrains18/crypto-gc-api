@@ -57,7 +57,7 @@
   "scripts": {
     "start:dev": "nodemon src/server.ts",
     "blocksacnner:dev": "NODE_OPTIONS=--max-old-space-size=2048 && nodemon blockScanner/server.ts",
-    "start:prod": "node build/server.js",
+    "start:prod": "node build/src/server.js",
     "build": "tsc"
   },
   "devDependencies": {
