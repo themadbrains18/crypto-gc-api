@@ -94,7 +94,7 @@ class paymentController extends BaseController {
         req.body?.otp === "" ||
         req.body?.otp === null
       ) {
-        
+
         let passCodeVerify = await userModel.findOne({
           where: { id: req.body.user_id },
           attributes: {
@@ -103,17 +103,17 @@ class paymentController extends BaseController {
           raw: true
         })
 
-        let userOtp = { username: passCodeVerify?.email ? passCodeVerify?.email : passCodeVerify?.number };
+        let userOtp:any = { username: passCodeVerify?.email ? passCodeVerify?.email : passCodeVerify?.number };
 
-        let otp = await service.otpGenerate.createOtpForUser(userOtp);
+        let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
-        // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+        const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-        // service.emailService.sendMail(req.headers["X-Request-Id"], {
-        //   to: userOtp.username,
-        //   subject: "Verify OTP",
-        //   html: emailTemplate.html,
-        // });
+        service.emailService.sendMail(req.headers["X-Request-Id"], {
+          to: userOtp?.username,
+          subject: "Verify OTP",
+          html: emailTemplate.html,
+        });
 
         return super.ok<any>(
           res,

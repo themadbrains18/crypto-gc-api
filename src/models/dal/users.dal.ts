@@ -38,8 +38,8 @@ class userDal {
             user_id: users?.id,
             type: 'Coupon',
             amount: 10,
-            description:'Welcome Gift',
-            coupan_code : await service.otpGenerate.referalCodeGenerate()
+            description: 'Welcome Gift',
+            coupan_code: await service.otpGenerate.referalCodeGenerate()
           }
 
           await userRewardModel.create(welcomeObj);
@@ -57,6 +57,19 @@ class userDal {
       const user = await userModel.findOne({
         where: {
           [Op.or]: [{ number: id }, { email: id }],
+        },
+      });
+      return user;
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  };
+
+  checkUserReferCodeExist = async (refer: string): Promise<object | null> => {
+    try {
+      const user = await userModel.findOne({
+        where: {
+          own_code: refer
         },
       });
       return user;

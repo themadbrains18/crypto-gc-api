@@ -44,8 +44,8 @@ class otpGenerate {
       OTP += string[Math.floor(Math.random() * len)];
     }
 
-    // return OTP;
-    return '123456';
+    return OTP;
+    // return '123456';
   }
 
   /**
@@ -55,7 +55,6 @@ class otpGenerate {
    */
   async createOtpForUser(data: userOtp): Promise<string | number | undefined> {
     try {
-      // console.log( data.username,"== data.username");
       let apiStatus;
       let otp = this.otp_generator();
       const now = new Date();
@@ -94,7 +93,6 @@ class otpGenerate {
               where: { username: data.username }, attributes: {
                 exclude: [
                   "deletedAt",
-                  "otp",
                   "username",
                   "token",
                   "updatedAt:",
@@ -127,7 +125,6 @@ class otpGenerate {
               where: { username: data.username }, attributes: {
                 exclude: [
                   "deletedAt",
-                  "otp",
                   "username",
                   "token",
                   "updatedAt:",

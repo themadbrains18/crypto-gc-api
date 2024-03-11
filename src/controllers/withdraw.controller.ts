@@ -59,16 +59,16 @@ class withdrawController extends BaseController {
       if (payload?.otp === '' || payload?.otp === 'string' || payload.otp === null) {
         userOtp = { username: req?.body?.username };
 
-        let otp = await service.otpGenerate.createOtpForUser(userOtp);
+        let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-        // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+        const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-        // service.emailService.sendMail(req.headers["X-Request-Id"], {
-        //   to: userOtp.username,
-        //   subject: "Verify OTP",
-        //   html: emailTemplate.html,
-        // });
-
+        service.emailService.sendMail(req.headers["X-Request-Id"], {
+          to: userOtp.username,
+          subject: "Verify OTP",
+          html: emailTemplate.html,
+        });
+        delete otp["otp"];
         super.ok<any>(res, {message : "OTP sent in your inbox. Please verify your otp", otp});
       }
       else {

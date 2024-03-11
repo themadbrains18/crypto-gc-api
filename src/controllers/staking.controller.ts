@@ -46,16 +46,16 @@ class stakingController extends BaseController {
             ) {
                 userOtp = { username: req.body?.username };
 
-                let otp = await service.otpGenerate.createOtpForUser(userOtp);
+                let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-                // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+                const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-                // service.emailService.sendMail(req.headers["X-Request-Id"], {
-                //   to: userOtp.username,
-                //   subject: "Verify OTP",
-                //   html: emailTemplate.html,
-                // });
-
+                service.emailService.sendMail(req.headers["X-Request-Id"], {
+                  to: userOtp.username,
+                  subject: "Verify OTP",
+                  html: emailTemplate.html,
+                });
+                delete otp["otp"];
                 // Return a 200
                 super.ok<any>(
                     res, { result: "OTP sent in your inbox. Please verify your otp to redeem assets", otp });

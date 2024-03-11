@@ -34,6 +34,10 @@ class userServices {
     return await userDataLayer.userAlreadyExist(id);
   }
 
+  async checkUserReferCodeExist(refer :string):Promise<object | null>{
+    return await userDataLayer.checkUserReferCodeExist(refer);
+  }
+
   /**
    * User Login process
    * @param payload 

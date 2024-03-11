@@ -41,6 +41,8 @@ class usersRoutes extends BaseController {
         this.router.get('/address/:id/:type', users.depositAddress);
         this.router.delete('/authdelete/:id', middleware.auth, users.authRemove);
         this.router.get('/jwt', middleware.auth, users.checkUser);
+        this.router.post('/confirm/otp', middleware.auth, users.confirmUserOtp);
+        this.router.post('/send/otp', middleware.auth, users.sendOtp);
 
         //=======================================================//
         // Profile routes create/update and get info

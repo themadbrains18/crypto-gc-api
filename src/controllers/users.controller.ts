@@ -65,8 +65,16 @@ class userController extends BaseController {
       if (flag == "number") user.number = user?.username;
       if (flag == "email") user.email = user?.username;
 
-      //   check if user already exist
+      // check refer code available or not
+      if (user?.refeer_code != "") {
+        let referCodeExist = await service.user.checkUserReferCodeExist(user?.refeer_code);
+        if (!referCodeExist) {
+          return super.fail(res, `Entered refer code not available. Please try again`);
+        }
+      }
 
+
+      //   check if user already exist
       let userExist = await service.user.checkIfUserExsit(user?.username);
       let message;
       if (userExist) {
@@ -87,17 +95,17 @@ class userController extends BaseController {
         //SEND VERIFICATION MAIL TO USER
         if (flag == "email") {
           //  send email otp to user
-          let otp = await service.otpGenerate.createOtpForUser(user);
-          // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+          let otp: any = await service.otpGenerate.createOtpForUser(user);
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-          // let emailResponse = await service.emailService.sendMail(
-          //   req.headers["X-Request-Id"],
-          //   {
-          //     to: user.username,
-          //     subject: "Verify OTP",
-          //     html: emailTemplate.html,
-          //   }
-          // );
+          let emailResponse = await service.emailService.sendMail(
+            req.headers["X-Request-Id"],
+            {
+              to: user.username,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            }
+          );
 
           // if (
           //   emailResponse?.accepted != undefined &&
@@ -105,6 +113,7 @@ class userController extends BaseController {
           // ) {
           //   return super.ok<any>(res, "Mail sent successfully!!");
           // }
+          delete otp["otp"];
           return super.ok<any>(res, { message: "Mail sent successfully!!", otp });
 
         }
@@ -151,7 +160,7 @@ class userController extends BaseController {
       let login = await service.user.login(user);
 
       if (login.success == false) {
-        return super.fail(res, `Username & password is incorrect.`);
+        return super.fail(res, `Username or password is incorrect.`);
       }
 
       login = login.data;
@@ -169,17 +178,18 @@ class userController extends BaseController {
       ) {
         userOtp = { username: login?.email ? login?.email : login?.number };
 
-        let otp = await service.otpGenerate.createOtpForUser(userOtp);
+        let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-        // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+        const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-        // service.emailService.sendMail(req.headers["X-Request-Id"], {
-        //   to: userOtp.username,
-        //   subject: "Verify OTP",
-        //   html: emailTemplate.html,
-        // });
+        service.emailService.sendMail(req.headers["X-Request-Id"], {
+          to: userOtp.username,
+          subject: "Verify OTP",
+          html: emailTemplate.html,
+        });
 
         // Return a 200
+        delete otp["otp"];
         super.ok<any>(
           res,
           { message: "OTP sent in your inbox. Your account is almost logged-in please verify your otp", otp }
@@ -423,85 +433,133 @@ class userController extends BaseController {
    * @param req
    * @param res
    */
+  // async verifyGoogleAuth(req: Request, res: Response) {
+  //   try {
+  //     let user = await service.user.checkIfUserExsit(req?.body?.username);
+  //     if (user) {
+  //       let userOtp;
+  //       if (
+  //         req.body?.otp === "string" ||
+  //         req.body?.otp === "" ||
+  //         req.body?.otp === null
+  //       ) {
+  //         //  send email otp to user
+  //         userOtp = { username: req?.body?.username };
+
+  //         let otp = await service.otpGenerate.createOtpForUser(userOtp);
+
+  //         // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+
+  //         // service.emailService.sendMail(req.headers["X-Request-Id"], {
+  //         //   to: userOtp.username,
+  //         //   subject: "Verify OTP",
+  //         //   html: emailTemplate.html,
+  //         // });
+
+  //         super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
+  //       } else {
+
+  //         if (req.body?.otp) {
+  //           userOtp = {
+  //             username: req?.body?.username,
+  //             otp: req.body?.otp,
+  //           };
+
+  //           let result = await service.otpService.matchOtp(userOtp);
+
+  //           if (result.success === true) {
+
+  //             let user: any = await userModel.findOne({
+  //               where: { id: req?.body?.user_id },
+  //               raw: true,
+  //             });
+
+  //             let pass = service.bcypt.MDB_compareHash(
+  //               `${req?.body?.password}`,
+  //               user?.password
+  //             );
+
+  //             if (pass) {
+  //               let pwdData: googleAuth = req.body;
+
+  //               pwdData.TwoFA = user?.TwoFA === true || user?.TwoFA === 1 ? false : true;
+
+  //               let pwdResponse = await service.user.googleAuth(pwdData);
+
+  //               if (pwdResponse === true) {
+
+  //                 user = await userModel.findOne({
+  //                   where: { id: req?.body?.user_id },
+  //                   raw: true,
+  //                 });
+
+  //                 super.ok<any>(res, {
+  //                   message: `Two Factor Authentication ${user.TwoFA === true || user.TwoFA ? 'Enabled' : 'Disabled'}!!.`,
+  //                   result: user.TwoFA === true || user.TwoFA === 1 ? true : false,
+  //                 });
+  //               }
+  //               else {
+  //                 return super.fail(res, 'Google security code not matched');
+  //               }
+
+  //             }
+  //             else {
+  //               return super.fail(res, 'Password not matched');
+  //             }
+  //           }
+  //           else {
+  //             return super.fail(res, result.message);
+  //           }
+
+  //         }
+  //       }
+  //     }
+  //   } catch (error: any) {
+  //     super.fail(res, error.message);
+  //   }
+  // }
+
+
   async verifyGoogleAuth(req: Request, res: Response) {
     try {
-      let user = await service.user.checkIfUserExsit(req?.body?.username);
-      if (user) {
-        let userOtp;
-        if (
-          req.body?.otp === "string" ||
-          req.body?.otp === "" ||
-          req.body?.otp === null
-        ) {
-          //  send email otp to user
-          userOtp = { username: req?.body?.username };
+      let userExist = await service.user.checkIfUserExsit(req?.body?.username);
+      if (userExist) {
+        let user: any = await userModel.findOne({
+          where: { id: req?.body?.user_id },
+          raw: true,
+        });
 
-          let otp = await service.otpGenerate.createOtpForUser(userOtp);
+        let pass = service.bcypt.MDB_compareHash(
+          `${req?.body?.password}`,
+          user?.password
+        );
 
-          // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+        if (pass) {
+          let pwdData: googleAuth = req.body;
 
-          // service.emailService.sendMail(req.headers["X-Request-Id"], {
-          //   to: userOtp.username,
-          //   subject: "Verify OTP",
-          //   html: emailTemplate.html,
-          // });
+          pwdData.TwoFA = user?.TwoFA === true || user?.TwoFA === 1 ? false : true;
 
-          super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
-        } else {
+          let pwdResponse = await service.user.googleAuth(pwdData);
 
-          if (req.body?.otp) {
-            userOtp = {
-              username: req?.body?.username,
-              otp: req.body?.otp,
-            };
+          if (pwdResponse === true) {
 
-            let result = await service.otpService.matchOtp(userOtp);
+            user = await userModel.findOne({
+              where: { id: req?.body?.user_id },
+              raw: true,
+            });
 
-            if (result.success === true) {
-
-              let user: any = await userModel.findOne({
-                where: { id: req?.body?.user_id },
-                raw: true,
-              });
-
-              let pass = service.bcypt.MDB_compareHash(
-                `${req?.body?.password}`,
-                user?.password
-              );
-
-              if (pass) {
-                let pwdData: googleAuth = req.body;
-
-                pwdData.TwoFA = user?.TwoFA === true || user?.TwoFA === 1 ? false : true;
-
-                let pwdResponse = await service.user.googleAuth(pwdData);
-
-                if (pwdResponse === true) {
-
-                  user = await userModel.findOne({
-                    where: { id: req?.body?.user_id },
-                    raw: true,
-                  });
-
-                  super.ok<any>(res, {
-                    message: `Two Factor Authentication ${user.TwoFA === true || user.TwoFA ? 'Enabled' : 'Disabled'}!!.`,
-                    result: user.TwoFA === true || user.TwoFA === 1 ? true : false,
-                  });
-                }
-                else {
-                  return super.fail(res, 'Google security code not matched');
-                }
-
-              }
-              else {
-                return super.fail(res, 'Password not matched');
-              }
-            }
-            else {
-              return super.fail(res, result.message);
-            }
-
+            super.ok<any>(res, {
+              message: `Two Factor Authentication ${user.TwoFA === true || user.TwoFA ? 'Enabled' : 'Disabled'}!!.`,
+              result: user.TwoFA === true || user.TwoFA === 1 ? true : false,
+            });
           }
+          else {
+            return super.fail(res, 'Google security code not matched');
+          }
+
+        }
+        else {
+          return super.fail(res, 'Password not matched');
         }
       }
     } catch (error: any) {
@@ -532,16 +590,17 @@ class userController extends BaseController {
           ) {
             //  send email otp to user
             userOtp = { username: req?.body?.username };
-            let otp = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-            // service.emailService.sendMail(req.headers["X-Request-Id"], {
-            //   to: userOtp.username,
-            //   subject: "Verify OTP",
-            //   html: emailTemplate.html,
-            // });
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: userOtp.username,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            });
 
+            delete otp["otp"];
             super.ok<any>(
               res,
               { message: "OTP sent in your inbox. please your verify otp", otp }
@@ -589,16 +648,16 @@ class userController extends BaseController {
           ) {
             //  send email otp to user
             userOtp = { username: req?.body?.username };
-            let otp = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
 
-            // service.emailService.sendMail(req.headers["X-Request-Id"], {
-            //   to: userOtp.username,
-            //   subject: "Verify OTP",
-            //   html: emailTemplate.html,
-            // });
-
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: userOtp.username,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            });
+            delete otp["otp"];
             super.ok<any>(
               res,
               { message: "OTP sent in your inbox. please your verify otp", otp }
@@ -662,15 +721,15 @@ class userController extends BaseController {
           ) {
             userOtp = { username: req?.body?.username };
 
-            let otp = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
-            // service.emailService.sendMail(req.headers["X-Request-Id"], {
-            //   to: userOtp.username,
-            //   subject: "Verify OTP",
-            //   html: emailTemplate.html,
-            // });
-
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: userOtp.username,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            });
+            delete otp["otp"];
             super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
           } else {
             //  send email otp to user
@@ -711,15 +770,15 @@ class userController extends BaseController {
         ) {
 
           userOtp = { username: req?.body?.username };
-          let otp = await service.otpGenerate.createOtpForUser(userOtp);
+          let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-          // const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
-          // service.emailService.sendMail(req.headers["X-Request-Id"], {
-          //   to: userOtp.username,
-          //   subject: "Verify OTP",
-          //   html: emailTemplate.html,
-          // });
-
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+          service.emailService.sendMail(req.headers["X-Request-Id"], {
+            to: userOtp.username,
+            subject: "Verify OTP",
+            html: emailTemplate.html,
+          });
+          delete otp["otp"];
           // Return a 200
           super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
         } else {
@@ -1087,6 +1146,57 @@ class userController extends BaseController {
       let userData = await service.user.getUserDataAsCounts();
 
       super.ok<any>(res, userData);
+    } catch (error: any) {
+      super.fail(res, error.message);
+    }
+  }
+
+  async confirmUserOtp(req: Request, res: Response) {
+    try {
+
+      let userOtp;
+      userOtp = {
+        username: req.body?.username,
+        otp: req.body?.otp,
+      };
+      let result = await service.otpService.matchOtp(userOtp);
+      if (result.success) {
+        return super.ok<any>(res, "Otp Matched");
+      } else {
+        return super.fail(res, result.message);
+      }
+    } catch (error: any) {
+      return super.fail(res, error.message);
+    }
+  }
+
+  async sendOtp(req: Request, res: Response) {
+    try {
+      let user = await service.user.checkIfUserExsit(req?.body?.username);
+      if (user) {
+        let userOtp;
+        if (
+          req.body?.otp === "string" ||
+          req.body?.otp === "" ||
+          req.body?.otp === null
+        ) {
+          //  send email otp to user
+          userOtp = { username: req?.body?.username };
+
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+
+          service.emailService.sendMail(req.headers["X-Request-Id"], {
+            to: userOtp.username,
+            subject: "Verify OTP",
+            html: emailTemplate.html,
+          });
+
+          delete otp["otp"];
+          super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
+        }
+      }
     } catch (error: any) {
       super.fail(res, error.message);
     }

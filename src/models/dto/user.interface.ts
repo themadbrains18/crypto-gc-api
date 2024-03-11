@@ -6,8 +6,8 @@ export interface registerUser {
     confirmPassword: true,
     termAndCondition: string,
     id : string,
-    refeer_code? : string,
-    own_code?:string,
+    refeer_code : string,
+    own_code:string,
     secret?:string,
   }
 
