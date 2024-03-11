@@ -96,7 +96,7 @@ class userController extends BaseController {
         if (flag == "email") {
           //  send email otp to user
           let otp: any = await service.otpGenerate.createOtpForUser(user);
-          const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
           let emailResponse = await service.emailService.sendMail(
             req.headers["X-Request-Id"],
@@ -180,7 +180,7 @@ class userController extends BaseController {
 
         let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-        const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+        const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
         service.emailService.sendMail(req.headers["X-Request-Id"], {
           to: userOtp.username,
@@ -592,7 +592,7 @@ class userController extends BaseController {
             userOtp = { username: req?.body?.username };
             let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
             service.emailService.sendMail(req.headers["X-Request-Id"], {
               to: userOtp.username,
@@ -650,7 +650,7 @@ class userController extends BaseController {
             userOtp = { username: req?.body?.username };
             let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
             service.emailService.sendMail(req.headers["X-Request-Id"], {
               to: userOtp.username,
@@ -723,7 +723,7 @@ class userController extends BaseController {
 
             let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
             service.emailService.sendMail(req.headers["X-Request-Id"], {
               to: userOtp.username,
               subject: "Verify OTP",
@@ -772,7 +772,7 @@ class userController extends BaseController {
           userOtp = { username: req?.body?.username };
           let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-          const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
           service.emailService.sendMail(req.headers["X-Request-Id"], {
             to: userOtp.username,
             subject: "Verify OTP",

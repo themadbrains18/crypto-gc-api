@@ -48,7 +48,7 @@ class stakingController extends BaseController {
 
                 let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
-                const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+                const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
                 service.emailService.sendMail(req.headers["X-Request-Id"], {
                   to: userOtp.username,
