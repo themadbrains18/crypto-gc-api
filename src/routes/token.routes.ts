@@ -39,7 +39,7 @@ class tokenRoutes extends BaseController {
         //         maxCount: 1,
         //     },
         // ]), super.Validator(tokenSchema.create), tokens.create);
-        this.router.post('/token/create', auth, super.Validator(tokenSchema.create), tokens.create);
+        this.router.post('/create', auth, super.Validator(tokenSchema.create), tokens.create);
         /**
         * Top gainer token list
         */
@@ -66,7 +66,7 @@ class tokenRoutes extends BaseController {
         //         maxCount: 1,
         //     },
         // ]), super.Validator(tokenSchema.edit), tokens.edit);
-        this.router.post('/token/edit', auth, super.Validator(tokenSchema.edit), tokens.edit);
+        this.router.post('/edit', auth, super.Validator(tokenSchema.edit), tokens.edit);
 
         /**
          * Admin active/Inactive token that show on frontend

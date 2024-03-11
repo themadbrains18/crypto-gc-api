@@ -80,11 +80,11 @@ class tokenController extends BaseController {
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const obj = JSON.parse(JSON.stringify(req.files));
-      for (let itm in obj) {
-        req.body[itm] =
-          "http://localhost:3000/tmbexchange/token/" + obj[itm][0]?.filename;
-      }
+      // const obj = JSON.parse(JSON.stringify(req.files));
+      // for (let itm in obj) {
+      //   req.body[itm] =
+      //     "http://localhost:3000/tmbexchange/token/" + obj[itm][0]?.filename;
+      // }
 
       let token: tokenDto = req.body;
       //=======================================//
@@ -172,11 +172,11 @@ class tokenController extends BaseController {
 
   async edit(req: Request, res: Response, next: NextFunction) {
     try {
-      const obj = JSON.parse(JSON.stringify(req.files));
-      for (let itm in obj) {
-        req.body[itm] =
-          "http://localhost:3000/tmbexchange/token/" + obj[itm][0]?.filename;
-      }
+      // const obj = JSON.parse(JSON.stringify(req.files));
+      // for (let itm in obj) {
+      //   req.body[itm] =
+      //     "http://localhost:3000/tmbexchange/token/" + obj[itm][0]?.filename;
+      // }
 
       let token: tokenDto = req.body;
 

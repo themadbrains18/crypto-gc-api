@@ -28,10 +28,10 @@ class paymentController extends BaseController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
 
-      const obj = JSON.parse(JSON.stringify(req.files));
-      for (let itm in obj) {
-        req.body[itm] = obj[itm][0]?.filename;
-      }
+      // const obj = JSON.parse(JSON.stringify(req.files));
+      // for (let itm in obj) {
+      //   req.body[itm] = obj[itm][0]?.filename;
+      // }
 
       let method: paymentMethodDto = req.body;
       let paymentResponse = await service.p_method.create(method);
