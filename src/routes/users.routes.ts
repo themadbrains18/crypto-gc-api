@@ -57,7 +57,7 @@ class usersRoutes extends BaseController {
         //         maxCount: 1,
         //     },
         // ]), middleware.auth, profile.savedp);
-        // this.router.post('/user/profile/dp', middleware.auth, profile.savedpImage);
+        this.router.post('/profile/dp', middleware.auth, profile.savedp);
         //=======================================================//
         // user account manually scanner // admin can access this routes
         //=======================================================//

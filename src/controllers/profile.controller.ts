@@ -51,11 +51,11 @@ class profileController extends BaseController {
 
     async savedp(req: Request, res: Response) {
         try {
-            const obj = JSON.parse(JSON.stringify(req.files));
+            // const obj = JSON.parse(JSON.stringify(req.files));
 
-            for (let itm in obj) {
-                req.body[itm] = obj[itm][0]?.filename;
-            }
+            // for (let itm in obj) {
+            //     req.body[itm] = obj[itm][0]?.filename;
+            // }
 
             let response = await service.profile.saveDp(req.body);
 
