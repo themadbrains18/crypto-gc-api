@@ -19,7 +19,7 @@ class kycRoutes extends BaseController {
     let middleware = new authController();
 
     this.router.post(
-      "/kyc/create",
+      "/create",
       middleware.auth,
       kyc.create
     );

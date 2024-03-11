@@ -26,13 +26,17 @@ class kycController extends BaseController {
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const obj = JSON.parse(JSON.stringify(req.files));
-      for (let itm in obj) {
-        req.body[itm] = obj[itm][0]?.filename;
-        req.body.destinationPath = obj[itm][0]?.destination;
-      }
+      // const obj = JSON.parse(JSON.stringify(req.files));
+      // for (let itm in obj) {
+      //   req.body[itm] = obj[itm][0]?.filename;
+      //   req.body.destinationPath = obj[itm][0]?.destination;
+      // }
+
+      // console.log(req.body ,'-------kyc body data---------');
+      // return
 
       let kyc: kycDto = req.body;
+
 
       let kycAlreadyAdded = await service.kyc.alreadyExist(kyc);
 
@@ -52,7 +56,7 @@ class kycController extends BaseController {
         super.ok<any>(res, { message: "Kyc successfully Added.", result: tokenResponse })
       }
 
-
+      kyc.userid = req.body.user_id;
       let tokenResponse = await service.kyc.create(kyc);
 
       super.ok<any>(res, { message: "Kyc successfully Added.", result: tokenResponse })
