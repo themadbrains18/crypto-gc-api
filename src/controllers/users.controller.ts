@@ -619,6 +619,13 @@ class userController extends BaseController {
 
                 let pwdResponse = await service.user.updatePassword(pwdData);
 
+                const emailTemplate = service.emailTemplate.passwordMail();
+
+                service.emailService.sendMail(req.headers["X-Request-Id"], {
+                  to: userOtp.username,
+                  subject: "Password Update",
+                  html: emailTemplate.html,
+                });
                 super.ok<any>(res, {
                   status: 200,
                   message: "Password update successfully!!.",
@@ -674,7 +681,13 @@ class userController extends BaseController {
                 let pwdData: updatepassword = req.body;
 
                 let pwdResponse = await service.user.updatePassword(pwdData);
+                const emailTemplate = service.emailTemplate.passwordMail();
 
+                service.emailService.sendMail(req.headers["X-Request-Id"], {
+                  to: userOtp.username,
+                  subject: "Password Update",
+                  html: emailTemplate.html,
+                });
                 super.ok<any>(res, {
                   status: 200,
                   message: "Password update successfully!!.",

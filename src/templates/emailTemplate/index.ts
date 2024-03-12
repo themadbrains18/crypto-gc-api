@@ -20,7 +20,7 @@ class emailTemplates {
      * @param otp 
      * @returns 
      */
-    otpVerfication (otp : string | number) {
+    otpVerfication(otp: string | number) {
         return verifyEmail(otp)
     }
     /**
@@ -28,15 +28,15 @@ class emailTemplates {
      * @param otp 
      * @returns 
      */
-    loginTemplate (ip : string , loginTime:number | string) {
-        return loginEmail(ip,loginTime)
+    loginTemplate(ip: string, loginTime: number | string) {
+        return loginEmail(ip, loginTime)
     }
     /**
      * kyc verification email template
      * @param  
      * @returns 
      */
-    kycVerification (status : string) {
+    kycVerification(status: string) {
         return kycProcess(status)
     }
     /**
@@ -44,31 +44,31 @@ class emailTemplates {
      * @param  
      * @returns 
      */
-   withdrawVerification (otp : string | number, address:string, amount:string | number) {
-        return withdrawEmail(otp,address,amount)
+    withdrawVerification(otp: string | number, address: string, amount: string | number) {
+        return withdrawEmail(otp, address, amount)
     }
-   withdrawSuccess ( address:string, amount:string | number, txid:string) {
-        return withdrawSuccessEmail(address,amount,txid)
+    withdrawSuccess(address: string, amount: string | number, txid: string) {
+        return withdrawSuccessEmail(address, amount, txid)
     }
-   withdrawSent( address:string, amount:string | number, fees:string | number) {
-        return withdrawSentEmail(address,amount,fees)
+    withdrawSent(address: string, amount: string | number, fees: string | number) {
+        return withdrawSentEmail(address, amount, fees)
     }
-   p2pBuyEmail( order_id:string, amount:string | number, seller:string, currency:string) {
-        return P2pBuyEmailTemplate(order_id,amount,seller,currency)
+    p2pBuyEmail(order_id: string, amount: string | number, seller: string, currency: string) {
+        return P2pBuyEmailTemplate(order_id, amount, seller, currency)
     }
-   conversionMail( converted:string,received: string ,conversionRate: string ,fees:string) {
-        return conversionEmailTemplate(converted,received,conversionRate,fees)
+    conversionMail(converted: string, received: string, conversionRate: string, fees: string) {
+        return conversionEmailTemplate(converted, received, conversionRate, fees)
     }
-   twoFactorMail() {
+    twoFactorMail() {
         return TwoFactorEmailTemplate()
     }
-   passwordMail() {
+    passwordMail() {
         return PasswordTemplate()
     }
-  postMail() {
+    postMail() {
         return PostEmailTemplate()
     }
-  announcementMail() {
+    announcementMail() {
         return Announcement()
     }
 

@@ -149,7 +149,7 @@ const verifyEmail = function (otp: string | number) {
                                                 height: auto !important;
                                               "
                                              
-                                              src="http://139.59.63.186/icons/tmb_icon.svg"
+                                              src="https://res.cloudinary.com/dpcxtbxlk/image/upload/v1710230375/my-uploads/myr7gt9fjqgy4omb3thn.png"
                                               alt=""
                                           /></a>
                                         </td>
