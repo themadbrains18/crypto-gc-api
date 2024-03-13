@@ -114,7 +114,7 @@ class userController extends BaseController {
           //   return super.ok<any>(res, "Mail sent successfully!!");
           // }
           delete otp["otp"];
-          return super.ok<any>(res, { message: "Mail sent successfully!!", otp });
+          return super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
 
         }
       } else {
@@ -192,7 +192,7 @@ class userController extends BaseController {
         delete otp["otp"];
         super.ok<any>(
           res,
-          { message: "OTP sent in your inbox. Your account is almost logged-in please verify your otp", otp }
+          { message: "OTP sent in your inbox. please verify your otp", otp }
         );
       } else {
         //  send email otp to user
@@ -382,7 +382,7 @@ class userController extends BaseController {
             emailResponse?.accepted?.length > 0
           ) {
             return super.ok<any>(res, {
-              data: "OTP sent in your inbox. please your verify otp",
+              data: "OTP sent in your inbox. please verify your otp",
             });
           }
           // Return a 200
@@ -603,7 +603,7 @@ class userController extends BaseController {
             delete otp["otp"];
             super.ok<any>(
               res,
-              { message: "OTP sent in your inbox. please your verify otp", otp }
+              { message: "OTP sent in your inbox. please verify your otp", otp }
             );
           } else {
             if (req.body?.otp) {
@@ -667,7 +667,7 @@ class userController extends BaseController {
             delete otp["otp"];
             super.ok<any>(
               res,
-              { message: "OTP sent in your inbox. please your verify otp", otp }
+              { message: "OTP sent in your inbox. please verify your otp", otp }
             );
           } else {
             if (req.body?.otp) {
@@ -743,7 +743,7 @@ class userController extends BaseController {
               html: emailTemplate.html,
             });
             delete otp["otp"];
-            super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
+            super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
           } else {
             //  send email otp to user
             if (req.body?.otp) {
@@ -1207,7 +1207,7 @@ class userController extends BaseController {
           });
 
           delete otp["otp"];
-          super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
+          super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
         }
       }
     } catch (error: any) {

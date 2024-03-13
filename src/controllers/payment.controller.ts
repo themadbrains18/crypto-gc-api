@@ -117,7 +117,7 @@ class paymentController extends BaseController {
 
         return super.ok<any>(
           res,
-          "OTP sent"
+          "OTP sent in your inbox. please verify your otp"
         );
       }
 

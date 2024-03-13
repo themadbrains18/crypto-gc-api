@@ -125,7 +125,7 @@ class kycController extends BaseController {
 
             service.emailService.sendMail(req.headers["X-Request-Id"], {
               to: user.email,
-              subject: "Verify OTP",
+              subject: "KYC Status",
               html: emailTemplate.html,
             });
           }

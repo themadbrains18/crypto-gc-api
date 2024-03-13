@@ -69,7 +69,7 @@ class withdrawController extends BaseController {
           html: emailTemplate.html,
         });
         delete otp["otp"];
-        super.ok<any>(res, {message : "OTP sent in your inbox. Please verify your otp", otp});
+        super.ok<any>(res, {message : "OTP sent in your inbox. please verify your otp", otp});
       }
       else {
         //  send email otp to user
