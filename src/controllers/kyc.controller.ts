@@ -5,6 +5,7 @@ import service from "../services/service";
 import kycSchema from "../validators/kyc.validator";
 import kycDal from "../models/dal/kyc.dal";
 import fileUpload from "../utils/multer";
+import userDal from "../models/dal/users.dal";
 
 class kycController extends BaseController {
 
@@ -102,12 +103,33 @@ class kycController extends BaseController {
   async kycStatus(req: Request, res: Response, next: NextFunction) {
     try {
       let kyc: kycDto = req.body;
-      
+
       let userKyc = await service.kyc.alreadyExist(kyc);
 
       if (userKyc.length > 0) {
         let kycResponse = await service.kyc.updateStatus(kyc);
         if (kycResponse) {
+          let userService = new userDal();
+          let user = await userService.checkUserByPk(kycResponse.userid);
+
+          if (user.email !== null) {
+            let status = 'Pending';
+            
+            if ( Number(kycResponse.isReject) === 1) {
+              status = "Rejected"
+            }
+            else if ( Number(kycResponse.isVerified) === 1) {
+              status = "Verified"
+            }
+            const emailTemplate = service.emailTemplate.kycVerification(status);
+
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: user.email,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            });
+          }
+
           let kycs = await service.kyc.getAllKyc('All');
           super.ok<any>(res, { message: "Kyc status successfully updated.", result: kycs })
         }
@@ -142,9 +164,9 @@ class kycController extends BaseController {
     try {
       let { offset, limit } = req.params;
       let kycs = await service.kyc.getAllKyc(req.params.type);
-     
-      let kycPaginated = await service.kyc.getAllKycByLimit(req.params.type,offset,limit);
-      super.ok<any>(res, { data: kycPaginated, total: kycs});
+
+      let kycPaginated = await service.kyc.getAllKycByLimit(req.params.type, offset, limit);
+      super.ok<any>(res, { data: kycPaginated, total: kycs });
     } catch (error: any) {
       next(error);
     }

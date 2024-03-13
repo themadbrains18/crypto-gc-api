@@ -9,8 +9,8 @@ export default interface kycDto {
     idfront: string;
     idback :string;
     statement :string;
-    isVerified :boolean;
-    isReject : boolean;
+    isVerified? :boolean;
+    isReject? : boolean;
     destinationPath?: string;
     dob: Date;
   }

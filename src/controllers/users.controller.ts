@@ -352,11 +352,11 @@ class userController extends BaseController {
         ) {
           userOtp = { username: req?.body?.username };
           userNewOtp = { username: req?.body?.data };
-          let otp = await service.otpGenerate.createOtpForUser(userOtp);
-          let otp2 = await service.otpGenerate.createOtpForUser(userNewOtp);
-          const emailTemplate = service.emailTemplate.otpVerfication(`${otp}`);
+          let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+          let otp2:any = await service.otpGenerate.createOtpForUser(userNewOtp);
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
           const newEmailTemplate = service.emailTemplate.otpVerfication(
-            `${otp2}`
+            `${otp2?.otp}`
           );
           // console.log(userOtp.username, " ========== 00")
 

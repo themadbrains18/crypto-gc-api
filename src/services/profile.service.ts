@@ -43,7 +43,7 @@ class profileServices {
         }
     }
     async getActivity(user_id: string): Promise<lastLoginOuput | any> {
-        let activity = await lastLoginModel.findAll({ where: { user_id: user_id }, raw: true });
+        let activity = await lastLoginModel.findAll({ where: { user_id: user_id }, raw: true, order: [['createdAt', 'ASC']] });
         if (activity) {
             return activity
         }
