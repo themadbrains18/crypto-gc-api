@@ -4,5 +4,5 @@ export default interface userPaymentMethodDto {
     status?: string,
     pm_name?: string,
     pmObject?: object,
-    otp?: number,
+    otp?: string,
 }
