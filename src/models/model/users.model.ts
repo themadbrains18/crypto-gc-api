@@ -147,7 +147,7 @@ class userModel
           allowNull: true,
         },
         antiphishing: {
-          type: DataTypes.BIGINT,
+          type: DataTypes.STRING,
           allowNull: true,
         },
         UID: {

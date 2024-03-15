@@ -35,16 +35,16 @@ class paymentController extends BaseController {
 
 
       let method: paymentMethodDto = req.body;
-      let paymentResponse = await service.p_method.create(method);
+      let p_method = paymentMethodModel.findAll({ where: { payment_method: req.body.payment_method } });
 
-      // console.log(paymentResponse,'===========paymentResponse');
-
-
-      if (paymentResponse.hasOwnProperty('status') && paymentResponse.status !== 200) {
-        return super.fail(res, paymentResponse.message === "" ? paymentResponse.additionalInfo : paymentResponse.message);
+      if ((await p_method).length > 0) {
+        return super.fail(res, "This Method is already exist!!.");
       }
-
-      super.ok<any>(res, { message: 'Payment method added successfully!.', result: paymentResponse });
+      let paymentResponse = await service.p_method.create(method);
+      if(paymentResponse){
+        super.ok<any>(res, { message: 'Payment method added successfully!.', result: paymentResponse });
+      }
+      
     } catch (error) {
       next(error);
     }
@@ -124,7 +124,7 @@ class paymentController extends BaseController {
           raw: true
         })
 
-        let userOtp:any = { username: passCodeVerify?.email ? passCodeVerify?.email : passCodeVerify?.number };
+        let userOtp: any = { username: passCodeVerify?.email ? passCodeVerify?.email : passCodeVerify?.number };
 
         let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 

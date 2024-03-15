@@ -11,15 +11,13 @@ class paymentMethodDal{
      */
     async create(payload : paymentMethodDto): Promise<paymentOuput | any>{
 
-        let p_method = paymentMethodModel.findAll({where : {payment_method : payload.payment_method}});
-
-        if((await p_method).length >0){
-            return {status : 500, message : "This Method is already exist!!."}  
-        }
+        
         return await paymentMethodModel.create(payload);
     }
 
     async getPaymentList():Promise<paymentOuput | any>{
+        console.log('---------herer payment list');
+        
         return await paymentMethodModel.findAll(); 
     }
 
