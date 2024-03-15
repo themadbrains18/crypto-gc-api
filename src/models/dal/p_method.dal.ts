@@ -26,6 +26,12 @@ class paymentMethodDal{
     async getPaymentListById(payload : string):Promise<paymentOuput | any>{
         return await paymentMethodModel.findOne({where :{id : payload}}); 
     }
+    async updateMethodById(payload :paymentMethodDto ):Promise<paymentOuput | any>{
+        let method= await paymentMethodModel.findOne({where :{id : payload.id}}); 
+        if(method){
+            return await paymentMethodModel.update(payload, { where: { id: payload.id } });
+        }
+    }
 }
 
 export default new paymentMethodDal();

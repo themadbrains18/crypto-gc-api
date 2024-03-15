@@ -21,6 +21,7 @@ class paymentMethodRoutes extends BaseController {
 
         this.router.get("/list", payment.list);
         this.router.get("/method/:id", payment.single);
+        this.router.put("/update", payment.updatePaymentMethod);
       
         this.router.post("/addmethod",auth, payment.addMethod); // create by users
         this.router.get("/get-method",auth, payment.getMethod); // get methods by user id 

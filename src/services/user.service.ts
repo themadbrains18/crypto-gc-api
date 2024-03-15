@@ -3,7 +3,7 @@ import userDal from "../models/dal/users.dal";
 import { loginUser } from "../models/dto/user.interface";
 import userModel, { UserInput, UserOuput } from "../models/model/users.model";
 import service from "./service";
-import { googleAuth, updateFundcode, updatepassword, updateUserPin, updateUserStatus } from "../utils/interface";
+import { antiPhishingCode, googleAuth, updateFundcode, updatepassword, updateUserPin, updateUserStatus } from "../utils/interface";
 import speakeasy from "speakeasy";
 import sequelize from "../models/model/users.model";
 import { lastLoginOuput } from "../models/model/lastLogin.model";
@@ -285,6 +285,23 @@ class userServices {
       let user = await userModel.findOne({ where: { id: payload.user_id } });
       if (user) {
         return await user.update({ tradingPassword: payload.new_password });
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+  /**
+   * set user Ntiphishing cde
+   * @param payload 
+   * @returns 
+   */
+  async antiPhishingCode(payload: antiPhishingCode): Promise<UserOuput | any> {
+    try {
+      let user = await userModel.findOne({ where: { id: payload.user_id } });
+      if (user) {
+        return await user.update({ antiphishing: payload.antiphishing });
       } else {
         throw new Error("User not found");
       }

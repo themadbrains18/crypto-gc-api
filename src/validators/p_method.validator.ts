@@ -3,8 +3,9 @@ import Joi from "joi";
 const p_methodSchema={
     create : Joi.object().keys({
         payment_method: Joi.string().required(),
-        icon: Joi.binary().encoding('utf8').optional(),
+        icon: Joi.string().optional(),
         region: Joi.string().required(),
+        user_id: Joi.string().optional(),
         fields: Joi.array().items({
             "name": Joi.string().required(),
             "type": Joi.string().required(),

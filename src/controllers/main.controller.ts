@@ -44,13 +44,15 @@ export default abstract class BaseController {
       
       
       try {
-        if (req.originalUrl === '/tmbexchange/payment/save') {
-          let fieldArray = [];
-          for (let filed of req.body.fields) {
-            fieldArray.push(JSON.parse(filed))
-          }
-          req.body.fields = fieldArray;
-        }
+        console.log(req.body, typeof req.body.fields);
+        
+        // if (req.originalUrl === '/tmbexchange/payment/save') {
+        //   let fieldArray = [];
+        //   for (let filed of req.body.fields) {
+        //     fieldArray.push(JSON.parse(filed))
+        //   }
+        //   req.body.fields = fieldArray;
+        // }
 
         if (req.originalUrl === '/tmbexchange/token/token_list/create') {
           let networkArray = [];

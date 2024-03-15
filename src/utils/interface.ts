@@ -30,6 +30,11 @@ export interface updatepassword {
   old_password: string;
   new_password: string;
 }
+export interface antiPhishingCode {
+  user_id?: string;
+  antiphishing: string;
+  otp?:string;
+}
 
 export interface updateFundcode {
   user_id?: string;

@@ -35,6 +35,7 @@ class usersRoutes extends BaseController {
         this.router.put('/password', middleware.auth, users.updatePassword);
         this.router.put('/forget', users.updatePassword);
         this.router.put('/trading-password', middleware.auth, users.tradingPassword);
+        this.router.put('/anti-phishing', middleware.auth, users.antiPhishingCode);
         this.router.post('/confirPassword', users.confirmPassword);
         this.router.post('/confirmFunCode', users.confirmFuncode);
         this.router.put('/fundcode', super.Validator(validators.settingSchema.updatefundcode), middleware.auth, users.updateFundcode);

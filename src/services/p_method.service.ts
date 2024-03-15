@@ -24,6 +24,9 @@ class paymentMethodService{
     async getPaymentMethodById(payload : string) : Promise<paymentOuput | any>{
         return await paymentMethodDal.getPaymentListById(payload);
     }
+    async updatePaymentMethodById(payload : paymentMethodDto) : Promise<paymentOuput | any>{
+        return await paymentMethodDal.updateMethodById(payload);
+    }
 
     async createUserPaymentMethod(payload : userPaymentMethodDto): Promise<userPmethodOuput | any>{
         return await userPaymentMethodDal.create(payload);

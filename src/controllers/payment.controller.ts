@@ -33,6 +33,7 @@ class paymentController extends BaseController {
       //   req.body[itm] = obj[itm][0]?.filename;
       // }
 
+
       let method: paymentMethodDto = req.body;
       let paymentResponse = await service.p_method.create(method);
 
@@ -46,6 +47,26 @@ class paymentController extends BaseController {
       super.ok<any>(res, { message: 'Payment method added successfully!.', result: paymentResponse });
     } catch (error) {
       next(error);
+    }
+  }
+
+  /**
+   *
+   * @param res
+   * @param req
+   */
+  async updatePaymentMethod(req: Request, res: Response, next: NextFunction) {
+    try {
+      let data = req.body;
+      let statusResponse = await service.p_method.updatePaymentMethodById(data);
+      if (statusResponse) {
+        let tokens = await service.p_method.getMethodList();
+        return super.ok<any>(res, tokens);
+      } else {
+        super.fail(res, statusResponse);
+      }
+    } catch (error: any) {
+      super.fail(res, error.message);
     }
   }
 

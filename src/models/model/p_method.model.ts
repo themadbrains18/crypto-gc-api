@@ -7,6 +7,7 @@ interface paymentAtteribute {
   payment_method?: string;
   icon?: string;
   region?: string;
+  status?: boolean;
   fields?: object;
 
   createdAt?: Date;
@@ -25,6 +26,7 @@ class paymentMethodModel
   public payment_method!: string;
   public icon!: string;
   public region!: string;
+  public status!: boolean;
   public fields!: object;
 
   // timestamps!
@@ -52,6 +54,11 @@ class paymentMethodModel
         region: {
           type: DataTypes.STRING,
           allowNull: false,
+        },
+        status: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: true,
         },
         fields: {
           type: DataTypes.JSON,

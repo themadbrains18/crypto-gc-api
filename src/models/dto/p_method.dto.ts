@@ -3,6 +3,7 @@ export default interface paymentMethodDto {
     payment_method?: string;
     icon?: string;
     region?: string;
+    status?: boolean;
     fields?: object;
 }
 

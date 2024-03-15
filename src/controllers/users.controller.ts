@@ -15,6 +15,7 @@ import {
   googleAuth,
   updateUserStatus,
   updateUserPin,
+  antiPhishingCode,
 } from "../utils/interface";
 import covalenthq from "../blockchain/scaner/covalenthq";
 import { lastLoginModel } from "../models";
@@ -706,6 +707,73 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
+
+/**
+ * antiphishing code
+ * @param req
+ * @param res
+ */
+
+async antiPhishingCode(req:Request, res:Response){
+  try {
+      let user = await service.user.checkIfUserExsit(req.body.username);
+      if (user) {
+        let userOtp;
+        console.log(req.body?.otp,"===otp");
+        
+        if (
+          req.body?.otp === "string" ||
+          req.body?.otp === "" ||
+          req.body?.otp === null
+        ) {
+          userOtp = { username: req?.body?.username };
+
+          let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+          service.emailService.sendMail(req.headers["X-Request-Id"], {
+            to: userOtp.username,
+            subject: "Verify OTP",
+            html: emailTemplate.html,
+          });
+          delete otp["otp"];
+          super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
+        } else {
+          //  send email otp to user
+          console.log("here");
+          
+          if (req.body?.otp) {
+            userOtp = {
+              username: req?.body?.username,
+              otp: req.body?.otp,
+            };
+
+            let result = await service.otpService.matchOtp(userOtp);
+            if (result.success === true) {
+              let data: antiPhishingCode = req.body;
+
+              let pwdResponse = await service.user.antiPhishingCode(data);
+
+              super.ok<any>(res, {
+                status: 200,
+                message: "Antiphishing Code update successfully!!.",
+                result: pwdResponse,
+              });
+            }
+            else {
+              super.fail(res, result.message);
+            }
+          }
+        
+     
+    }}
+
+  } catch (error: any) {
+    super.fail(res, error.message);
+  }
+}
+
+
   /**
    *tradePass
    * @param req
