@@ -58,7 +58,7 @@ class stakingController extends BaseController {
                 delete otp["otp"];
                 // Return a 200
                 super.ok<any>(
-                    res, { result: "OTP sent in your inbox. Please verify your otp to redeem assets", otp });
+                    res, { result: "OTP sent in your inbox. please verify your otp", otp });
             }
             else {
                 if (req.body?.otp) {

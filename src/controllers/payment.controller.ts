@@ -136,9 +136,10 @@ class paymentController extends BaseController {
           html: emailTemplate.html,
         });
 
+        delete otp["otp"];
         return super.ok<any>(
           res,
-          "OTP sent"
+          { message: "OTP sent in your inbox. please verify your otp", otp }
         );
       }
 
@@ -170,7 +171,7 @@ class paymentController extends BaseController {
         status: Joi.string().required(),
         pm_name: Joi.string().required(),
         pmObject: Joi.object(pmobj).optional(),
-        otp: Joi.number().required()
+        otp: Joi.string().required()
       })
 
 
