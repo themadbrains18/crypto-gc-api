@@ -50,8 +50,6 @@ class adsPostDal {
             if (post) {
                 let newBal = userAssets?.balance - payload.quantity;
 
-                // console.log(newBal,'===============new Balance');
-                
                 await assetModel.update({ balance: newBal }, { where: { user_id: payload.user_id, token_id: payload.token_id, walletTtype: assetsWalletType.main_wallet } });
                 return post;
             }
@@ -122,7 +120,8 @@ class adsPostDal {
      */
     async getAllAdsPost(): Promise<postOuput | any> {
         try {
-            return await postModel.findAll({where: { status: true },
+            return await postModel.findAll({
+                where: { status: true },
                 include: [
                     {
                         model: tokensModel,
@@ -157,15 +156,15 @@ class adsPostDal {
                                 }
                             },
                             {
-                                model : profileModel
+                                model: profileModel
                             },
                             {
-                                model : userPmethodModel,
+                                model: userPmethodModel,
                                 include: [
                                     {
                                         model: paymentMethodModel,
                                         attributes: {
-                                            exclude: ["createdAt", "updatedAt","deletedAt"]
+                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
                                         },
                                     }
                                 ]
@@ -188,13 +187,13 @@ class adsPostDal {
     async deletePostByUserPostId(post_id: string, user_id: string): Promise<postOuput | any> {
 
         try {
-            let post = await postModel.findOne({ where: { id: post_id, user_id: user_id }, raw :true });
+            let post = await postModel.findOne({ where: { id: post_id, user_id: user_id }, raw: true });
             if (post != null) {
                 let balance: number = post.quantity;
-                let userAssets = await assetModel.findOne({ where: { user_id: user_id, token_id: post.token_id, walletTtype: assetsWalletType.main_wallet },raw : true });
-                let deletePost = await postModel.destroy({ where: {id : post_id} });
+                let userAssets = await assetModel.findOne({ where: { user_id: user_id, token_id: post.token_id, walletTtype: assetsWalletType.main_wallet }, raw: true });
+                let deletePost = await postModel.destroy({ where: { id: post_id } });
                 if (userAssets != null && deletePost != null) {
-                    await assetModel?.update({ balance: userAssets.balance + parseFloat(balance.toString()) },{where :{id : userAssets?.id, user_id : user_id}});
+                    await assetModel?.update({ balance: userAssets.balance + parseFloat(balance.toString()) }, { where: { id: userAssets?.id, user_id: user_id } });
                     return post;
                 }
                 else {
@@ -217,9 +216,10 @@ class adsPostDal {
      * @param user_id 
      * @returns 
      */
-    async getSingleAds(post_id:string, user_id: string):Promise<postOuput | any>{
+    async getSingleAds(post_id: string, user_id: string): Promise<postOuput | any> {
         try {
-            return await postModel.findOne({where: { id : post_id, user_id : user_id },
+            return await postModel.findOne({
+                where: { id: post_id, user_id: user_id },
                 include: [
                     {
                         model: tokensModel,
@@ -238,12 +238,12 @@ class adsPostDal {
                         },
                         include: [
                             {
-                                model : userPmethodModel,
+                                model: userPmethodModel,
                                 include: [
                                     {
                                         model: paymentMethodModel,
                                         attributes: {
-                                            exclude: ["createdAt", "updatedAt","deletedAt"]
+                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
                                         },
                                     }
                                 ]

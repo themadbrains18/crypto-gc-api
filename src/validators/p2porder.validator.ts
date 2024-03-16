@@ -26,7 +26,7 @@ const p2pOrderSchema = {
     release : Joi.object().keys({
         order_id : Joi.string().required(),
         user_id : Joi.string().required(),
-        fundcode : Joi.number().positive().required()
+        fundcode : Joi.string().required()
     })
 }
 
