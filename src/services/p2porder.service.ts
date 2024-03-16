@@ -204,7 +204,8 @@ class p2pOrderService {
                             }
                         ]
                     }
-                ]
+                ],
+                order:[["createdAt","desc"]]
             });
         } catch (error:any) {
             throw new Error(error.message);
