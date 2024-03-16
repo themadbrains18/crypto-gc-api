@@ -12,8 +12,10 @@ interface postAtteribute {
   max_limit?: number;
   p_method?: object;
   payment_time?: string;
-  notes?: string;
-  checked?: boolean;
+  remarks?: string;
+  auto_reply?: string;
+  complete_kyc?: boolean;
+  min_btc?: boolean;
   status?: boolean;
 
   createdAt?: Date;
@@ -37,8 +39,10 @@ class postModel
   public max_limit!: number;
   public p_method!: object;
   public payment_time!: string;
-  public notes!: string;
-  public checked!: boolean;
+  public remarks!: string;
+  public auto_reply!: string;
+  public complete_kyc!: boolean;
+  public min_btc!: boolean;
   public status!: boolean;
   // timestamps!
   public readonly createdAt!: Date;
@@ -84,10 +88,16 @@ class postModel
         payment_time: {
           type: DataTypes.STRING,
         },
-        notes: {
+        remarks: {
           type: DataTypes.STRING,
         },
-        checked: {
+        auto_reply: {
+          type: DataTypes.STRING,
+        },
+        complete_kyc: {
+          type: DataTypes.BOOLEAN,
+        },
+        min_btc: {
           type: DataTypes.BOOLEAN,
         },
         status: {

@@ -8,8 +8,9 @@ export default interface adsPostDto{
     max_limit?: number;
     p_method?: object;
     payment_time?: string;
-    notes?: string;
-    checked?: boolean;
-    status?: boolean;
+    remarks?: string;
+    auto_reply?: string;
+    complete_kyc?: boolean;
+    min_btc?: boolean;
     fundcode?:string;
 }
