@@ -48,7 +48,6 @@ class marketDal {
                                 entry_id: 0
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
-                            console.log('------here order history create first time');
 
                             let new_bal = assets.balance - payload.token_amount;
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
@@ -86,7 +85,6 @@ class marketDal {
                                 entry_id: 0
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
-                            console.log('------here order history create first time');
 
                             let new_bal = assets.balance - payload.volume_usdt;
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });

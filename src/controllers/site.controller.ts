@@ -63,9 +63,6 @@ class siteController extends BaseController {
     async activeInactiveSite(req: Request, res: Response, next: NextFunction) {
         try {
             let { id, down_status } = req.body;
-            console.log(id,"=mds");
-            
-
             let data: updateSiteDownStatus = { id, down_status };
 
             let response = await service.site.updateStatus(data);

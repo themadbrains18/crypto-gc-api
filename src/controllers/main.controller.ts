@@ -44,7 +44,7 @@ export default abstract class BaseController {
       
       
       try {
-        console.log(req.body, typeof req.body.fields);
+        // console.log(req.body, typeof req.body.fields);
         
         // if (req.originalUrl === '/tmbexchange/payment/save') {
         //   let fieldArray = [];

@@ -37,7 +37,6 @@ class networkController extends BaseController {
   async create(req: Request, res: Response, next: NextFunction) {
     try {
       let network: networkInput = req.body;
-      console.log(network)
       let result = await service.network.create(network);
       return super.ok<any>(res, {
         message: "new network successfully added.",

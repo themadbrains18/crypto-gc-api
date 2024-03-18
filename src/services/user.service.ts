@@ -86,7 +86,6 @@ class userServices {
           encoding: "base32",
           token: token,
         });
-        console.log("isVerified -->", isVerified);
 
         if (isVerified) {
           let user: UserInput = payload;

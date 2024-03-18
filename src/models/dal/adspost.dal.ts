@@ -230,6 +230,14 @@ class adsPostDal {
                         }
                     },
                     {
+                        model: globalTokensModel,
+                        attributes: {
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
                         model: userModel,
                         attributes: {
                             exclude: [

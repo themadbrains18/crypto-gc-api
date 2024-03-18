@@ -307,7 +307,6 @@ class tokenDal {
     try {
       let response = await globalTokensModel.update({ networks: payload.networks }, { where: { id: payload?.id } });
       if (response[0] === 1) {
-        console.log('here update successfully!!');
         return await globalTokensModel.findOne({ where: { id: payload?.id }, raw: true });
       }
     } catch (error: any) {

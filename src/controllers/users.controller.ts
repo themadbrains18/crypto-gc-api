@@ -719,8 +719,6 @@ async antiPhishingCode(req:Request, res:Response){
       let user = await service.user.checkIfUserExsit(req.body.username);
       if (user) {
         let userOtp;
-        console.log(req.body?.otp,"===otp");
-        
         if (
           req.body?.otp === "string" ||
           req.body?.otp === "" ||
@@ -979,7 +977,6 @@ async antiPhishingCode(req:Request, res:Response){
   async userExist(req: Request, res: Response) {
     try {
       let formInput: checkUser = req.body;
-      console.log(formInput, "==========here========");
       let regx = /^[6-9]\d{9}$/;
       let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
 
@@ -1146,7 +1143,6 @@ async antiPhishingCode(req:Request, res:Response){
         req.params.userid
       );
       if (activityResponse) {
-        console.log(activityResponse);
 
         super.ok<any>(res, {
           message: "Activity cleared!!.",

@@ -16,8 +16,6 @@ class paymentMethodDal{
     }
 
     async getPaymentList():Promise<paymentOuput | any>{
-        console.log('---------herer payment list');
-        
         return await paymentMethodModel.findAll(); 
     }
 
