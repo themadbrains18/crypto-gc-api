@@ -1,5 +1,5 @@
 const PasswordTemplate = function () {
-    const html = `
+  const html = `
     <!DOCTYPE html>
     <html
       lang="en"
@@ -173,6 +173,7 @@ const PasswordTemplate = function () {
                         </tr>
                       </tbody>
                     </table>
+                    
                     <table
                       width="100%"
                       style="width: 100%; max-width: 600px; padding-top: 10px"
@@ -229,7 +230,7 @@ const PasswordTemplate = function () {
                                       >
                                     <div>
                                             <span style="font-size: 14px; color:#222a35"
-                                              >Your password on Crypto Planet has been successfully updated. </span
+                                              >Your password on Crypto Planet has been successfully updated. Withdrawal will be restricted for 24 hours after changing your password..</span
                                             >
                                           </div>
                                       
@@ -253,7 +254,7 @@ const PasswordTemplate = function () {
                                                     font-size: 15px;
                                                     color: #5367FF;
                                                   "
-                                                  >https://crypto-planet.</span
+                                                  >crypto-planet</span
                                                 ></a
                                               ></span
                                             >
@@ -383,13 +384,13 @@ const PasswordTemplate = function () {
       </body>
     </html>
     `;
-    
-    const text = `
+
+  const text = `
         Use this OTP to confirm your account and log in`;
-    return {
-        html: html,
-        text: text,
-    };
+  return {
+    html: html,
+    text: text,
+  };
 };
 
 export default PasswordTemplate;

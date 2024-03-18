@@ -28,10 +28,12 @@ interface UsersAttributes {
   cronStatus?: string;
   otpToken?: string;
   referral_id?:string;
+  pwdupdatedAt?:Date;
 
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+  
 }
 
 export interface UserInput extends Optional<UsersAttributes, "id"> {}  
@@ -68,11 +70,13 @@ class userModel
   public cronStatus!: string;
   public otpToken!: string;
   public referral_id!:string;
+  public pwdupdatedAt!:Date;
 
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   public readonly deletedAt!: Date;
+  
 
   public static initialize(sequelize: Sequelize) {
     this.init(
@@ -158,6 +162,10 @@ class userModel
           type: DataTypes.BIGINT,
           allowNull: true,
         },
+        pwdupdatedAt:{
+          type :DataTypes.DATE,
+          allowNull:true
+        }
       },
       {
         timestamps: true,

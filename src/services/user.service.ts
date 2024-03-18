@@ -265,7 +265,7 @@ class userServices {
       if (user) {
         let password = await service.bcypt.MDB_crateHash(payload?.new_password);
 
-        return await user.update({ password: password });
+        return await user.update({ password: password, pwdupdatedAt : new Date(new Date().getTime() + 60 * 60 * 24 * 1000) });
       } else {
         throw new Error("User not found");
       }

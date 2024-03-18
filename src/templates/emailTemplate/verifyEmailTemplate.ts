@@ -1,5 +1,5 @@
 const verifyEmail = function (otp: string | number) {
-    const html = `
+  const html = `
     <!DOCTYPE html>
     <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -90,7 +90,6 @@ const verifyEmail = function (otp: string | number) {
                 >
                   <table
                     border="0"
-                   
                     align="center"
                     width="100%"
                     style="
@@ -102,11 +101,8 @@ const verifyEmail = function (otp: string | number) {
                     <tbody>
                       <tr >
                         <td height="100%" >
-                          <table
-                            style="
-                              border-spacing: 0;
-                              margin: 0px 0px 0px 0px;
-                            "
+                        <table
+                            style="border-spacing: 0; margin: 0px 0px 0px 0px"
                           >
                             <tbody>
                               <tr>
@@ -118,10 +114,7 @@ const verifyEmail = function (otp: string | number) {
                                     border-bottom: 1px solid #eee;
                                   "
                                 >
-                                  <table
-                                    width="100%"
-                                    style="table-layout: fixed"
-                                  >
+                                  <table width="100%" style="table-layout: fixed">
                                     <tbody>
                                       <tr>
                                         <td
@@ -134,9 +127,7 @@ const verifyEmail = function (otp: string | number) {
                                           "
                                           align="center"
                                         >
-                                          <a
-                                            href="/"
-                                            target="_blank"
+                                          <a href="/" target="_blank"
                                             ><img
                                               border="0"
                                               style="
@@ -148,12 +139,21 @@ const verifyEmail = function (otp: string | number) {
                                                 width: 100%;
                                                 height: auto !important;
                                               "
-                                             
                                               src="https://res.cloudinary.com/dpcxtbxlk/image/upload/v1710230375/my-uploads/myr7gt9fjqgy4omb3thn.png"
                                               alt=""
                                           /></a>
                                         </td>
-                                       
+                                        <td
+                                          style="
+                                            color: #ffffff;
+                                            opacity: 0.5;
+                                            font-size: 12px;
+                                            white-space: nowrap;
+                                            font-family: HelveticaNeue;
+                                            text-align: right;
+                                            padding-right: 20px;
+                                          "
+                                        ></td>
                                       </tr>
                                     </tbody>
                                   </table>
@@ -362,12 +362,12 @@ const verifyEmail = function (otp: string | number) {
     </body>
 
     </html>`;
-    const text = `
+  const text = `
         Verify Email, Use this OTP to confirm your account and log in`;
-    return {
-        html: html,
-        text: text,
-    };
+  return {
+    html: html,
+    text: text,
+  };
 };
 
 export default verifyEmail;
