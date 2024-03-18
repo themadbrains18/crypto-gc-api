@@ -1,3 +1,4 @@
+import { assetsWalletType } from "../../utils/interface";
 import withdrawDto from "../dto/withdraw.dto";
 import assetModel from "../model/assets.model";
 import globalTokensModel from "../model/global_token.model";
@@ -21,9 +22,10 @@ class withdrawDal {
       let WithdrawResponse = await withdrawModel.create(payload);
       if (WithdrawResponse) {
 
-        let getassets = await assetModel.findOne({ where: { token_id: payload?.tokenID, user_id: payload?.user_id }, raw: true });
+        let getassets = await assetModel.findOne({ where: { token_id: payload?.tokenID, user_id: payload?.user_id,walletTtype: assetsWalletType.main_wallet}, raw: true });
         if (getassets) {
           let updatebalance = getassets?.balance - payload?.amount;
+          
           let balUpdate = await assetModel.update({ balance: updatebalance }, { where: { id: getassets?.id } });
           if (balUpdate) {
             apiResponse = WithdrawResponse;
