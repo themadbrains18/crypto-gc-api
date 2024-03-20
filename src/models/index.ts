@@ -41,6 +41,7 @@ import referProgramInviteModel from "./model/refer_program_invite.model";
 import referUserModel from "./model/refer_user.model";
 import userRewardModel from "./model/rewards";
 import userRewardTotalModel from "./model/rewards_total.model";
+import userJwtTokenModel from "./model/userJwtToken.model";
 
 // future trading history model
 import futurePositionHistoryModel from "./model/future_position_history.model";
@@ -105,7 +106,8 @@ let models = [
   referProgramInviteModel,
   referUserModel,
   userRewardModel,
-  userRewardTotalModel
+  userRewardTotalModel,
+  userJwtTokenModel
 ];
 
 /**
@@ -383,7 +385,8 @@ export {
   referProgramInviteModel,
   referUserModel,
   userRewardModel,
-  userRewardTotalModel
+  userRewardTotalModel,
+  userJwtTokenModel
 };
 
 export default sequelize;

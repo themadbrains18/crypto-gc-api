@@ -18,7 +18,7 @@ import {
   antiPhishingCode,
 } from "../utils/interface";
 import covalenthq from "../blockchain/scaner/covalenthq";
-import { lastLoginModel } from "../models";
+import { lastLoginModel, userJwtTokenModel } from "../models";
 
 
 
@@ -267,14 +267,20 @@ class userController extends BaseController {
             delete login["password"];
             delete login["otpToken"];
             // Create token
-            let token = service.jwt.sign({
+            let token = await service.jwt.sign({
               user_id: login.id,
               username: login?.email ? login?.email : login.number,
               role: login?.role,
             });
 
             login.access_token = token;
-
+            let jwtToken = await userJwtTokenModel.findOne({where :{user_id : login.id}, raw : true});
+            if(jwtToken){
+              await userJwtTokenModel.update({token : token},{where :{user_id : login.id}});
+            }
+            else{
+              await userJwtTokenModel.create({user_id : login.id, token : token});
+            }
 
             return super.ok<any>(res, {
               status: "success",
