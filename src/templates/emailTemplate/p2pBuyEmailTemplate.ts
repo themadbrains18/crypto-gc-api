@@ -147,7 +147,7 @@ const P2pBuyEmailTemplate = function (order_id:string, amount:string | number, s
                                                   width: 100%;
                                                   height: auto !important;
                                                 "
-                                                src="https://ci3.googleusercontent.com/meips/ADKq_NbRd3kJJoCgEjIGRHGaPTxv_0mLt0elJGtsVZJTPzInzxhsbcWH2zm0KYmwGThBQ8-g6D8-sgSUkxR-MFB8kZ16Qzi-DLLzO3agmDwN_Rcn3L9ppYuwPfkrRePEImWdvQ=s0-d-e1-ft#https://img.bitgetimg.com/image/emailTemplate/bitget-logo-rebrand-0803.png"
+                                                src="https://res.cloudinary.com/dpcxtbxlk/image/upload/v1710230375/my-uploads/myr7gt9fjqgy4omb3thn.png"
                                                 alt=""
                                             /></a>
                                           </td>
