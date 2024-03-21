@@ -20,6 +20,8 @@ interface tokenAtteribute {
   rank?: number;
   withdraw_fee?:number;
   minimum_deposit?:number;
+  marketcap?:number;
+  volume?:number;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -52,6 +54,8 @@ class tokensModel
   public rank!: number;
   public withdraw_fee!:number;
   public minimum_deposit!:number;
+  public marketcap!: number;
+  public volume!: number;
 
   // timestamps!
   public readonly createdAt!: Date;
@@ -148,8 +152,17 @@ class tokensModel
           type: DataTypes.DOUBLE,
           defaultValue: 0.001,
           allowNull: false
-        }
-
+        },
+        marketcap: {
+          type: DataTypes.DOUBLE,
+          defaultValue: 0.0,
+          allowNull: true
+        },
+        volume: {
+          type: DataTypes.DOUBLE,
+          defaultValue: 0.0,
+          allowNull: true
+        },
       },
       {
         timestamps: true,

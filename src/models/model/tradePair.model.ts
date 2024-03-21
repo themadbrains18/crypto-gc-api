@@ -11,6 +11,7 @@ interface tradePairAttribute {
   taker?:number;
   min_trade?:number;
   limit_trade?:boolean;
+  maxTrade?:number;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -34,6 +35,7 @@ class tradePairModel
   public min_trade!:number;
   public status!: string;
   public limit_trade!:boolean;
+  public maxTrade!:number;
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -84,7 +86,12 @@ class tradePairModel
         limit_trade:{
           type : DataTypes.BOOLEAN,
           defaultValue : true
-        }
+        },
+        maxTrade: {
+          type: DataTypes.DOUBLE,
+          defaultValue: 0.005,
+          allowNull: true
+        },
       },
       {
         timestamps: true,

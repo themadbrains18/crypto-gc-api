@@ -102,6 +102,8 @@ class tokenServices {
                         maxSupply: num.maxSupply,
                         totalSupply: num.totalSupply,
                         circulatingSupply: num.circulatingSupply,
+                        marketcap:num?.cap,
+                        volume : num?.volume,
                         rank: num.rank
                     }
                     await globalTokensModel.update(payload, { where: { id: exist?.id } });
@@ -115,8 +117,6 @@ class tokenServices {
             console.log();
 
         }
-
-
     }
 
     async updateGlobalTokenNetwork(payload: updateTokenNetwork): Promise<any> {
