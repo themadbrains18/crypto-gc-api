@@ -45,6 +45,7 @@ import userJwtTokenModel from "./model/userJwtToken.model";
 
 // future trading history model
 import futurePositionHistoryModel from "./model/future_position_history.model";
+import addressModel from "./model/address.model";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -107,7 +108,8 @@ let models = [
   referUserModel,
   userRewardModel,
   userRewardTotalModel,
-  userJwtTokenModel
+  userJwtTokenModel,
+  addressModel
 ];
 
 /**
@@ -221,6 +223,9 @@ models.forEach((model) => model.initialize(sequelize));
 
       networkModel.hasMany(withdrawModel, { foreignKey: "networkId" });
       withdrawModel.belongsTo(networkModel, { foreignKey: "networkId" });
+
+      networkModel.hasMany(addressModel, { foreignKey: "networkId" });
+      addressModel.belongsTo(networkModel, { foreignKey: "networkId" });
 
       tokensModel.hasMany(convertHistoryModel, { foreignKey: "token_id" });
       convertHistoryModel.belongsTo(tokensModel, { foreignKey: "token_id" });
@@ -386,7 +391,8 @@ export {
   referUserModel,
   userRewardModel,
   userRewardTotalModel,
-  userJwtTokenModel
+  userJwtTokenModel,
+  addressModel
 };
 
 export default sequelize;

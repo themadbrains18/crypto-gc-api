@@ -16,6 +16,7 @@ import {
   updateUserStatus,
   updateUserPin,
   antiPhishingCode,
+  updateWhiteList,
 } from "../utils/interface";
 import covalenthq from "../blockchain/scaner/covalenthq";
 import { lastLoginModel, userJwtTokenModel } from "../models";
@@ -953,7 +954,31 @@ async antiPhishingCode(req:Request, res:Response){
       let pwdResponse = await service.user.updateFundcode(pwdData);
 
       super.ok<any>(res, {
-        message: "Paaword update successfully!!.",
+        message: "Password update successfully!!.",
+        result: pwdResponse,
+      });
+    } catch (error: any) {
+      super.fail(res, error.message);
+    }
+  }
+  /**
+   *updateWhiteList
+   * @param req
+   * @param res
+   */
+  async updateWhiteList(req: Request, res: Response) {
+    try {
+      let pwdData: updateWhiteList = req.body;
+      let user: any = await userModel.findOne({
+        where: { id: req?.body?.user_id },
+        raw: true,
+      });
+
+      pwdData.whitelist = user?.whitelist === true || user?.whitelist === 1 ? false : true;
+      let pwdResponse = await service.user.updateWhiteList(pwdData);
+
+      super.ok<any>(res, {
+        message: "Whitelist status update successfully!!.",
         result: pwdResponse,
       });
     } catch (error: any) {

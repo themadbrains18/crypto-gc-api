@@ -30,6 +30,7 @@ class usersRoutes extends BaseController {
         this.router.post('/', middleware.auth, users.checkUser);
         this.router.post('/exist', users.userExist);
         this.router.put('/update', middleware.auth, users.updateUser);
+        this.router.put('/whitelist', middleware.auth, users.updateWhiteList);
         this.router.post('/googleAuth', middleware.auth, users.verifyGoogleAuth);
         this.router.post('/userinfo', middleware.auth, middleware.permit(roles.admin, roles.user), users.userAuthenticate);
         this.router.put('/password', middleware.auth, users.updatePassword);

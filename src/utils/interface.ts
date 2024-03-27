@@ -41,6 +41,10 @@ export interface updateFundcode {
   old_password?: string;
   new_password?: string;
 }
+export interface updateWhiteList {
+  user_id?: string;
+  whitelist?: boolean;
+}
 export interface googleAuth {
   user_id?: string;
   token?: string;
