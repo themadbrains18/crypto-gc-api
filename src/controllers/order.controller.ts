@@ -5,6 +5,7 @@ import service from "../services/service";
 import { orderModel, postModel, userModel } from "../models";
 import { Op } from "sequelize";
 import profileModel from "../models/model/profile.model";
+import pusher from "../utils/pusher";
 
 class orderController extends BaseController {
   protected async executeImpl(
@@ -55,6 +56,9 @@ class orderController extends BaseController {
         html: emailTemplate.html,
       });
 
+      pusher.trigger("crypto-channel", "p2p", {
+        message: "hello world", data : p2pResponse
+      })
 
       super.ok<any>(res, { message: 'P2P order create successfully!!.', result: p2pResponse });
 

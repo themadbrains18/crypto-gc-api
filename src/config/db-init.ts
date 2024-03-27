@@ -1,6 +1,5 @@
 const config = () => {
   let record = {
-    // database config add here
     // database: {
     //   db_urname: "root",
     //   db_pass: "123456",
@@ -29,7 +28,6 @@ const config = () => {
         dialectModule: require('mysql2')
       },
     },
-    // email config add here 
     email_service: false,
     email_config: {},
   };
