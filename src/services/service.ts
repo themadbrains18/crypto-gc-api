@@ -43,6 +43,7 @@ import watchlistServices from './watchlist.service';
 import scannerService from "./scanner.service";
 
 import referProgramService from "./referProgram.service";
+import addressServices from "./address.service";
 
 class service {
     otpService = new otpService();
@@ -81,6 +82,7 @@ class service {
     watchlist = new watchlistServices();
     scan = new scannerService();
     refer = new referProgramService();
+    address = new addressServices();
 }
 
 export default new service()

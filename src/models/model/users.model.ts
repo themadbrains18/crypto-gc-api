@@ -29,7 +29,8 @@ interface UsersAttributes {
   otpToken?: string;
   referral_id?:string;
   pwdupdatedAt?:Date;
-
+  whitelist?: boolean;
+  
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
@@ -70,6 +71,7 @@ class userModel
   public cronStatus!: string;
   public otpToken!: string;
   public referral_id!:string;
+  public whitelist!:boolean;
   public pwdupdatedAt!:Date;
 
   // timestamps!
@@ -157,6 +159,10 @@ class userModel
         UID: {
           type: DataTypes.UUID,
           allowNull: true,
+        },
+        whitelist: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false
         },
         cronStatus: {
           type: DataTypes.BIGINT,

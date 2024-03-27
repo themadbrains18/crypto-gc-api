@@ -39,7 +39,7 @@ class userOtpModel extends Model<UserOtpAttributes, UserInputOtp> {
           username: {
             type: DataTypes.STRING,
             allowNull: true,
-            unique : true
+            // unique : true
           },
           token: {
             type: DataTypes.STRING,
@@ -51,6 +51,7 @@ class userOtpModel extends Model<UserOtpAttributes, UserInputOtp> {
           },
         },
         {
+          indexes: [{ unique: true, fields: ["username"] }],
             timestamps: true,
             sequelize: sequelize,
             modelName : "usersotp",
