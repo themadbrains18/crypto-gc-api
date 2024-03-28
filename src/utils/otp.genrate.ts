@@ -31,11 +31,12 @@ class otpGenerate {
    * @returns 
    */
 
-  otp_generator(): number | string {
+  otp_generator(flag:string): number | string {
     // Declare a string variable
     // which stores all string
-    var string =
-      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var string = flag==="email"?
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":"0123456789";
+    
     let OTP = "";
 
     // Find the length of string
@@ -56,7 +57,22 @@ class otpGenerate {
   async createOtpForUser(data: userOtp): Promise<string | number | undefined> {
     try {
       let apiStatus;
-      let otp = this.otp_generator();
+
+        let regx = /^[6-9]\d{9}$/;
+        let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+
+        // Initialize flag with an empty string or another appropriate default value
+        let flag: string = "";
+
+        // Verify provided username type
+        if (data && typeof data.username === 'string') {
+            if (regx.test(data.username)) {
+                flag = "number";
+            } else if (regex.test(data.username)) {
+                flag = "email";
+            }
+        }
+      let otp = this.otp_generator(flag);
       const now = new Date();
       const expiration_time = this.AddMinutesToDate(now);
       //const token = this.token();

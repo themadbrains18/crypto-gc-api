@@ -119,6 +119,17 @@ class userController extends BaseController {
           return super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
 
         }
+        else {
+          let otp: any = await service.otpGenerate.createOtpForUser(user);
+
+          let response = await fetch('https://www.fast2sms.com/dev/bulkV2?authorization=6ElMeqCL34x7iskWctpVyGRZ52PfKbJNhuOoFUYvnrjXI8T0AaI64E2FnHjecMJXPqDbTd7QCKiWhuZg&route=otp&variables_values=' + Number(otp.otp) + '&flash=1&numbers=' + user?.username)
+
+          console.log(await response.json(), "===fdjkhfjkdh");
+
+
+          delete otp["otp"];
+          return super.ok<any>(res, { message: "OTP sent in your phone. please verify your otp", otp });
+        }
       } else {
         let userOtp;
         userOtp = {
@@ -172,6 +183,13 @@ class userController extends BaseController {
       }
 
       let userOtp;
+      // let regx = /^[6-9]\d{9}$/;
+      // let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+
+      let flag = "";
+
+      // // verify provide username is
+      flag = login?.email ? "email" : "number"
 
       if (
         req.body?.otp === "string" ||
@@ -179,23 +197,34 @@ class userController extends BaseController {
         req.body?.otp === null
       ) {
         userOtp = { username: login?.email ? login?.email : login?.number };
+        if (flag == "email") {
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
-        let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
-        const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+          service.emailService.sendMail(req.headers["X-Request-Id"], {
+            to: userOtp.username,
+            subject: "Verify OTP",
+            html: emailTemplate.html,
+          });
 
-        service.emailService.sendMail(req.headers["X-Request-Id"], {
-          to: userOtp.username,
-          subject: "Verify OTP",
-          html: emailTemplate.html,
-        });
+          // Return a 200
+          delete otp["otp"];
+          super.ok<any>(
+            res,
+            { message: "OTP sent in your inbox. please verify your otp", otp }
+          );
+        }
+        else {
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+          let response = await fetch('https://www.fast2sms.com/dev/bulkV2?authorization=6ElMeqCL34x7iskWctpVyGRZ52PfKbJNhuOoFUYvnrjXI8T0AaI64E2FnHjecMJXPqDbTd7QCKiWhuZg&route=otp&variables_values=' + Number(otp.otp) + '&flash=1&numbers=' + userOtp?.username)
 
-        // Return a 200
-        delete otp["otp"];
-        super.ok<any>(
-          res,
-          { message: "OTP sent in your inbox. please verify your otp", otp }
-        );
+          console.log(await response.json(), "===fdjkhfjkdh");
+
+
+          delete otp["otp"];
+          return super.ok<any>(res, { message: "OTP sent in your phone. please verify your otp", otp });
+        }
       } else {
         //  send email otp to user
 
@@ -275,12 +304,12 @@ class userController extends BaseController {
             });
 
             login.access_token = token;
-            let jwtToken = await userJwtTokenModel.findOne({where :{user_id : login.id}, raw : true});
-            if(jwtToken){
-              await userJwtTokenModel.update({token : token},{where :{user_id : login.id}});
+            let jwtToken = await userJwtTokenModel.findOne({ where: { user_id: login.id }, raw: true });
+            if (jwtToken) {
+              await userJwtTokenModel.update({ token: token }, { where: { user_id: login.id } });
             }
-            else{
-              await userJwtTokenModel.create({user_id : login.id, token : token});
+            else {
+              await userJwtTokenModel.create({ user_id: login.id, token: token });
             }
 
             return super.ok<any>(res, {
@@ -360,8 +389,8 @@ class userController extends BaseController {
         ) {
           userOtp = { username: req?.body?.username };
           userNewOtp = { username: req?.body?.data };
-          let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
-          let otp2:any = await service.otpGenerate.createOtpForUser(userNewOtp);
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+          let otp2: any = await service.otpGenerate.createOtpForUser(userNewOtp);
           const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
           const newEmailTemplate = service.emailTemplate.otpVerfication(
             `${otp2?.otp}`
@@ -598,7 +627,7 @@ class userController extends BaseController {
           ) {
             //  send email otp to user
             userOtp = { username: req?.body?.username };
-            let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
             const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
@@ -663,7 +692,7 @@ class userController extends BaseController {
           ) {
             //  send email otp to user
             userOtp = { username: req?.body?.username };
-            let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
             const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
@@ -715,14 +744,14 @@ class userController extends BaseController {
     }
   }
 
-/**
- * antiphishing code
- * @param req
- * @param res
- */
+  /**
+   * antiphishing code
+   * @param req
+   * @param res
+   */
 
-async antiPhishingCode(req:Request, res:Response){
-  try {
+  async antiPhishingCode(req: Request, res: Response) {
+    try {
       let user = await service.user.checkIfUserExsit(req.body.username);
       if (user) {
         let userOtp;
@@ -733,7 +762,7 @@ async antiPhishingCode(req:Request, res:Response){
         ) {
           userOtp = { username: req?.body?.username };
 
-          let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
           const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
           service.emailService.sendMail(req.headers["X-Request-Id"], {
@@ -746,7 +775,7 @@ async antiPhishingCode(req:Request, res:Response){
         } else {
           //  send email otp to user
           console.log("here");
-          
+
           if (req.body?.otp) {
             userOtp = {
               username: req?.body?.username,
@@ -769,14 +798,15 @@ async antiPhishingCode(req:Request, res:Response){
               super.fail(res, result.message);
             }
           }
-        
-     
-    }}
 
-  } catch (error: any) {
-    super.fail(res, error.message);
+
+        }
+      }
+
+    } catch (error: any) {
+      super.fail(res, error.message);
+    }
   }
-}
 
 
   /**
@@ -807,7 +837,7 @@ async antiPhishingCode(req:Request, res:Response){
           ) {
             userOtp = { username: req?.body?.username };
 
-            let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
             const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
             service.emailService.sendMail(req.headers["X-Request-Id"], {
@@ -856,7 +886,7 @@ async antiPhishingCode(req:Request, res:Response){
         ) {
 
           userOtp = { username: req?.body?.username };
-          let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
           const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
           service.emailService.sendMail(req.headers["X-Request-Id"], {
@@ -1283,6 +1313,16 @@ async antiPhishingCode(req:Request, res:Response){
       let user = await service.user.checkIfUserExsit(req?.body?.username);
       if (user) {
         let userOtp;
+        // let regx = /^[6-9]\d{9}$/;
+        // let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+
+        // let flag = "";
+
+        // // verify provide username is
+        // if (regx.test(req?.body?.username)) flag = "number";
+
+        // if (regex.test(req?.body?.username)) flag = "email";
+
         if (
           req.body?.otp === "string" ||
           req.body?.otp === "" ||
@@ -1291,18 +1331,34 @@ async antiPhishingCode(req:Request, res:Response){
           //  send email otp to user
           userOtp = { username: req?.body?.username };
 
-          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+          // if (flag == "email") {
 
-          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+            let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
-          service.emailService.sendMail(req.headers["X-Request-Id"], {
-            to: userOtp.username,
-            subject: "Verify OTP",
-            html: emailTemplate.html,
-          });
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
-          delete otp["otp"];
-          super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: userOtp.username,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            });
+
+            delete otp["otp"];
+            super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
+          // }
+
+          // else {
+          //   let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+
+          //   let response = await fetch('https://www.fast2sms.com/dev/bulkV2?authorization=6ElMeqCL34x7iskWctpVyGRZ52PfKbJNhuOoFUYvnrjXI8T0AaI64E2FnHjecMJXPqDbTd7QCKiWhuZg&route=otp&variables_values=' + Number(otp.otp) + '&flash=1&numbers=' + userOtp?.username)
+
+          //   console.log(await response.json(), "===send otp");
+
+
+          //   delete otp["otp"];
+          //   return super.ok<any>(res, { message: "OTP sent in your phone. please verify your otp", otp });
+
+          // }
         }
       }
     } catch (error: any) {
