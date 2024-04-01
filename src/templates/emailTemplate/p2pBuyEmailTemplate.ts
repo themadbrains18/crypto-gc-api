@@ -258,7 +258,7 @@ const P2pBuyEmailTemplate = function (order_id:string, amount:string | number, s
                                                     font-size: 15px;
                                                     color: #5367FF;
                                                   "
-                                                  >https://crypto-planet.</span
+                                                  >https://launchyourexchange.com/.</span
                                                 ></a
                                               ></span
                                             >

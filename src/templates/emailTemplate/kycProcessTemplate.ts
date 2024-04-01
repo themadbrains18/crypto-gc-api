@@ -15,7 +15,7 @@ const kycProcess = function (status:string) {
           name="format-detection"
           content="telephone=no, date=no, address=no, email=no"
         />
-        <title>kYC Under Process</title>
+        <title>${status==="Pending"?'kYC Under Process':status==="Rejected"?'KYC Rejected for any reason':'Congratulation Your KYC Is Verified!!'} </title>
         <link
           href="https://fonts.googleapis.com/css?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700"
           rel="stylesheet"
@@ -229,7 +229,7 @@ const kycProcess = function (status:string) {
                                       >
                                     <div>
                                             <span style="font-size: 14px; color:#222a35"
-                                              > ${status==="Pending"?"Your KYC process is on Crypto Planet currently under review":status==="Rejected"?" We regret to inform you that your KYC application has been rejected.":"Your KYC process is on Crypto Planet has been successfully completed"} </span
+                                              > ${status==="Pending"?"Your KYC process is on Crypto Planet currently under review":status==="Rejected"?" We regret to inform you that your KYC application has been rejected.":"Your KYC process is on Crypto Planet has been successfully Verified"} </span
                                             >
                                           </div>
                                       
@@ -253,7 +253,7 @@ const kycProcess = function (status:string) {
                                                     font-size: 15px;
                                                     color: #5367FF;
                                                   "
-                                                  >https://crypto-planet.</span
+                                                  >https://launchyourexchange.com/.</span
                                                 ></a
                                               ></span
                                             >

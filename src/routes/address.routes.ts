@@ -14,13 +14,9 @@ class addressRoutes extends BaseController  {
     init(){
         let address = new addressController();
         let middleware = new authController();
-        // this.router.get('/getToken/:id/:type', withdraw.tokenDetail);
         this.router.post('/create',middleware.auth,address.create); 
         this.router.get('/list/:userid',middleware.auth, address.userAddress);
         this.router.put('/change/status', middleware.auth, address.activeInactiveAddress);
-        // this.router.get('/history/:userid',middleware.auth, withdraw.userWithdrawHistory);
-        // this.router.get('/history/:userid/:offset/:limit',middleware.auth, withdraw.userWithdrawHistoryByLimit);
-
     }
 }
 

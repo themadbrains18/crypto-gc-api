@@ -260,7 +260,7 @@ const loginEmail = function (ip : string , loginTime:number | string) {
                                                     font-size: 15px;
                                                     color: #5367FF;
                                                   "
-                                                  >https://crypto-planet.</span
+                                                  >https://launchyourexchange.com/.</span
                                                 ></a
                                               ></span
                                             >

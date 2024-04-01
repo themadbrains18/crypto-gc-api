@@ -268,7 +268,7 @@ const withdrawSentEmail = function (address:string,amount: string | number,fee: 
                                                   font-size: 15px;
                                                   color: #5367ff;
                                                 "
-                                                >https://crypto-planet.</span
+                                                >https://launchyourexchange.com/.</span
                                               ></a
                                             ></span
                                           >

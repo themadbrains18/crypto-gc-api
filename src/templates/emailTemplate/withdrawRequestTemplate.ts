@@ -295,7 +295,7 @@ const withdrawEmail = function (otp : string | number, address:string, amount:st
                                                   font-size: 15px;
                                                   color: #5367ff;
                                                 "
-                                                >https://crypto-planet.</span
+                                                >https://launchyourexchange.com/.</span
                                               ></a
                                             ></span
                                           >
