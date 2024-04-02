@@ -27,7 +27,7 @@ class addressDal {
         model: networkModel,
         attributes: {
           exclude: [
-            "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
+            "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
           ]
         }
       }] });
