@@ -41,10 +41,10 @@ class paymentController extends BaseController {
         return super.fail(res, "This Method is already exist!!.");
       }
       let paymentResponse = await service.p_method.create(method);
-      if(paymentResponse){
+      if (paymentResponse) {
         super.ok<any>(res, { message: 'Payment method added successfully!.', result: paymentResponse });
       }
-      
+
     } catch (error) {
       next(error);
     }
@@ -161,7 +161,7 @@ class paymentController extends BaseController {
           pmobj[field.name] = Joi.number().integer().required();
         }
         if (field.type === 'file') {
-          // pmobj[field.name] = Joi.binary().encoding('utf8').optional();
+          pmobj[field.name] = Joi.string();
         }
       }
 
