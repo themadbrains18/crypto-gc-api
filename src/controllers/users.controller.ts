@@ -166,6 +166,9 @@ class userController extends BaseController {
    */
   async login(req: Request, res: Response, next: NextFunction) {
     try {
+
+      // console.log(req.body,'---------body');
+      
       let TOKEN_KEY =
         process.env.TOKEN_KEY ||
         "$2b$10$oy2o.eHnBE1bZMyAkj4GQ.j0nT4ceDBNU7PZ71Tjp19Mpwf0.NGlW";
@@ -177,6 +180,11 @@ class userController extends BaseController {
       }
 
       login = login.data;
+
+      // console.log(login,'----------------------');
+      if(req.body.loginType ==='admin' &&  login.role === 'user'){
+        return super.fail(res, 'You have not access to admin account.');
+      }
 
       if (login && req.body?.step === 1) {
         return super.ok<any>(res, "User Matched!!");
