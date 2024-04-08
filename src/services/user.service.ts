@@ -31,7 +31,19 @@ class userServices {
    * @returns 
    */
   async checkIfUserExsit(id: number | string): Promise<object | null> {
-    return await userDataLayer.userAlreadyExist(id);
+    console.log(id);
+    
+    let user= await userDataLayer.userAlreadyExist(id);
+    
+    if (user == null) {
+      console.log("here");
+      
+      return {
+        success: false,
+        message: "Opps! please check your credentials 1",
+      };
+    }
+    return { success: true, data: user };
   }
 
   async checkUserReferCodeExist(refer :string):Promise<object | null>{

@@ -63,6 +63,9 @@ class userController extends BaseController {
         );
       }
 
+    
+      
+
       //  recogonize user provided phone / email
       if (flag == "number") user.number = user?.username;
       if (flag == "email") user.email = user?.username;
@@ -77,15 +80,16 @@ class userController extends BaseController {
 
 
       //   check if user already exist
-      let userExist = await service.user.checkIfUserExsit(user?.username);
+      let userExist:any = await service.user.checkIfUserExsit(user?.username);
+      
       let message;
-      if (userExist) {
+      if (userExist?.success===true) {
         let message = flag == "number" ? "Phone number" : "Email";
         return super.fail(res, `${message} is already used in our system.`);
         // throw new Error();
       }
 
-      if (userExist === null && req.body?.step == 1) {
+      if (userExist?.success === false && req.body?.step == 1) {
         return super.ok<any>(res, "send otp");
       }
 
@@ -187,7 +191,7 @@ class userController extends BaseController {
       }
 
       if (login && req.body?.step === 1) {
-        return super.ok<any>(res, "User Matched!!");
+        return super.ok<any>(res, {message:"User Matched!!",login});
       }
 
       let userOtp;
@@ -623,10 +627,14 @@ class userController extends BaseController {
         let user: any = await service.user.checkIfUserExsit(
           req?.body?.username
         );
+        if (user.success == false) {
+          return super.fail(res, `Account doesn't exist`);
+        }
+  
         if (user) {
-          if (req.body.step === 1) {
-            return super.ok<any>(res, "User matched");
-          }
+          // if (req.body.step === 1) {
+          //   return super.ok<any>(res, "User matched");
+          // }
           let userOtp;
           if (
             req.body?.otp === "string" ||
@@ -782,7 +790,6 @@ class userController extends BaseController {
           super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
         } else {
           //  send email otp to user
-          console.log("here");
 
           if (req.body?.otp) {
             userOtp = {
