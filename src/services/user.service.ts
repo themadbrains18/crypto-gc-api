@@ -31,7 +31,6 @@ class userServices {
    * @returns 
    */
   async checkIfUserExsit(id: number | string): Promise<object | null> {
-    console.log(id);
     
     let user= await userDataLayer.userAlreadyExist(id);
     
@@ -44,7 +43,6 @@ class userServices {
       };
     }
 
-    console.log(user,"===user here");
     
     return { success: true, data: user };
   }
