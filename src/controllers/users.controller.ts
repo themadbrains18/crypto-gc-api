@@ -636,9 +636,6 @@ class userController extends BaseController {
         }
 
         if (user.success == true) {
-
-
-
           let userOtp;
           if (
             req.body?.otp === "string" ||
@@ -665,7 +662,6 @@ class userController extends BaseController {
           } else {
             if (req.body?.otp) {
 
-
               userOtp = {
                 username: req?.body?.username,
                 otp: req.body?.otp,
@@ -681,23 +677,33 @@ class userController extends BaseController {
                 }
               }
               if (req.body.step === 4) {
-                let pwdData: updatepassword = req.body;
-                pwdData.user_id = user?.data?.dataValues?.id;
 
-                let pwdResponse = await service.user.updatePassword(pwdData);
+                let pass = service.bcypt.MDB_compareHash(
+                  `${req.body.new_password}`,
+                  user?.data?.dataValues?.password
+                );
+                
+                if (pass) {
+                  super.fail(res,'Password should not be same as previous password!!');
+                } else {
+                  let pwdData: updatepassword = req.body;
+                  pwdData.user_id = user?.data?.dataValues?.id;
 
-                const emailTemplate = service.emailTemplate.passwordMail();
+                  let pwdResponse = await service.user.updatePassword(pwdData);
 
-                service.emailService.sendMail(req.headers["X-Request-Id"], {
-                  to: userOtp.username,
-                  subject: "Password Update",
-                  html: emailTemplate.html,
-                });
-                super.ok<any>(res, {
-                  status: 200,
-                  message: "Password update successfully!!.",
-                  result: pwdResponse,
-                });
+                  const emailTemplate = service.emailTemplate.passwordMail();
+
+                  service.emailService.sendMail(req.headers["X-Request-Id"], {
+                    to: userOtp.username,
+                    subject: "Password Update",
+                    html: emailTemplate.html,
+                  });
+                  super.ok<any>(res, {
+                    status: 200,
+                    message: "Password update successfully!!.",
+                    result: pwdResponse,
+                  });
+                }
               }
 
             }
