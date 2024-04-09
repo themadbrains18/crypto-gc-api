@@ -43,6 +43,9 @@ class userServices {
         message: "Opps! please check your credentials 1",
       };
     }
+
+    console.log(user,"===user here");
+    
     return { success: true, data: user };
   }
 
@@ -290,7 +293,11 @@ class userServices {
    */
   async updatePassword(payload: updatepassword): Promise<UserOuput | any> {
     try {
+
+      console.log(payload.user_id);
+      
       let user = await userModel.findOne({ where: { id: payload.user_id } });
+      
       if (user) {
         let password = await service.bcypt.MDB_crateHash(payload?.new_password);
 
@@ -299,6 +306,8 @@ class userServices {
         throw new Error("User not found");
       }
     } catch (error: any) {
+      console.log(error.message,"===errror here");
+      
       throw new Error(error.message);
     }
   }

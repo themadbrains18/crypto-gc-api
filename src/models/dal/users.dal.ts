@@ -54,13 +54,16 @@ class userDal {
 
   userAlreadyExist = async (id: number | string): Promise<object | null> => {
     try {
+
       const user = await userModel.findOne({
         where: {
           [Op.or]: [{ number: id }, { email: id }],
         },
       });
+   
       return user;
     } catch (error: any) {
+      
       throw new Error(error.message);
     }
   };

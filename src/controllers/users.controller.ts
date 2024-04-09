@@ -376,6 +376,9 @@ class userController extends BaseController {
       // let user = await service.user.checkIfUserExsit(req?.body?.username);
       let alreadyExist = await service.user.checkIfUserExsit(req?.body?.data);
 
+      console.log(alreadyExist,"==alredyexist");
+      
+
       let regx = /^[6-9]\d{9}$/;
       let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
 
@@ -436,7 +439,7 @@ class userController extends BaseController {
           }
           // Return a 200
         } else {
-          if (req.body?.otp) {
+          if (req.body?.otp) {            
             let username =
               req?.body?.password == "" ? req?.body?.data : req?.body?.username;
 
@@ -444,6 +447,7 @@ class userController extends BaseController {
               username: username,
               otp: req.body?.otp,
             };
+           
 
             let result = await service.otpService.matchOtp(userOtp);
 
@@ -631,10 +635,9 @@ class userController extends BaseController {
           return super.fail(res, `Account doesn't exist`);
         }
   
-        if (user) {
-          // if (req.body.step === 1) {
-          //   return super.ok<any>(res, "User matched");
-          // }
+        if (user.success == true) {
+          
+          
           let userOtp;
           if (
             req.body?.otp === "string" ||
@@ -660,6 +663,8 @@ class userController extends BaseController {
             );
           } else {
             if (req.body?.otp) {
+            
+              
               userOtp = {
                 username: req?.body?.username,
                 otp: req.body?.otp,
@@ -667,8 +672,9 @@ class userController extends BaseController {
 
               let result = await service.otpService.matchOtp(userOtp);
               if (result.success === true) {
-                let pwdData: updatepassword = req.body;
-                pwdData.user_id = user?.dataValues?.id;
+                if(req.body.step===4){
+                   let pwdData: updatepassword = req.body;
+                pwdData.user_id = user?.data?.dataValues?.id;
 
                 let pwdResponse = await service.user.updatePassword(pwdData);
 
@@ -684,6 +690,12 @@ class userController extends BaseController {
                   message: "Password update successfully!!.",
                   result: pwdResponse,
                 });
+                }
+                else{
+                  return super.ok<any>(res, {status:200,message:"OTP matched"});
+
+                }
+               
               } else {
                 return super.fail(res, result.message);
               }
