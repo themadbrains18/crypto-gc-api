@@ -63,8 +63,8 @@ class userController extends BaseController {
         );
       }
 
-    
-      
+
+
 
       //  recogonize user provided phone / email
       if (flag == "number") user.number = user?.username;
@@ -80,10 +80,10 @@ class userController extends BaseController {
 
 
       //   check if user already exist
-      let userExist:any = await service.user.checkIfUserExsit(user?.username);
-      
+      let userExist: any = await service.user.checkIfUserExsit(user?.username);
+
       let message;
-      if (userExist?.success===true) {
+      if (userExist?.success === true) {
         let message = flag == "number" ? "Phone number" : "Email";
         return super.fail(res, `${message} is already used in our system.`);
         // throw new Error();
@@ -172,7 +172,7 @@ class userController extends BaseController {
     try {
 
       // console.log(req.body,'---------body');
-      
+
       let TOKEN_KEY =
         process.env.TOKEN_KEY ||
         "$2b$10$oy2o.eHnBE1bZMyAkj4GQ.j0nT4ceDBNU7PZ71Tjp19Mpwf0.NGlW";
@@ -186,12 +186,12 @@ class userController extends BaseController {
       login = login.data;
 
       // console.log(login,'----------------------');
-      if(req.body.loginType ==='admin' &&  login.role === 'user'){
+      if (req.body.loginType === 'admin' && login.role === 'user') {
         return super.fail(res, 'You have not access to admin account.');
       }
 
       if (login && req.body?.step === 1) {
-        return super.ok<any>(res, {message:"User Matched!!",login});
+        return super.ok<any>(res, { message: "User Matched!!", login });
       }
 
       let userOtp;
@@ -376,8 +376,8 @@ class userController extends BaseController {
       // let user = await service.user.checkIfUserExsit(req?.body?.username);
       let alreadyExist = await service.user.checkIfUserExsit(req?.body?.data);
 
-      console.log(alreadyExist,"==alredyexist");
-      
+      console.log(alreadyExist, "==alredyexist");
+
 
       let regx = /^[6-9]\d{9}$/;
       let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
@@ -439,7 +439,7 @@ class userController extends BaseController {
           }
           // Return a 200
         } else {
-          if (req.body?.otp) {            
+          if (req.body?.otp) {
             let username =
               req?.body?.password == "" ? req?.body?.data : req?.body?.username;
 
@@ -447,7 +447,7 @@ class userController extends BaseController {
               username: username,
               otp: req.body?.otp,
             };
-           
+
 
             let result = await service.otpService.matchOtp(userOtp);
 
@@ -634,10 +634,11 @@ class userController extends BaseController {
         if (user.success == false) {
           return super.fail(res, `Account doesn't exist`);
         }
-  
+
         if (user.success == true) {
-          
-          
+
+
+
           let userOtp;
           if (
             req.body?.otp === "string" ||
@@ -663,17 +664,24 @@ class userController extends BaseController {
             );
           } else {
             if (req.body?.otp) {
-            
-              
+
+
               userOtp = {
                 username: req?.body?.username,
                 otp: req.body?.otp,
               };
 
-              let result = await service.otpService.matchOtp(userOtp);
-              if (result.success === true) {
-                if(req.body.step===4){
-                   let pwdData: updatepassword = req.body;
+              if (req.body.step === 3) {
+                let result = await service.otpService.matchOtp(userOtp);
+                if (result.success === true) {
+
+                  return super.ok<any>(res, { status: 200, message: "OTP matched" });
+                } else {
+                  return super.fail(res, result.message);
+                }
+              }
+              if (req.body.step === 4) {
+                let pwdData: updatepassword = req.body;
                 pwdData.user_id = user?.data?.dataValues?.id;
 
                 let pwdResponse = await service.user.updatePassword(pwdData);
@@ -690,15 +698,8 @@ class userController extends BaseController {
                   message: "Password update successfully!!.",
                   result: pwdResponse,
                 });
-                }
-                else{
-                  return super.ok<any>(res, {status:200,message:"OTP matched"});
-
-                }
-               
-              } else {
-                return super.fail(res, result.message);
               }
+
             }
           }
         } else {
@@ -1360,18 +1361,18 @@ class userController extends BaseController {
 
           // if (flag == "email") {
 
-            let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
-            const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
-            service.emailService.sendMail(req.headers["X-Request-Id"], {
-              to: userOtp.username,
-              subject: "Verify OTP",
-              html: emailTemplate.html,
-            });
+          service.emailService.sendMail(req.headers["X-Request-Id"], {
+            to: userOtp.username,
+            subject: "Verify OTP",
+            html: emailTemplate.html,
+          });
 
-            delete otp["otp"];
-            super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
+          delete otp["otp"];
+          super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
           // }
 
           // else {
