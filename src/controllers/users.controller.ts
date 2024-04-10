@@ -725,10 +725,23 @@ class userController extends BaseController {
       }
       else {
         let isMatched = await service.user.confirmPassword(req?.body);
+        
+        let user: any = await service.user.checkIfUserExsit(
+          req?.body?.username
+        );
 
         if (isMatched) {
           if (req.body.step === 1) {
+            let pass = service.bcypt.MDB_compareHash(
+              `${req.body.new_password}`,
+              user?.data?.dataValues?.password
+            );
+            
+            if (pass) {
+             return super.fail(res,'Password should not be same as previous password!!');
+            } else {
             return super.ok<any>(res, "User matched");
+            }
           }
           let userOtp;
           if (
