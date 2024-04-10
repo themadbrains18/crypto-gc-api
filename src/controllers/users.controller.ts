@@ -20,6 +20,7 @@ import {
 } from "../utils/interface";
 import covalenthq from "../blockchain/scaner/covalenthq";
 import { lastLoginModel, userJwtTokenModel } from "../models";
+import { profileInput } from "../models/model/profile.model";
 
 
 
@@ -63,9 +64,6 @@ class userController extends BaseController {
         );
       }
 
-
-
-
       //  recogonize user provided phone / email
       if (flag == "number") user.number = user?.username;
       if (flag == "email") user.email = user?.username;
@@ -77,8 +75,6 @@ class userController extends BaseController {
           return super.fail(res, `Entered refer code not available. Please try again`);
         }
       }
-
-
       //   check if user already exist
       let userExist: any = await service.user.checkIfUserExsit(user?.username);
 
@@ -143,14 +139,29 @@ class userController extends BaseController {
         let result = await service.otpService.matchOtp(userOtp);
         if (result.success) {
           //   normal password connect into hash
-
           user.password = await service.bcypt.MDB_crateHash(user.password);
           user.refeer_code = req.body.refeer_code;
           user.own_code = await service.otpGenerate.referalCodeGenerate();
           user.secret = await service.otpGenerate.secretCodeGenerate();
-          // console.log(user, "new register user");
 
           let newuser: any = await service.user.create(user);
+
+          var string =
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          let code = "";
+
+          // Find the length of string
+          var len = string.length;
+          for (let i = 0; i < 6; i++) {
+            code += string[Math.floor(Math.random() * len)];
+          }
+          let profile: profileInput = {
+            user_id: newuser?.id,
+            dName: 'CPUSER-' +code,
+            uName: 'CPUSER-' +code,
+          };
+          await service.profile.create(profile);
+
           service.walletService.allWallets(newuser?.id);
           //SENDING RESPONSE
           return super.ok<any>(res, newuser);
@@ -682,9 +693,9 @@ class userController extends BaseController {
                   `${req.body.new_password}`,
                   user?.data?.dataValues?.password
                 );
-                
+
                 if (pass) {
-                  super.fail(res,'Password should not be same as previous password!!');
+                  super.fail(res, 'Password should not be same as previous password!!');
                 } else {
                   let pwdData: updatepassword = req.body;
                   pwdData.user_id = user?.data?.dataValues?.id;
