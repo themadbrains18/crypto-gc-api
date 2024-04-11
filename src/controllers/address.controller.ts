@@ -3,6 +3,7 @@ import BaseController from "./main.controller";
 import service from "../services/service";
 import networkModel, { networkInput } from "../models/model/network.model";
 import { addressInput } from "../models/model/address.model";
+import WAValidator from 'multicoin-address-validator';
 
 class addressController extends BaseController {
   protected async executeImpl(
@@ -37,39 +38,41 @@ class addressController extends BaseController {
    */
   async create(req: Request, res: Response) {
     try {
-      
-        
+
       let payload = req.body;
-      
-     
-      
-      let network = await networkModel.findOne({where : {id : payload.networkId},raw : true});
 
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      let network: any = await networkModel.findOne({ where: { id: payload.networkId }, raw: true });
 
-      var raw = JSON.stringify({
-        "address": `${payload.address}`,
-        "currency": `${network?.symbol.toLowerCase()}`
-      });
+      var valid = WAValidator.validate(`${payload.address}`,`${network?.symbol.toLowerCase()}`,'testnet');
+      if (valid)
+        console.log('This is a valid address');
+      else
+        console.log('Address INVALID');
 
-      var requestOptions: any = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
+      // return super.ok<any>(res, 'valid');
+      // var myHeaders = new Headers();
+      // myHeaders.append("Content-Type", "application/json");
 
-      let validAddress = await fetch("https://checkcryptoaddress.com/api/check-address", requestOptions);
+      // var raw = JSON.stringify({
+      //   "address": `${payload.address}`,
+      //   "currency": `${network?.symbol.toLowerCase()}`
+      // });
 
-      let isValid = await validAddress.json();
+      // var requestOptions: any = {
+      //   method: 'POST',
+      //   headers: myHeaders,
+      //   body: raw,
+      //   redirect: 'follow'
+      // };
 
-      if (isValid.data.isValid === true && payload.step === 1) {
-       
-        
+      // let validAddress = await fetch("https://checkcryptoaddress.com/api/check-address", requestOptions);
+
+      // let isValid = await validAddress.json();
+
+      if (valid && payload.step === 1) {
         return super.ok<any>(res, 'valid');
       }
-      else if(payload.step === 1) {
+      else if (payload.step === 1) {
         return super.fail(res, 'Invalid Address');
       }
 
@@ -77,7 +80,7 @@ class addressController extends BaseController {
       if (payload?.otp === '' || payload?.otp === 'string' || payload.otp === null) {
         userOtp = { username: req?.body?.username };
 
-        let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
+        let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
         const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
@@ -87,11 +90,11 @@ class addressController extends BaseController {
           html: emailTemplate.html,
         });
         delete otp["otp"];
-        super.ok<any>(res, {message : "OTP sent in your inbox. please verify your otp", otp});
+        super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
       }
       else {
         //  send email otp to user
-      
+
         if (req.body?.otp) {
           userOtp = {
             username: req?.body?.username,
@@ -105,8 +108,8 @@ class addressController extends BaseController {
             let responseData = await service.address.create(payload);
             super.ok<any>(res, responseData);
           }
-          else{
-            super.fail(res, result.message);      
+          else {
+            super.fail(res, result.message);
           }
         }
       }
@@ -117,7 +120,7 @@ class addressController extends BaseController {
 
   async userAddress(req: Request, res: Response) {
     try {
- 
+
       let responseData = await service.address.addressById(req.body.user_id);
       super.ok<any>(res, responseData);
 
@@ -126,28 +129,28 @@ class addressController extends BaseController {
     }
   }
 
-    /**
-   *
-   * @param res
-   * @param req
-   */
-    async activeInactiveAddress(req: Request, res: Response, next: NextFunction) {
-      try {
-        let { id, status } = req.body;
-  
-        let data: any = { id, status };
-  
-        let statusResponse = await service.address.changeStatus(data);
-        if (statusResponse) {
-          let trades = await service.address.all();
-          return super.ok<any>(res, trades);
-        } else {
-          super.fail(res, statusResponse);
-        }
-      } catch (error: any) {
-        super.fail(res, error.message);
+  /**
+ *
+ * @param res
+ * @param req
+ */
+  async activeInactiveAddress(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { id, status } = req.body;
+
+      let data: any = { id, status };
+
+      let statusResponse = await service.address.changeStatus(data);
+      if (statusResponse) {
+        let trades = await service.address.all();
+        return super.ok<any>(res, trades);
+      } else {
+        super.fail(res, statusResponse);
       }
+    } catch (error: any) {
+      super.fail(res, error.message);
     }
+  }
 }
 
 export default addressController;
