@@ -157,8 +157,8 @@ class userController extends BaseController {
           }
           let profile: profileInput = {
             user_id: newuser?.id,
-            dName: 'CPUSER-' +code,
-            uName: 'CPUSER-' +code,
+            dName: 'CPUSER-' + code,
+            uName: 'CPUSER-' + code,
           };
           await service.profile.create(profile);
 
@@ -385,22 +385,17 @@ class userController extends BaseController {
   async updateUser(req: Request, res: Response) {
     try {
       // let user = await service.user.checkIfUserExsit(req?.body?.username);
-      let alreadyExist = await service.user.checkIfUserExsit(req?.body?.data);
-
-      console.log(alreadyExist, "==alredyexist");
-
-
+      let alreadyExist:any = await service.user.checkIfUserExsit(req?.body?.data);
       let regx = /^[6-9]\d{9}$/;
       let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
 
       let flag = "";
 
-      // verify provide username is
       if (regx.test(req.body?.data)) flag = "number";
 
       if (regex.test(req.body?.data)) flag = "email";
-      if (alreadyExist) {
-        // console.log(res)
+
+      if (alreadyExist.success === true) {
         return super.fail(
           res,
           `This ${flag} is already exist. Try another ${flag}`
@@ -413,43 +408,38 @@ class userController extends BaseController {
           req.body?.otp === "" ||
           req.body?.otp === null
         ) {
-          userOtp = { username: req?.body?.username };
-          userNewOtp = { username: req?.body?.data };
+          userOtp = { username: req?.body?.step === 1? req?.body?.data : req?.body?.username };
+          // userNewOtp = { username: req?.body?.data };
           let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
-          let otp2: any = await service.otpGenerate.createOtpForUser(userNewOtp);
+          // let otp2: any = await service.otpGenerate.createOtpForUser(userNewOtp);
           const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
-          const newEmailTemplate = service.emailTemplate.otpVerfication(
-            `${otp2?.otp}`
-          );
-          // console.log(userOtp.username, " ========== 00")
+          // const newEmailTemplate = service.emailTemplate.otpVerfication(
+          //   `${otp2?.otp}`
+          // );
 
-          let emailResponse = await service.emailService.sendMail(
+          service.emailService.sendMail(
             req.headers["X-Request-Id"],
             {
-              to: userOtp.username,
+              to: userOtp?.username,
               subject: "Verify OTP",
               html: emailTemplate.html,
             }
           );
-          let emailResponse2 = await service.emailService.sendMail(
-            req.headers["X-Request-Id"],
-            {
-              to: userNewOtp.username,
-              subject: "Verify OTP",
-              html: newEmailTemplate.html,
-            }
-          );
 
-          if (
-            emailResponse?.accepted != undefined &&
-            emailResponse?.accepted?.length > 0
-          ) {
-            return super.ok<any>(res, {
-              data: "OTP sent in your inbox. please verify your otp",
-            });
-          }
-          // Return a 200
-        } else {
+          // let emailResponse2 = service.emailService.sendMail(
+          //   req.headers["X-Request-Id"],
+          //   {
+          //     to: userNewOtp.username,
+          //     subject: "Verify OTP",
+          //     html: newEmailTemplate.html,
+          //   }
+          // );
+
+          return super.ok<any>(res, {
+            message: "OTP sent in your inbox. please verify your otp", otp
+          });
+        } 
+        else {
           if (req.body?.otp) {
             let username =
               req?.body?.password == "" ? req?.body?.data : req?.body?.username;
@@ -458,13 +448,10 @@ class userController extends BaseController {
               username: username,
               otp: req.body?.otp,
             };
-
-
             let result = await service.otpService.matchOtp(userOtp);
-
             if (result.success) {
               if (req?.body?.password == "") {
-                super.ok<any>(res, "match successfully");
+                super.ok<any>(res,  {result});
               } else {
                 let user: UserInput = req.body;
                 user.id = req.body.user_id;
@@ -725,7 +712,7 @@ class userController extends BaseController {
       }
       else {
         let isMatched = await service.user.confirmPassword(req?.body);
-        
+
         let user: any = await service.user.checkIfUserExsit(
           req?.body?.username
         );
@@ -736,11 +723,11 @@ class userController extends BaseController {
               `${req.body.new_password}`,
               user?.data?.dataValues?.password
             );
-            
+
             if (pass) {
-             return super.fail(res,'Password should not be same as previous password!!');
+              return super.fail(res, 'Password should not be same as previous password!!');
             } else {
-            return super.ok<any>(res, "User matched");
+              return super.ok<any>(res, "User matched");
             }
           }
           let userOtp;
