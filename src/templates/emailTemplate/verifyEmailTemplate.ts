@@ -204,9 +204,9 @@ const verifyEmail = function (otp: string | number) {
                             <span style="line-height: 1.5; font-size: 15px"
                               ><div>
                                   <span style="font-size: 14px; color: #222a35; "
-                                    >Thank you for registering Crypto Planet. To start using
+                                    >Thank you for using Crypto Planet. To start using
                                     Crypto Planet, you will need to enter the following
-                                    verification code to complete the registration
+                                    verification code to complete the further
                                     process.</span
                                   >
                                 </div>

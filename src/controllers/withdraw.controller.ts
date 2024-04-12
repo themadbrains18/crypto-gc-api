@@ -3,6 +3,7 @@ import BaseController from "./main.controller";
 import withdrawDto from "../models/dto/withdraw.dto";
 import service from "../services/service";
 import { networkModel } from "../models";
+import WAValidator from 'multicoin-address-validator';
 // import { validate } from 'crypto-address-validator-ts';
 
 class withdrawController extends BaseController {
@@ -29,26 +30,31 @@ class withdrawController extends BaseController {
 
       let network = await networkModel.findOne({where : {id : payload.networkId},raw : true});
 
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      var valid = WAValidator.validate(`${payload.withdraw_wallet}`,`${network?.symbol.toLowerCase()}`,'testnet');
+      if (valid)
+        console.log('This is a valid address');
+      else
+        console.log('Address INVALID');
+      // var myHeaders = new Headers();
+      // myHeaders.append("Content-Type", "application/json");
 
-      var raw = JSON.stringify({
-        "address": `${payload.withdraw_wallet}`,
-        "currency": `${network?.symbol.toLowerCase()}`
-      });
+      // var raw = JSON.stringify({
+      //   "address": `${payload.withdraw_wallet}`,
+      //   "currency": `${network?.symbol.toLowerCase()}`
+      // });
 
-      var requestOptions: any = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
+      // var requestOptions: any = {
+      //   method: 'POST',
+      //   headers: myHeaders,
+      //   body: raw,
+      //   redirect: 'follow'
+      // };
 
-      let validAddress = await fetch("https://checkcryptoaddress.com/api/check-address", requestOptions);
+      // let validAddress = await fetch("https://checkcryptoaddress.com/api/check-address", requestOptions);
 
-      let isValid = await validAddress.json();
+      // let isValid = await validAddress.json();
 
-      if (isValid.data.isValid === true && payload.step === 1) {
+      if (valid && payload.step === 1) {
         return super.ok<any>(res, 'valid');
       }
       else if(payload.step === 1) {
