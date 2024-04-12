@@ -385,7 +385,7 @@ class userController extends BaseController {
   async updateUser(req: Request, res: Response) {
     try {
       // let user = await service.user.checkIfUserExsit(req?.body?.username);
-      let alreadyExist:any = await service.user.checkIfUserExsit(req?.body?.data);
+      let alreadyExist: any = await service.user.checkIfUserExsit(req?.body?.data);
       let regx = /^[6-9]\d{9}$/;
       let regex = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
 
@@ -408,7 +408,7 @@ class userController extends BaseController {
           req.body?.otp === "" ||
           req.body?.otp === null
         ) {
-          userOtp = { username: req?.body?.step === 1? req?.body?.data : req?.body?.username };
+          userOtp = { username: req?.body?.step === 1 ? req?.body?.data : req?.body?.username };
           // userNewOtp = { username: req?.body?.data };
           let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
           // let otp2: any = await service.otpGenerate.createOtpForUser(userNewOtp);
@@ -438,7 +438,7 @@ class userController extends BaseController {
           return super.ok<any>(res, {
             message: "OTP sent in your inbox. please verify your otp", otp
           });
-        } 
+        }
         else {
           if (req.body?.otp) {
             let username =
@@ -451,7 +451,7 @@ class userController extends BaseController {
             let result = await service.otpService.matchOtp(userOtp);
             if (result.success) {
               if (req?.body?.password == "") {
-                super.ok<any>(res,  {result});
+                super.ok<any>(res, { result });
               } else {
                 let user: UserInput = req.body;
                 user.id = req.body.user_id;
@@ -798,54 +798,56 @@ class userController extends BaseController {
 
   async antiPhishingCode(req: Request, res: Response) {
     try {
-      let user = await service.user.checkIfUserExsit(req.body.username);
+
+      let user: any = await service.user.checkIfUserExsit(req.body.username);
       if (user) {
-        let userOtp;
-        if (
-          req.body?.otp === "string" ||
-          req.body?.otp === "" ||
-          req.body?.otp === null
-        ) {
-          userOtp = { username: req?.body?.username };
+        if (user?.data?.dataValues?.antiphishing === req.body.antiphishing) {
+          super.fail(res, 'Antifishing code should not be same as previous code');
+        }
+        else {
+          let userOtp;
+          if (
+            req.body?.otp === "string" ||
+            req.body?.otp === "" ||
+            req.body?.otp === null
+          ) {
+            userOtp = { username: req?.body?.username };
 
-          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+            let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
-          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
-          service.emailService.sendMail(req.headers["X-Request-Id"], {
-            to: userOtp.username,
-            subject: "Verify OTP",
-            html: emailTemplate.html,
-          });
-          delete otp["otp"];
-          super.ok<any>(res, { message: "OTP sent in your inbox. please your verify otp", otp });
-        } else {
-          //  send email otp to user
+            const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: userOtp.username,
+              subject: "Verify OTP",
+              html: emailTemplate.html,
+            });
+            delete otp["otp"];
+            super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
+          }
+          else {
+            if (req.body?.otp) {
+              userOtp = {
+                username: req?.body?.username,
+                otp: req.body?.otp,
+              };
 
-          if (req.body?.otp) {
-            userOtp = {
-              username: req?.body?.username,
-              otp: req.body?.otp,
-            };
-
-            let result = await service.otpService.matchOtp(userOtp);
-            if (result.success === true) {
-              let data: antiPhishingCode = req.body;
-
-              let pwdResponse = await service.user.antiPhishingCode(data);
-
-              super.ok<any>(res, {
-                status: 200,
-                message: "Antiphishing Code update successfully!!.",
-                result: pwdResponse,
-              });
-            }
-            else {
-              super.fail(res, result.message);
+              let result = await service.otpService.matchOtp(userOtp);
+              if (result.success === true) {
+                let data: antiPhishingCode = req.body;
+                let pwdResponse = await service.user.antiPhishingCode(data);
+                super.ok<any>(res, {
+                  status: 200,
+                  message: `Antiphishing Code ${user?.dataValues?.antiphishing === null ? 'create' : 'update'} successfully!!.`,
+                  result: pwdResponse,
+                });
+              }
+              else {
+                super.fail(res, result.message);
+              }
             }
           }
-
-
         }
+
       }
 
     } catch (error: any) {
