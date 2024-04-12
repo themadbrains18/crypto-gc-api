@@ -837,7 +837,7 @@ class userController extends BaseController {
                 let pwdResponse = await service.user.antiPhishingCode(data);
                 super.ok<any>(res, {
                   status: 200,
-                  message: `Antiphishing Code ${user?.dataValues?.antiphishing === null ? 'create' : 'update'} successfully!!.`,
+                  message: `Antiphishing Code ${user?.data?.dataValues?.antiphishing === null ? 'create' : 'update'} successfully!!.`,
                   result: pwdResponse,
                 });
               }
