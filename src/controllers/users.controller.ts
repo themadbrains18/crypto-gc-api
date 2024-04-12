@@ -864,18 +864,20 @@ class userController extends BaseController {
   async tradingPassword(req: Request, res: Response) {
     try {
 
-      if (req.body.step === 1) {
+      // if (req.body.step === 1) {
         let user = await service.user.checkIfUserExsit(req.body.username);
         if (user) {
-          return super.ok<any>(res, "User matched");
-        }
-      }
-
-      let isMatched;
+        let isMatched;
       if (req?.body?.old_password) {
         isMatched = await service.user.confirmTradingPassword(req?.body);
-
+         
+        if(isMatched && req.body.step===1){
+          
+          return  super.ok<any>(res,"User match")
+        }
+            
         if (isMatched) {
+
           let userOtp;
           if (
             req.body?.otp === "string" ||
@@ -925,6 +927,9 @@ class userController extends BaseController {
         }
       }
       else {
+        if ( req.body.step===1) {
+          return  super.ok<any>(res,"User match")
+        }
         let userOtp;
         if (
           req.body?.otp === "string" ||
@@ -973,6 +978,7 @@ class userController extends BaseController {
           }
         }
       }
+    }
     } catch (error: any) {
       super.fail(res, error.message);
     }
