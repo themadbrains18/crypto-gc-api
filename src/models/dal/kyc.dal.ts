@@ -53,11 +53,14 @@ class kycDal {
    * @returns 
    */
     async kycIfExist(payload: kycDto): Promise<kycOuput | any> {
+
+        console.log(payload?.userid,'-----------------payload?.userid');
+        
         if (payload?.userid != undefined && payload?.userid != "") {
-            let data = await kycModel.findAll({
+            let data = await kycModel.findOne({
                 where: {
                     "userid": payload?.userid
-                }
+                }, raw: true
             });
             return data
         }
@@ -78,7 +81,7 @@ class kycDal {
 
     async editKyc(payload: kycDto): Promise<kycOuput | any> {
 
-        let result = await kycModel.update({ isVerified: false, isReject: false }, { where: { userid: payload?.userid } });
+        let result = await kycModel.update(payload, { where: { userid: payload?.userid } });
         if (result.length > 0) {
             return await this.kycById(payload.userid);
         }

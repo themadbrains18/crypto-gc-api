@@ -27,22 +27,14 @@ class kycController extends BaseController {
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
-      // const obj = JSON.parse(JSON.stringify(req.files));
-      // for (let itm in obj) {
-      //   req.body[itm] = obj[itm][0]?.filename;
-      //   req.body.destinationPath = obj[itm][0]?.destination;
-      // }
-
-      // console.log(req.body ,'-------kyc body data---------');
-      // return
-
+      
       let kyc: kycDto = req.body;
-
-
+      kyc.userid = req?.body?.user_id;
+      
       let kycAlreadyAdded = await service.kyc.alreadyExist(kyc);
 
       // if already kyc available but in pending state
-      if (kycAlreadyAdded.length > 0 && kycAlreadyAdded[0].isReject === false) {
+      if ( kycAlreadyAdded && (kycAlreadyAdded?.isReject === false || kycAlreadyAdded?.isReject === 0)) {
         return super.clientError(res, {
           message: "Sorry, you are already submit kyc request!!",
           result: kycAlreadyAdded
@@ -50,16 +42,15 @@ class kycController extends BaseController {
       }
 
       // if already kyc available but admin rejected and user re-submit request
-      if (kycAlreadyAdded.length > 0 && kycAlreadyAdded[0].isReject === true) {
-        kyc.userid = kycAlreadyAdded[0].user_id;
+      if (kycAlreadyAdded &&  (kycAlreadyAdded?.isReject === true || kycAlreadyAdded?.isReject === 1)) {
+        kyc.isReject = false;
+        kyc.isVerified = false;
         let tokenResponse = await service.kyc.edit(kyc);
-
-        super.ok<any>(res, { message: "Kyc successfully Added.", result: tokenResponse })
+        return super.ok<any>(res, { message: "Kyc successfully updated.", result: tokenResponse })
       }
 
-      kyc.userid = req.body.user_id;
+      // kyc.userid = req.body.user_id;
       let tokenResponse = await service.kyc.create(kyc);
-
       super.ok<any>(res, { message: "Kyc successfully Added.", result: tokenResponse })
 
     } catch (error: any) {
