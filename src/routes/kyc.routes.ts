@@ -21,6 +21,7 @@ class kycRoutes extends BaseController {
     this.router.post(
       "/create",
       middleware.auth,
+      super.Validator(kycSchema.create),
       kyc.create
     );
     // this.router.post("/create",service.upload.upload("../upload",['pdf','png','jpg']), super.Validator(kycSchema.create),auth, kyc.create);
