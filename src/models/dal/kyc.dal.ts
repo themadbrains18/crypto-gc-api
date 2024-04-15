@@ -54,7 +54,7 @@ class kycDal {
    */
     async kycIfExist(payload: kycDto): Promise<kycOuput | any> {
 
-        console.log(payload?.userid,'-----------------payload?.userid');
+        // console.log(payload?.userid,'-----------------payload?.userid');
         
         if (payload?.userid != undefined && payload?.userid != "") {
             let data = await kycModel.findOne({
