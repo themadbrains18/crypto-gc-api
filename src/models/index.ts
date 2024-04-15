@@ -224,6 +224,13 @@ models.forEach((model) => model.initialize(sequelize));
       networkModel.hasMany(withdrawModel, { foreignKey: "networkId" });
       withdrawModel.belongsTo(networkModel, { foreignKey: "networkId" });
 
+
+      tokensModel.hasMany(addressModel, { foreignKey: "tokenID" });
+      addressModel.belongsTo(tokensModel, { foreignKey: "tokenID" });
+
+      globalTokensModel.hasMany(addressModel, { foreignKey: "tokenID" });
+      addressModel.belongsTo(globalTokensModel, { foreignKey: "tokenID" });
+
       networkModel.hasMany(addressModel, { foreignKey: "networkId" });
       addressModel.belongsTo(networkModel, { foreignKey: "networkId" });
 

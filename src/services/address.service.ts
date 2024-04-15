@@ -36,6 +36,10 @@ class addressServices {
     async changeStatus(payload:addressInput) : Promise<any>{
         return await addressDal.changeStatus(payload);
      }
+
+     async deleteAddress(address_id : string, user_id:string):Promise<addressOuput |any>{
+        return await addressDal.deleteAddressByUserAddressId(address_id,user_id);
+    }
 }
 
 export default addressServices

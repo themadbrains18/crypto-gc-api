@@ -41,6 +41,7 @@ class addressController extends BaseController {
 
       let payload = req.body;
 
+
       let network: any = await networkModel.findOne({ where: { id: payload.networkId }, raw: true });
 
       var valid = WAValidator.validate(`${payload.address}`,`${network?.symbol.toLowerCase()}`,'testnet');
@@ -105,6 +106,7 @@ class addressController extends BaseController {
 
           if (result.success === true) {
             console.log("==hi");
+            delete payload?.username
             let responseData = await service.address.create(payload);
             super.ok<any>(res, responseData);
           }
@@ -151,6 +153,22 @@ class addressController extends BaseController {
       super.fail(res, error.message);
     }
   }
+
+    /**
+  * 
+  * @param res 
+  * @param req 
+  */
+    async deleteAddress(req: Request, res: Response) {
+      try {
+  
+        let address = await service.address.deleteAddress(req.params.addressid, req.params.userid);
+  
+        super.ok<any>(res, address);
+      } catch (error: any) {
+        super.fail(res, error.message);
+      }
+    }
 }
 
 export default addressController;

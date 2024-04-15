@@ -4,6 +4,7 @@ interface addressAtteribute {
   id?: string;
   label?: string;
   address?: string;
+  tokenID?: string;
   networkId?: string;
   user_id?: string
   status? : boolean;
@@ -23,6 +24,7 @@ class addressModel
   public user_id!: string;
   public label!: string;
   public address!: string;
+  public tokenID!: string;
   public networkId!: string;
   public status!: boolean;
 
@@ -55,10 +57,14 @@ class addressModel
         address: {
           type: DataTypes.STRING,
           allowNull: false,
-          unique: {
-            name: "address",
-            msg: 'Address is already exist.' 
-          },
+          // unique: {
+          //   name: "address",
+          //   msg: 'Address is already exist.' 
+          // },
+        },
+        tokenID: {
+          type: DataTypes.STRING,
+          allowNull: true,
         },
         networkId: {
           type: DataTypes.STRING,
