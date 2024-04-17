@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import BaseController from "./main.controller";
 import adsPostDto from "../models/dto/adspost.dto";
 import service from "../services/service";
+import WebSocket from 'ws';
+
 
 class postController extends BaseController {
   protected async executeImpl(
@@ -61,7 +63,8 @@ class postController extends BaseController {
   */
   async getAllAds(req: Request, res: Response) {
     try {
-      let allPost = await service.ads.getAllPost();
+      let { offset, limit } = req.params;
+      let allPost = await service.ads.getAllPost(offset, limit);
       super.ok<any>(res, allPost);
     } catch (error: any) {
       super.fail(res, error.message);
@@ -133,9 +136,9 @@ class postController extends BaseController {
   * @param res 
   * @param req 
   */
-  async socketPostAds(wss: any, ws: any) {
+  async socketPostAds(wss: WebSocket.Server, ws: WebSocket, limit: number, offset: number): Promise<void> {
     try {
-      let data = await service.ads.getAllPost();
+      const { data, totalLength } = await service.ads.getAllPost(limit, offset);
       wss.clients.forEach(function e(client: any) {
         client.send(JSON.stringify({ status: 200, data: data, type: 'post' }));
       })

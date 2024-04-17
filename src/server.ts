@@ -55,7 +55,9 @@ wss.on('connection', (ws: WebSocket) => {
     }
 
     if (body.ws_type === 'post') {
-      await post.socketPostAds(wss, ws);
+      const limit = 20; 
+      const offset = 0; 
+      await post.socketPostAds(wss, ws, limit, offset);
     }
 
     if (body.ws_type === 'user_withdraw') {

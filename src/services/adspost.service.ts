@@ -13,8 +13,8 @@ class adsPostservice{
         return await adspostDal.getUserAdsPost(payload);
     }
 
-    async getAllPost():Promise<postOuput | any>{
-        return await adspostDal.getAllAdsPost();
+    async getAllPost(offset:any,limit:any):Promise<postOuput | any>{
+        return await adspostDal.getAllAdsPost(offset,limit);
     }
 
     async deletePost(post_id : string, user_id:string):Promise<postOuput |any>{

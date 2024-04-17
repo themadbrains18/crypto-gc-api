@@ -118,66 +118,73 @@ class adsPostDal {
      * Get all post create by users
      * @returns 
      */
-    async getAllAdsPost(): Promise<postOuput | any> {
+    async getAllAdsPost(limit: number, offset: number): Promise<{ data: any[], totalLength: number }> {
         try {
-            return await postModel.findAll({
-                where: { status: true },
+          const data = await postModel.findAll({
+            where: { status: true },
+            include: [
+              {
+                model: tokensModel,
+                attributes: {
+                  exclude: [
+                    "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                  ]
+                }
+              },
+              {
+                model: globalTokensModel,
+                attributes: {
+                  exclude: [
+                    "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                  ]
+                }
+              },
+              {
+                model: userModel,
+                attributes: {
+                  exclude: [
+                    "otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"
+                  ]
+                },
                 include: [
-                    {
-                        model: tokensModel,
-                        attributes: {
-                            exclude: [
-                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
-                            ]
-                        }
-                    },
-                    {
-                        model: globalTokensModel,
-                        attributes: {
-                            exclude: [
-                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
-                            ]
-                        }
-                    },
-                    {
-                        model: userModel,
-                        attributes: {
-                            exclude: [
-                                "otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"
-                            ]
-                        },
-                        include: [
-                            {
-                                model: kycModel,
-                                attributes: {
-                                    exclude: [
-                                        "id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"
-                                    ]
-                                }
-                            },
-                            {
-                                model: profileModel
-                            },
-                            {
-                                model: userPmethodModel,
-                                include: [
-                                    {
-                                        model: paymentMethodModel,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
-                                        },
-                                    }
-                                ]
-                            }
-                        ]
+                  {
+                    model: kycModel,
+                    attributes: {
+                      exclude: [
+                        "id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"
+                      ]
                     }
+                  },
+                  {
+                    model: profileModel
+                  },
+                  {
+                    model: userPmethodModel,
+                    include: [
+                      {
+                        model: paymentMethodModel,
+                        attributes: {
+                          exclude: ["createdAt", "updatedAt", "deletedAt"]
+                        },
+                      }
+                    ]
+                  }
                 ]
-            })
+              }
+            ],
+            limit: limit,  // Add limit for pagination
+            offset: offset  // Add offset for pagination
+          });
+      
+          // Count total number of rows
+          const totalLength = await postModel.count({ where: { status: true } });
+      
+          return { data: data, totalLength: totalLength };
         } catch (error: any) {
-            throw new Error(error.message)
+          throw new Error(error.message);
         }
-    }
-
+      }
+      
     /**
      * Delete ads post
      * @param post_id 
