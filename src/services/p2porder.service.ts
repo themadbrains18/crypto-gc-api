@@ -238,6 +238,46 @@ class p2pOrderService {
         }
         
     }
+    async getOrderListByStatusByLimit(userid: string,status:string,offset:string,limit:string):Promise<orderOuput | any>{
+        try {
+
+            let limits=parseInt(limit)
+            let offsets=parseInt(offset)
+
+            if(userid===""){
+                throw new Error('Please provide userid.')
+            }
+            let whereClause:any = {
+                [Op.or]: [
+                    { buy_user_id: userid },
+                    { sell_user_id: userid }
+                ]
+            };
+            
+            if (status !== "all") {
+                whereClause.status = status;
+            }
+            
+            // Query to fetch paginated data
+            let data = await orderModel.findAll({
+                where: whereClause,
+                include: {
+                    model: tokensModel
+                },
+                limit: limits,
+                offset: offsets
+            });
+            
+            // Query to fetch total count
+            let countQuery = await orderModel.count({
+                where: whereClause
+            })
+            return {data, total:countQuery}
+        } catch (error:any) {
+            throw new Error(error.message);
+        }
+        
+    }
     async getAllOrderList():Promise<orderOuput | any>{
         try {
             

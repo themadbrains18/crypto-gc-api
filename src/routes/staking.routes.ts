@@ -20,6 +20,7 @@ class stakingRoutes extends BaseController {
         this.router.post('/create',super.Validator(stakingSchema.create),auth,staking.saveStaking );
         this.router.put('/release',super.Validator(stakingSchema.release),auth,staking.stakingRelease);
         this.router.get('/all',auth,staking.getAllStaking);
+        this.router.get('/all/:offset/:limit',auth,staking.getAllStakingByLimit);
         this.router.get('/getbytoken/:tokenid/:userid',auth,staking.getStakedByToken);
         this.router.put('/unstaking',auth,staking.unstakingToken);
 

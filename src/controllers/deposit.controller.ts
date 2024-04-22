@@ -26,10 +26,6 @@ class depositController extends BaseController {
 
     }
 
-  
-
-   
-
   sleep = (ms:any) => {
     return new Promise(resolve => setTimeout(resolve, ms));
    }
@@ -90,8 +86,8 @@ class depositController extends BaseController {
       try {
         let {offset,limit} = req?.params
         let depositResponse = await service.depositServices.getDepositHistoryById(req?.params?.id);
-        let depositResponsePaginate = await service.depositServices.getDepositHistoryByIdAndLimit(req?.params?.id,offset,limit);
-        super.ok<any>(res, {data:depositResponsePaginate, total:depositResponse.length});
+        let depositResponsePaginate:any = await service.depositServices.getDepositHistoryByIdAndLimit(req?.params?.id,offset,limit);
+        super.ok<any>(res, {data:depositResponsePaginate.data, total:depositResponse.length,  totalAmount:depositResponsePaginate.totalAmount});
       } catch (error: any) {
         super.fail(res, error.message);
       }

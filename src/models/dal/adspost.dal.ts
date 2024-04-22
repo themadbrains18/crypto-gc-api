@@ -63,7 +63,7 @@ class adsPostDal {
      * @param payload 
      * @returns 
      */
-    async getUserAdsPost(payload: string): Promise<postOuput | any> {
+    async getUserAdsPost(payload: string,offset: number, limit: number): Promise<postOuput | any> {
         try {
             let posts: any = await postModel.findAll({
                 where: { user_id: payload }, include: [
@@ -105,9 +105,12 @@ class adsPostDal {
                             ],
                         }
                     }
-                ]
+                ],
+                limit: Number(limit),  // Add limit for pagination
+                offset: Number(offset) 
             })
-            return posts;
+            const totalLength = await postModel.count({ where: { user_id: payload } });
+            return { data: posts, total: totalLength };
 
         } catch (error: any) {
             throw new Error(error.message)
@@ -118,7 +121,7 @@ class adsPostDal {
      * Get all post create by users
      * @returns 
      */
-    async getAllAdsPost(limit: number, offset: number): Promise<{ data: any[], totalLength: number }> {
+    async getAllAdsPost(offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
         try {
           const data = await postModel.findAll({
             where: { status: true },
@@ -172,8 +175,8 @@ class adsPostDal {
                 ]
               }
             ],
-            limit: limit,  // Add limit for pagination
-            offset: offset  // Add offset for pagination
+            limit: Number(limit),  // Add limit for pagination
+            offset: Number(offset)  // Add offset for pagination
           });
       
           // Count total number of rows
@@ -182,6 +185,73 @@ class adsPostDal {
           return { data: data, totalLength: totalLength };
         } catch (error: any) {
           throw new Error(error.message);
+        }
+      }
+      
+    /**
+     * Get all post create by users and post status
+     * @returns 
+     */
+    async getUserPostByStatus(payload:string,status:string,offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
+        try {
+            let whereClause:any = {
+                user_id: payload
+            };
+            
+            
+            if (status !== "all") {
+                whereClause.status = status === "true"?true:false;
+            }
+            
+            let posts: any = await postModel.findAll({
+                where: whereClause, include: [
+                    {
+                        model: tokensModel,
+                        attributes: {
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
+                        model: globalTokensModel,
+                        attributes: {
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
+                        model: userModel,
+                        attributes: {
+                            exclude: [
+                                "password",
+                                "deletedAt",
+                                "cronStatus",
+                                "updatedAt",
+                                "createdAt",
+                                "createdAt",
+                                "UID",
+                                "antiphishing",
+                                "registerType",
+                                "statusType",
+                                "tradingPassword",
+                                "kycstatus",
+                                "TwoFA",
+                                "otpToken", "own_code",
+                                "refeer_code", "secret"
+                            ],
+                        }
+                    }
+                ],
+                limit: Number(limit),  // Add limit for pagination
+                offset: Number(offset) 
+            })
+            const totalLength = await postModel.count({ where: whereClause });
+            return { data: posts, totalLength: totalLength };
+
+        } catch (error: any) {
+            throw new Error(error.message)
         }
       }
       

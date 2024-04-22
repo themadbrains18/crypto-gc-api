@@ -19,12 +19,15 @@ class convertService{
         return await convertDal.createConvertHistory(payload);
     }
 
-    async getConvertRecord(user_id : string) : Promise<convertOuput | any>{
-        return await convertDal.getRecord(user_id);
+    async getConvertRecord(user_id : string,offset:any,limit:any) : Promise<convertOuput | any>{
+        return await convertDal.getRecord(user_id,offset,limit);
     }
 
     async getConvertHistory(user_id : string) : Promise<convertHistoryOuput | any>{
         return await convertDal.getHistoryRecord(user_id);
+    }
+    async getConvertHistoryByLimit(user_id : string, offset:any,limit:any) : Promise<convertHistoryOuput | any>{
+        return await convertDal.getHistoryRecordByLimit(user_id,offset,limit);
     }
 }
 

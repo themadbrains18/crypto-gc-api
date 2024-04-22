@@ -135,6 +135,19 @@ class orderController extends BaseController {
       super.fail(res, error.message);
     }
   }
+  /**
+  * 
+  */
+  async getOrderListByStatusByLimit(req: Request, res: Response) {
+    try {
+      let { status, offset, limit } = req.params
+      let orderResponse = await service.p2p.getOrderList(req.params.userid);
+      let orderpaginate = await service.p2p.getOrderListByStatusByLimit(req.params.userid,status, offset, limit);
+      super.ok<any>(res,  orderpaginate);
+    } catch (error: any) {
+      super.fail(res, error.message);
+    }
+  }
 
   /**
   * 

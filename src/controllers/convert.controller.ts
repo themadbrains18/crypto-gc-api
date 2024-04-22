@@ -52,7 +52,8 @@ class convertController extends BaseController {
 
   async getConvertList(req :Request, res :Response, next : NextFunction){
     try {
-      let responseData = await service.convert.getConvertRecord(req.body.user_id);
+      let {  offset, limit } = req.params
+      let responseData = await service.convert.getConvertRecord(req.body.user_id,offset, limit);
 
       return super.ok<any>(res,responseData);
     } catch (error:any) {
@@ -63,6 +64,17 @@ class convertController extends BaseController {
   async getConvertHistoryList(req: Request, res : Response, next :NextFunction){
     try {
       let responseData = await service.convert.getConvertHistory(req.body.user_id);
+
+      return super.ok<any>(res,responseData);
+    } catch (error:any) {
+      super.fail(res,error.message)
+    }
+  }
+
+  async getConvertHistoryListByLimit(req: Request, res : Response, next :NextFunction){
+    try {
+      let {  offset, limit } = req.params
+      let responseData = await service.convert.getConvertHistoryByLimit(req.body.user_id,offset, limit);
 
       return super.ok<any>(res,responseData);
     } catch (error:any) {

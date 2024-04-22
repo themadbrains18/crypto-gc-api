@@ -16,6 +16,9 @@ class stakingService{
     async getAllStaking(user_id:string):Promise<stakingOuput | any>{
         return await stakingDal.getAllStaking(user_id);
     }
+    async getAllStakingByLimit(user_id:string,offset:string,limit:string):Promise<stakingOuput | any>{
+        return await stakingDal.getAllStakingByLimit(user_id,offset,limit);
+    }
 
     async getStakingByToken(token_id : string, user_id: string):Promise<stakingOuput | any>{
         return await stakingDal.getStakingDataByTokenId(token_id, user_id);

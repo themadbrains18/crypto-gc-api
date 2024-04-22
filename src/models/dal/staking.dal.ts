@@ -95,6 +95,76 @@ class stakingDal extends BaseController {
             console.log(error);
         }
     }
+    /**
+     * Get all staking list
+     * @returns 
+     */
+    async getAllStakingByLimit(user_id: string, offset:string, limit:string): Promise<stakingOuput | any> {
+        try {
+            let data= await stakingModel.findAll({
+                where: { user_id: user_id },
+                include: [
+                    {
+                        model: tokensModel,
+                        attributes: {
+                            exclude: [
+                                "deletedAt",
+                                "createdAt",
+                                "createdAt",
+                                "updatedAt",
+                                "networks",
+                                "minimum_withdraw",
+                                "decimals",
+                                "tokenType",
+                                "status",
+                                "price",
+                                "min_price",
+                                "max_price",
+                                "type",
+                                "maxSupply",
+                                "totalSupply",
+                                "circulatingSupply",
+                                "rank",
+                            ],
+                        },
+                    },
+                    {
+                        model: globalTokensModel,
+                        attributes: {
+                            exclude: [
+                                "deletedAt",
+                                "createdAt",
+                                "createdAt",
+                                "updatedAt",
+                                "networks",
+                                "minimum_withdraw",
+                                "decimals",
+                                "tokenType",
+                                "status",
+                                "price",
+                                "min_price",
+                                "max_price",
+                                "type",
+                                "maxSupply",
+                                "totalSupply",
+                                "circulatingSupply",
+                                "rank",
+                            ],
+                        },
+                    }
+                ],
+                limit:Number(limit),
+                offset:Number(offset)
+            },
+        )
+
+        const total = await stakingModel.count({ where: { user_id: user_id } });
+        return { data: data, total: total };
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     /**
      * Get staking tokan data by user and token id

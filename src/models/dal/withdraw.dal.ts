@@ -6,6 +6,7 @@ import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.mode
 import networkModel from "../model/network.model";
 import tokensModel from "../model/tokens.model";
 import withdrawModel, { assetOuput } from "../model/withdraw.model";
+import tokenDal from "./token.dal";
 
 class withdrawDal {
 
@@ -22,10 +23,10 @@ class withdrawDal {
       let WithdrawResponse = await withdrawModel.create(payload);
       if (WithdrawResponse) {
 
-        let getassets = await assetModel.findOne({ where: { token_id: payload?.tokenID, user_id: payload?.user_id,walletTtype: assetsWalletType.main_wallet}, raw: true });
+        let getassets = await assetModel.findOne({ where: { token_id: payload?.tokenID, user_id: payload?.user_id, walletTtype: assetsWalletType.main_wallet }, raw: true });
         if (getassets) {
           let updatebalance = getassets?.balance - payload?.amount;
-          
+
           let balUpdate = await assetModel.update({ balance: updatebalance }, { where: { id: getassets?.id } });
           if (balUpdate) {
             apiResponse = WithdrawResponse;
@@ -81,21 +82,21 @@ class withdrawDal {
     try {
       return await withdrawModel.findAll({
         include:
-        [{
-          model: networkModel,
-          attributes: {
-            exclude: [
-              "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
-            ]
+          [{
+            model: networkModel,
+            attributes: {
+              exclude: [
+                "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
+              ]
+            }
+          },
+          {
+            model: tokensModel
+          },
+          {
+            model: globalTokensModel
           }
-        },
-        {
-          model : tokensModel
-        },
-        {
-          model : globalTokensModel
-        }
-      ],
+          ],
       });
     } catch (error: any) {
       throw new Error(error.message);
@@ -107,21 +108,21 @@ class withdrawDal {
       let limits = parseInt(limit);
       return await withdrawModel.findAll({
         include:
-        [{
-          model: networkModel,
-          attributes: {
-            exclude: [
-              "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
-            ]
+          [{
+            model: networkModel,
+            attributes: {
+              exclude: [
+                "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
+              ]
+            }
+          },
+          {
+            model: tokensModel
+          },
+          {
+            model: globalTokensModel
           }
-        },
-        {
-          model : tokensModel
-        },
-        {
-          model : globalTokensModel
-        }
-      ], limit: limits,
+          ], limit: limits,
         offset: offsets,
       });
     } catch (error: any) {
@@ -134,21 +135,21 @@ class withdrawDal {
       let wallet: any = await withdrawModel.findAll({
         where: { user_id: id },
         include:
-        [{
-          model: networkModel,
-          attributes: {
-            exclude: [
-              "chainId", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
-            ]
+          [{
+            model: networkModel,
+            attributes: {
+              exclude: [
+                "chainId", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
+              ]
+            }
+          },
+          {
+            model: tokensModel
+          },
+          {
+            model: globalTokensModel
           }
-        },
-        {
-          model : tokensModel
-        },
-        {
-          model : globalTokensModel
-        }
-      ],
+          ],
         order: [["createdAt", "desc"]]
       });
       let data = wallet
@@ -164,27 +165,44 @@ class withdrawDal {
       let wallet: any = await withdrawModel.findAll({
         where: { user_id: id },
         include:
-        [{
-          model: networkModel,
-          attributes: {
-            exclude: [
-              "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
-            ]
+          [{
+            model: networkModel,
+            attributes: {
+              exclude: [
+                "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "symbol", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
+              ]
+            }
+          },
+          {
+            model: tokensModel
+          },
+          {
+            model: globalTokensModel
           }
-        },
-        {
-          model : tokensModel
-        },
-        {
-          model : globalTokensModel
-        }
-      ],
+          ],
         order: [["createdAt", "desc"]],
         limit: limits,
         offset: offsets
       });
       let data = wallet
-      return data;
+      
+      let allData: any = await withdrawModel.findAll({
+        where: { user_id: id }, raw: true
+      })
+
+      let assests = await tokenDal.adminTokenAll()
+
+      let withdrawTotal = 0.00;
+
+      for (const ls of assests) {
+        for (const wl of allData) {
+          if (wl.tokenID === ls.id)
+
+            withdrawTotal = withdrawTotal + (parseFloat(wl?.amount) * parseFloat(ls.price));
+        }
+      }
+
+      return { data: data, totalAmount: withdrawTotal };
     } catch (error: any) {
       throw new Error(error.message);
     }

@@ -103,6 +103,22 @@ class stakingController extends BaseController {
      * @param req
      * @param res
      */
+    async getAllStakingByLimit(req: Request, res: Response) {
+        try {
+            let { offset, limit } = req.params
+            let stakingResponse = await service.staking.getAllStakingByLimit(req?.body?.user_id,offset, limit);
+
+            super.ok<any>(res, stakingResponse);
+        } catch (error) {
+
+        }
+    }
+
+    /**
+     * get user assets list here
+     * @param req
+     * @param res
+     */
     async getStakedByToken(req: Request, res: Response) {
         let stakingResponse = await service.staking.getStakingByToken(req.params.tokenid, req.params.userid);
         super.ok<any>(res, stakingResponse)

@@ -48,7 +48,8 @@ class postController extends BaseController {
   */
   async getPostByUser(req: Request, res: Response) {
     try {
-      let userPost = await service.ads.getUserAdsPost(req?.body?.user_id);
+      let { offset, limit } = req.params;
+      let userPost = await service.ads.getUserAdsPost(req?.body?.user_id,offset, limit);
 
       super.ok<any>(res, userPost);
     } catch (error: any) {
@@ -65,6 +66,21 @@ class postController extends BaseController {
     try {
       let { offset, limit } = req.params;
       let allPost = await service.ads.getAllPost(offset, limit);
+      super.ok<any>(res, allPost);
+    } catch (error: any) {
+      super.fail(res, error.message);
+    }
+  }
+
+  /**
+  * 
+  * @param res 
+  * @param req 
+  */
+  async getPostByUserByStatus(req: Request, res: Response) {
+    try {
+      let {status, offset, limit } = req.params;
+      let allPost = await service.ads.getUserPostByStatus(req.body.user_id,status,offset, limit);
       super.ok<any>(res, allPost);
     } catch (error: any) {
       super.fail(res, error.message);

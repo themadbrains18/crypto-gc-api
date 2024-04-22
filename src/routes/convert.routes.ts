@@ -15,8 +15,9 @@ class convertRoutes extends BaseController {
     let middleware = new authController();
 
     this.router.post("/create",middleware.auth,convert.saveConvert);
-    this.router.get("/",middleware.auth,convert.getConvertList);
+    this.router.get("/:offset/:limit",middleware.auth,convert.getConvertList);
     this.router.get("/history",middleware.auth,convert.getConvertHistoryList);
+    this.router.get("/history/:offset/:limit",middleware.auth,convert.getConvertHistoryListByLimit);
   }
 }
 

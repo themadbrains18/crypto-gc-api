@@ -9,12 +9,15 @@ class adsPostservice{
         return await adspostDal.create(payload);
     }
 
-    async getUserAdsPost(payload : string):Promise<postOuput | any>{
-        return await adspostDal.getUserAdsPost(payload);
+    async getUserAdsPost(payload : string,offset:any,limit:any):Promise<postOuput | any>{
+        return await adspostDal.getUserAdsPost(payload,offset, limit);
     }
 
     async getAllPost(offset:any,limit:any):Promise<postOuput | any>{
         return await adspostDal.getAllAdsPost(offset,limit);
+    }
+    async getUserPostByStatus(payload : string,status:string,offset:any,limit:any):Promise<postOuput | any>{
+        return await adspostDal.getUserPostByStatus(payload,status,offset,limit);
     }
 
     async deletePost(post_id : string, user_id:string):Promise<postOuput |any>{

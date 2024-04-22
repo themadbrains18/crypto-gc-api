@@ -109,7 +109,7 @@ class assetsController extends BaseController {
       let { offset, limit } = req.params
       let assetResponse = await service.assets.assetsOverview(req.params.userid);
       let assetPaginate = await service.assets.assetsOverviewByLimit(req.params.userid, offset, limit);
-      super.ok<any>(res, { data: assetPaginate, total: assetResponse.length });
+      super.ok<any>(res, { data: assetPaginate?.data, total: assetResponse.length, totalAmount: assetPaginate?.totalAmount });
 
     } catch (error) {
       next(error);

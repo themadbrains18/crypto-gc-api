@@ -130,7 +130,7 @@ class withdrawController extends BaseController {
       let {offset,limit} = req?.params
       let responseData = await service.withdrawServices.historyById(req.params.userid);
       let responseDataPaginate = await service.withdrawServices.historyByIdLimit(req.params.userid,offset,limit);
-      super.ok<any>(res, {data:responseDataPaginate,total:responseData.length});
+      super.ok<any>(res, {data:responseDataPaginate?.data,total:responseData.length, totalAmount:responseDataPaginate?.totalAmount});
 
     } catch (error: any) {
       super.fail(res, error.message);

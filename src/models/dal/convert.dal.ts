@@ -25,7 +25,7 @@ class convertDal {
         // get  admin_ assets
         // ===========================================
         let adminUser = await userModel.findOne({ where: { role: 'admin' }, raw: true });
-        
+
         if (adminUser) {
             let admin_assets = await assetModel.findAll({ where: { user_id: adminUser.id, walletTtype: assetsWalletType.main_wallet }, raw: true });
 
@@ -125,8 +125,13 @@ class convertDal {
         return await convertHistoryModel.create(payload);
     }
 
-    async getRecord(user_id: string): Promise<convertOuput | any> {
-        return await convertModel.findAll({ where: { user_id: user_id }, raw: true, order: [["createdAt", "DESC"]] });
+    async getRecord(user_id: string, offset: number, limit: number): Promise<convertOuput | any> {
+        let data = await convertModel.findAll({
+            where: { user_id: user_id }, raw: true, limit: Number(limit),  // Add limit for pagination
+            offset: Number(offset), order: [["createdAt", "DESC"]]
+        });
+        const total = await convertModel.count({ where: { user_id: user_id } });
+        return { data: data, total: total };
     }
 
     async getHistoryRecord(user_id: string): Promise<convertOuput | any> {
@@ -139,6 +144,29 @@ class convertDal {
             }],
             order: [["createdAt", "DESC"]],
         });
+    }
+    async getHistoryRecordByLimit(user_id: string, offset: number, limit: number): Promise<convertOuput | any> {
+        try {
+            let data = await convertHistoryModel.findAll({
+                where: { user_id: user_id },
+                include: [{
+                    model: tokensModel
+                }, {
+                    model: globalTokensModel
+                }],
+                limit: Number(limit),  // Add limit for pagination
+                offset: Number(offset),
+                order: [["createdAt", "DESC"]],
+            });
+
+            const total = await convertHistoryModel.count({ where: { user_id: user_id } });
+            return { data: data, total: total };
+        }
+        catch (error: any) {
+            console.log("error", error);
+
+            throw new Error(error.message);
+        }
     }
 
 }

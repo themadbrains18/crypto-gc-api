@@ -8,6 +8,7 @@ import globalTokensModel from "../model/global_token.model";
 import tokenstakeModel from "../model/tokenstake.model";
 import tradePairModel from "../model/tradePair.model";
 import futureTradePairModel from "../model/futuretrade.model";
+import tokenDal from "./token.dal";
 
 class assetsDal extends BaseController {
 
@@ -175,18 +176,58 @@ class assetsDal extends BaseController {
         try {
             let offsets = parseInt(offset)
             let limits = parseInt(limit)
-            return await assetModel.findAll({
+            let data= await assetModel.findAll({
                 where: { user_id: payload }, include: [
                     {
-                        model: tokensModel
+                        model: tokensModel,
+                        include: [
+                            {
+                                model: tokenstakeModel,
+                            },
+                            {
+                                model: tradePairModel
+                            },
+                            {
+                                model: futureTradePairModel
+                            }
+                        ]
                     },
                     {
-                        model: globalTokensModel
+                        model: globalTokensModel,
+                        include: [
+                            {
+                                model: tokenstakeModel,
+                            },
+                            {
+                                model: tradePairModel
+                            },
+                            {
+                                model: futureTradePairModel
+                            }
+                        ]
                     }
                 ],
                 limit: limits,
                 offset: offsets
             });
+            let allData: any = await assetModel.findAll({
+                where: { user_id: payload }, raw: true
+              })
+        
+              let assests = await tokenDal.adminTokenAll()
+        
+              let assetTotal = 0.00;
+        
+              for (const ls of assests) {
+                for (const as of allData) {
+                   if (as.token_id === ls.id && as.balance > 0) {
+                          ls.avail_bal = as.balance;
+                          assetTotal = assetTotal + (as.balance * ls?.price)
+                        }
+                }
+              }
+        
+              return { data: data, totalAmount: assetTotal };
         } catch (error: any) {
             console.log(error);
             throw new Error(error.message);
