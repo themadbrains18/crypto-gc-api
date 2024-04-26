@@ -52,7 +52,7 @@ class usersRoutes extends BaseController {
 
         this.router.post('/profile/create', middleware.auth, super.Validator(validators.profileSchema.create), profile.create);
         this.router.get('/profile', middleware.auth, profile.getProfile);
-        this.router.get('/activity', middleware.auth, profile.getActivity);
+        this.router.get('/activity/:offset/:limit', middleware.auth, profile.getActivity);
         // this.router.post('/profile/dp', service.upload.upload("dp", ["jpg", "png", "jpeg"], 5, [
         //     {
         //         name: "image",

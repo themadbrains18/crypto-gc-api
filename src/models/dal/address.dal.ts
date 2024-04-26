@@ -21,35 +21,41 @@ class addressDal {
           }
         },
         {
-          model : tokensModel
+          model: tokensModel
         },
         {
-          model : globalTokensModel
+          model: globalTokensModel
         }
 
 
-      ]
+        ]
     });
   }
 
-  async addressyId(payload: string): Promise<any> {
-    return await addressModel.findAll({ where: { user_id: payload }, include:
-      [{
-        model: networkModel,
-        attributes: {
-          exclude: [
-            "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
-          ]
+  async addressyId(payload: string, offset: string, limit: string): Promise<any> {
+    let address = await addressModel.findAll({
+      where: { user_id: payload }, include:
+        [{
+          model: networkModel,
+          attributes: {
+            exclude: [
+              "chainId", "BlockExplorerURL", "rpcUrl", "walletSupport", "network", "user_id", "status", "createdAt", "updatedAt", "deletedAt"
+            ]
+          }
+        },
+        {
+          model: tokensModel
+        },
+        {
+          model: globalTokensModel
         }
-      },
-      {
-        model : tokensModel
-      },
-      {
-        model : globalTokensModel
-      }
-    
-    ] });
+
+        ],
+      limit: Number(limit),
+      offset: Number(offset)
+    });
+    const totalLength = await addressModel.count({ where: { user_id: payload } });
+    return { data: address, totalLength: totalLength };
   }
 
   /**
@@ -62,8 +68,8 @@ class addressDal {
     try {
       return await addressModel.create(payload);
     } catch (error: any) {
-      console.log(error,"==error here");
-      
+      console.log(error, "==error here");
+
       throw new Error(error.message)
     }
   }
@@ -79,27 +85,27 @@ class addressDal {
     }
   }
 
-  
-    /**
-     * Delete ads post
-     * @param address_id 
-     * @param user_id 
-     * @returns 
-     */
-    async deleteAddressByUserAddressId(address_id: string, user_id: string): Promise<addressOuput | any> {
 
-      try {
-          let address = await addressModel.findOne({ where: { id: address_id, user_id: user_id }, raw: true });
-          if (address != null) {
-              let deleteAddress = await addressModel.destroy({ where: { id: address_id } });
-              return deleteAddress;
-          }
-          else {
-              throw new Error('Selected address  not exist. Please verify your address.')
-          }
-      } catch (error: any) {
-          throw new Error(error.message);
+  /**
+   * Delete ads post
+   * @param address_id 
+   * @param user_id 
+   * @returns 
+   */
+  async deleteAddressByUserAddressId(address_id: string, user_id: string): Promise<addressOuput | any> {
+
+    try {
+      let address = await addressModel.findOne({ where: { id: address_id, user_id: user_id }, raw: true });
+      if (address != null) {
+        let deleteAddress = await addressModel.destroy({ where: { id: address_id } });
+        return deleteAddress;
       }
+      else {
+        throw new Error('Selected address  not exist. Please verify your address.')
+      }
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
 }
 

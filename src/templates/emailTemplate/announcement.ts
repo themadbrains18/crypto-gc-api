@@ -1,6 +1,6 @@
-const Announcement = function(){
+const Announcement = function () {
 
-    const html = `
+  const html = `
     <!DOCTYPE html>
     <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -11,18 +11,16 @@ const Announcement = function(){
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
       <title>Reset your Password</title>
-      <link
-        href="https://fonts.googleapis.com/css?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700"
-        rel="stylesheet" media="screen">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+      
       <style>
         *{
           margin: 0;
           padding: 0;
           box-sizing: border-box;
-          font-family: 'Montserrat', sans-serif;
+          font-family: 'Roboto', sans-serif;
         }
       
         .main-table-top{
@@ -172,12 +170,12 @@ const Announcement = function(){
     </html>
     `;
 
-    const text = `
+  const text = `
     Use this OTP to confirm your account and log in`;
-    return {
-        html: html,
-        text: text,
-    };
+  return {
+    html: html,
+    text: text,
+  };
 
 }
 

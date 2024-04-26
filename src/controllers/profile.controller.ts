@@ -41,7 +41,8 @@ class profileController extends BaseController {
 
     async getActivity(req: Request, res: Response) {
         try {
-            let response = await service.profile.getActivity(req.body.user_id);
+            const {offset,limit} = req.params
+            let response = await service.profile.getActivity(req.body.user_id,offset,limit);
             
             return super.ok<any>(res, response);
         } catch (error: any) {

@@ -42,10 +42,11 @@ class profileServices {
             return { messgae: 'Profile information not updated!!' }
         }
     }
-    async getActivity(user_id: string): Promise<lastLoginOuput | any> {
-        let activity = await lastLoginModel.findAll({ where: { user_id: user_id }, raw: true, order: [['createdAt', 'ASC']] });
+    async getActivity(user_id: string, offset: string, limit: string): Promise<lastLoginOuput | any> {
+        let activity = await lastLoginModel.findAll({ where: { user_id: user_id }, raw: true, order: [['createdAt', 'DESC']], offset: Number(offset), limit: Number(limit) });
         if (activity) {
-            return activity
+            const totalLength = await lastLoginModel.count({ where: { user_id: user_id } });
+            return { data: activity, totalLength: totalLength };
         }
         else {
             return { messgae: 'Activity information not updated!!' }

@@ -14,8 +14,8 @@ class addressServices {
     }
 
 
-    async addressById (payload:string) : Promise<any> {
-        return await addressDal.addressyId(payload);
+    async addressById (payload:string,offset:string,limit:string) : Promise<any> {
+        return await addressDal.addressyId(payload,offset,limit);
     }
    
     /**

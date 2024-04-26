@@ -16,11 +16,10 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
           content="telephone=no, date=no, address=no, email=no"
         />
         <title>Conversion Successful</title>
-        <link
-          href="https://fonts.googleapis.com/css?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700"
-          rel="stylesheet"
-          media="screen"
-        />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+        
         <style>
           .hover-underline:hover {
             text-decoration: underline !important;
@@ -147,7 +146,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                                   width: 100%;
                                                   height: auto !important;
                                                 "
-                                                src="D:\work\crypto packages\Crypto-Kickstarter\public\assets\logo.svg"
+                                                src="https://res.cloudinary.com/dpcxtbxlk/image/upload/v1710230375/my-uploads/myr7gt9fjqgy4omb3thn.png"
                                                 alt=""
                                             /></a>
                                           </td>
@@ -157,7 +156,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                               opacity: 0.5;
                                               font-size: 12px;
                                               white-space: nowrap;
-                                              font-family: HelveticaNeue;
+                                              font-family: Roboto;
                                               text-align: right;
                                               padding-right: 20px;
                                             "
@@ -206,7 +205,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                       <span
                                         style="
                                           color: #222a35;
-                                          font-family: HelveticaNeue;
+                                          font-family: Roboto;
                                           font-size: 15px;
                                           line-height: 1.5;
                                         "
@@ -217,7 +216,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                       <span
                                         style="
                                           color: #222a35;
-                                          font-family: HelveticaNeue;
+                                          font-family: Roboto;
                                           font-size: 15px;
                                           line-height: 1.5;
                                         "
@@ -291,7 +290,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                         </div>
                                       </div>
                                       <div>
-                                        <span style="font-family: HelveticaNeue"
+                                        <span style="font-family: Roboto"
                                           ><span
                                             style="
                                               color: #999999;
@@ -310,7 +309,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                         "
                                       >
                                         <span
-                                          style="font-family: HelveticaNeue"
+                                          style="font-family: Roboto"
                                         ></span>
                                       </div>
                                       <div style="padding-top: 40px">
@@ -320,7 +319,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                             margin-bottom: 13px;
                                             font-size: 13px;
                                             color: #222a35;
-                                            font-family: HelveticaNeue;
+                                            font-family: Roboto;
                                           "
                                         >
                                           Get the latest Crypto Planet App for your
@@ -405,7 +404,7 @@ const conversionEmailTemplate = function ( converted:string,received: string ,co
                                             line-height: 18px;
                                             color: #999999;
                                             font-size: 11px;
-                                            font-family: HelveticaNeue;
+                                            font-family: Roboto;
                                           "
                                         >
                                           Copyright 2017-2019&nbsp;©&nbsp;<a

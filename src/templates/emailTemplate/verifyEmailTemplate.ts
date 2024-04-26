@@ -10,9 +10,9 @@ const verifyEmail = function (otp: string | number) {
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
       <title>Verification Code</title>
-      <link
-        href="https://fonts.googleapis.com/css?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700"
-        rel="stylesheet" media="screen">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
       <style>
         .hover-underline:hover {
           text-decoration: underline !important;
@@ -149,7 +149,7 @@ const verifyEmail = function (otp: string | number) {
                                             opacity: 0.5;
                                             font-size: 12px;
                                             white-space: nowrap;
-                                            font-family: Helvetica Neue;
+                                            font-family: Roboto;
                                             text-align: right;
                                             padding-right: 20px;
                                           "
@@ -182,8 +182,8 @@ const verifyEmail = function (otp: string | number) {
                             <span
                               style="
                                 color: #222a35;
-                                font-family: HelveticaNeue;
-                                font-size: 15px;
+                                font-family: Roboto;
+                                font-size: 18px;
                                 line-height: 1.5;
                               "
                               >Dear User,</span
@@ -193,15 +193,15 @@ const verifyEmail = function (otp: string | number) {
                             <span
                               style="
                                 color: #222a35;
-                                font-family: HelveticaNeue;
-                                font-size: 15px;
+                                font-family: Roboto;
+                                font-size: 18px;
                                 line-height: 1.5;
                               "
                               ><br
                             /></span>
                           </div>
                           <div>
-                            <span style="line-height: 1.5; font-size: 15px; font-family: HelveticaNeue;"
+                            <span style="line-height: 1.5; font-size: 18px; font-family: Roboto;"
                               ><div>
                                   <span style="font-size: 14px; color: #222a35; "
                                     >Thank you for using Crypto Planet. To start using
@@ -220,7 +220,7 @@ const verifyEmail = function (otp: string | number) {
                                  <span
                                     style="
                                       color: #5367ff;
-                                      font-family: HelveticaNeue-Bold;
+                                      font-family: Roboto;
                                       font-size: 30px;
                                       letter-spacing: 2px;
                                       font-weight: 700;
@@ -230,19 +230,9 @@ const verifyEmail = function (otp: string | number) {
                                     >${otp}</span
                                   >
                                 </div>
-                                <div>
-                                  <span
-                                    style="
-                                     color: #222a35;;
-                                      font-family: HelveticaNeue-Bold;
-                                      font-size: 30px;
-                                      letter-spacing: 2px;
-                                      font-weight: 700;
-                                    "
-                                    ><br
-                                  /></span></div>
+                             
                                 <div style="margin-bottom: 20px;">
-                                  <span style="font-size: 14px; color: #222a35; font-family: HelveticaNeue;"
+                                  <span style="font-size: 14px; color: #222a35; font-family: Roboto;"
                                     >For security reasons, this code will expire in 5
                                     minutes. Please do not disclose this code to
                                     others.</span
@@ -253,19 +243,19 @@ const verifyEmail = function (otp: string | number) {
                           <div style="margin-bottom: 5px">
                             <br />
                             <div
-                              style="color: #222a35; font-size: 9px; line-height: 1.5; font-family: HelveticaNeue;"
+                              style="color: #222a35; font-size: 12px; line-height: 1.5; font-family: Roboto;"
                             >
                               Crypto Planet Team
                             </div>
                           </div>
                           <div>
-                            <span style="font-family: HelveticaNeue"
+                            <span style="font-family: Roboto"
                               ><span
                                 style="
                                   color: #999999;
                                   font-size: 11px;
                                   line-height: 18px;
-                                  font-family: HelveticaNeue;
+                                  font-family: Roboto;
                                 "
                                 >This is an automated email, please do not
                                 reply.</span
@@ -278,7 +268,7 @@ const verifyEmail = function (otp: string | number) {
                               border-bottom: 1px solid #eeeeee;
                             "
                           >
-                            <span style="font-family: HelveticaNeue"></span>
+                            <span style="font-family: Roboto"></span>
                           </div>
                           <div style="padding-top: 40px">
                             <div
@@ -287,7 +277,7 @@ const verifyEmail = function (otp: string | number) {
                                 margin-bottom: 13px;
                                 font-size: 13px;
                                 color: #222a35;
-                                font-family: HelveticaNeue;
+                                font-family: Roboto;
                               "
                             >
                               Get the latest Crypto Planet App for your phone
@@ -312,7 +302,7 @@ const verifyEmail = function (otp: string | number) {
                                 >
                                 <img src="http://139.59.63.186/icons/tmb_icon.svg" width="20px" height="20px"/>
                               
-                                <p style="padding: 10px 0; margin: 0 !important; font-family: HelveticaNeue;">Google Play</p>
+                                <p style="padding: 10px 0; margin: 0 !important; font-family: Roboto;">Google Play</p>
                                 </a
                               >
                               <a
@@ -334,7 +324,7 @@ const verifyEmail = function (otp: string | number) {
                                 >
                                
                                 <img src="http://139.59.63.186/icons/tmb_icon.svg" width="20px" height="20px"/>
-                                <p style="padding: 10px 0; margin: 0 !important; font-family: HelveticaNeue;">App Store</p>
+                                <p style="padding: 10px 0; margin: 0 !important; font-family: Roboto;">App Store</p>
                                 </a
                               >
                             
@@ -346,12 +336,12 @@ const verifyEmail = function (otp: string | number) {
                                 line-height: 18px;
                                 color: #999999;
                                 font-size: 11px;
-                                font-family: HelveticaNeue;
+                                font-family: Roboto;
                               "
                             >
                               Copyright 2017-2024&nbsp;©&nbsp;<a
                                 target="_blank"
-                                >Crypto Planet.com</a
+                                >launchyourexchange.com</a
                               >
                             </div>
                           </div>

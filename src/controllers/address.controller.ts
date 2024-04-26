@@ -123,7 +123,8 @@ class addressController extends BaseController {
   async userAddress(req: Request, res: Response) {
     try {
 
-      let responseData = await service.address.addressById(req.body.user_id);
+      const {offset,limit} = req.params
+      let responseData = await service.address.addressById(req.body.user_id,offset,limit);
       super.ok<any>(res, responseData);
 
     } catch (error: any) {
