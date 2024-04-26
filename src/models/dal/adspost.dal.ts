@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import service from "../../services/service";
 import { assetsAccountType, assetsWalletType } from "../../utils/interface";
 import adsPostDto from "../dto/adspost.dto";
@@ -121,14 +122,20 @@ class adsPostDal {
      * Get all post create by users
      * @returns 
      */
-    async getAllAdsPost(offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
+    async getAllAdsPost(userid:string | undefined,offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
         try {
+            let whereClause: any = { status: true };
+    
+            if (userid !== undefined && userid !== 'undefined') {
+                whereClause.user_id = { [Op.not]: userid };
+            }
+            
           const data = await postModel.findAll({
-            where: { status: true },
+            where: whereClause,
             include: [
               {
                 model: tokensModel,
-                attributes: {
+                attributes: {   
                   exclude: [
                     "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
                   ]
@@ -180,7 +187,7 @@ class adsPostDal {
           });
       
           // Count total number of rows
-          const totalLength = await postModel.count({ where: { status: true } });
+          const totalLength = await postModel.count({ where: whereClause  });
       
           return { data: data, totalLength: totalLength };
         } catch (error: any) {

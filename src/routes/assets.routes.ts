@@ -24,6 +24,7 @@ class assetsRoutes extends BaseController {
         this.router.post('/wallettransfer', middleware.auth, super.Validator(assetSchema.walletTowallet), assets.walletTowalletTranserfer);
         this.router.get('/overview/:userid', middleware.auth, assets.assetsOverview);
         this.router.get('/overview/:userid/:offset/:limit',auth, assets.assetsOverviewByLimit);
+        this.router.get('/type/:type/:offset/:limit',auth, assets.assetsOverviewByType);
         this.router.get('/history/:userid', auth, assets.transferHistory);
 
         this.router.post('/create', super.Validator(assetSchema.create), middleware.auth, assets.create);

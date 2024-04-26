@@ -78,7 +78,7 @@ class assetsDal extends BaseController {
                     //==========================
                     //update wallet_from assests
                     //==========================
-                    await assetModel.update({ balance: fromAssets.balance - payload.balance }, {where : {id : fromAssets?.id}});
+                    await assetModel.update({ balance: fromAssets.balance - payload.balance }, { where: { id: fromAssets?.id } });
 
                     //=========================================
                     // Wallet to wallet Transfer history create
@@ -89,7 +89,7 @@ class assetsDal extends BaseController {
                     //update wallet_to assests 
                     //==========================
                     if (!!toAssets) {
-                        await assetModel.update({ balance: toAssets.balance + payload.balance }, {where : {id : toAssets?.id}});
+                        await assetModel.update({ balance: toAssets.balance + payload.balance }, { where: { id: toAssets?.id } });
                         toAssets.balance = toAssets.balance + payload.balance;
                         return toAssets;
                     }
@@ -176,7 +176,7 @@ class assetsDal extends BaseController {
         try {
             let offsets = parseInt(offset)
             let limits = parseInt(limit)
-            let data= await assetModel.findAll({
+            let data = await assetModel.findAll({
                 where: { user_id: payload }, include: [
                     {
                         model: tokensModel,
@@ -212,22 +212,75 @@ class assetsDal extends BaseController {
             });
             let allData: any = await assetModel.findAll({
                 where: { user_id: payload }, raw: true
-              })
-        
-              let assests = await tokenDal.adminTokenAll()
-        
-              let assetTotal = 0.00;
-        
-              for (const ls of assests) {
+            })
+
+            let assests = await tokenDal.adminTokenAll()
+
+            let assetTotal = 0.00;
+
+            for (const ls of assests) {
                 for (const as of allData) {
-                   if (as.token_id === ls.id && as.balance > 0) {
-                          ls.avail_bal = as.balance;
-                          assetTotal = assetTotal + (as.balance * ls?.price)
-                        }
+                    if (as.token_id === ls.id && as.balance > 0) {
+                        ls.avail_bal = as.balance;
+                        assetTotal = assetTotal + (as.balance * ls?.price)
+                    }
                 }
-              }
+            }
+
+            return { data: data, totalAmount: assetTotal };
+        } catch (error: any) {
+            console.log(error);
+            throw new Error(error.message);
+        }
+    }
+    /**
+     * 
+     * @param payload 
+     * @returns 
+     */
+    async assetsOverviewByType(payload: string,type:string, offset: string, limit: string): Promise<assetOuput | any> {
+        try {
+            console.log("here");
+            
         
-              return { data: data, totalAmount: assetTotal };
+            let data = await assetModel.findAll({
+                where: { user_id: payload,walletTtype:type }, include: [
+                    {
+                        model: tokensModel,
+                        include: [
+                            {
+                                model: tokenstakeModel,
+                            },
+                            {
+                                model: tradePairModel
+                            },
+                            {
+                                model: futureTradePairModel
+                            }
+                        ]
+                    },
+                    {
+                        model: globalTokensModel,
+                        include: [
+                            {
+                                model: tokenstakeModel,
+                            },
+                            {
+                                model: tradePairModel
+                            },
+                            {
+                                model: futureTradePairModel
+                            }
+                        ]
+                    }
+                ],
+                limit: Number(limit),
+                offset: Number(offset)
+            });
+            const totalLength = await assetModel.count({ where: { user_id: payload,walletTtype:type  } });
+      
+            return { data: data, totalLength: totalLength };
+           
         } catch (error: any) {
             console.log(error);
             throw new Error(error.message);

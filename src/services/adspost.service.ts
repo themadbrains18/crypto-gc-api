@@ -13,8 +13,8 @@ class adsPostservice{
         return await adspostDal.getUserAdsPost(payload,offset, limit);
     }
 
-    async getAllPost(offset:any,limit:any):Promise<postOuput | any>{
-        return await adspostDal.getAllAdsPost(offset,limit);
+    async getAllPost(userid:string | undefined,offset:any,limit:any):Promise<postOuput | any>{
+        return await adspostDal.getAllAdsPost(userid,offset,limit);
     }
     async getUserPostByStatus(payload : string,status:string,offset:any,limit:any):Promise<postOuput | any>{
         return await adspostDal.getUserPostByStatus(payload,status,offset,limit);

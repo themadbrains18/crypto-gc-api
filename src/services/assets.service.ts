@@ -39,6 +39,14 @@ class assetsService{
     async assetsOverviewByLimit(payload :string,offset:string,limit:string) : Promise<assetOuput | any>{
         return await assetsDal.assetsOverviewByLimit(payload,offset,limit);
     }
+    /**
+     * 
+     * @param payload 
+     * @returns 
+     */
+    async assetsOverviewByType(payload :string,type:string,offset:string,limit:string) : Promise<assetOuput | any>{
+        return await assetsDal.assetsOverviewByType(payload,type,offset,limit);
+    }
 
     /**
      * 

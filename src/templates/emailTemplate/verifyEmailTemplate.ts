@@ -149,7 +149,7 @@ const verifyEmail = function (otp: string | number) {
                                             opacity: 0.5;
                                             font-size: 12px;
                                             white-space: nowrap;
-                                            font-family: HelveticaNeue;
+                                            font-family: Helvetica Neue;
                                             text-align: right;
                                             padding-right: 20px;
                                           "
@@ -201,7 +201,7 @@ const verifyEmail = function (otp: string | number) {
                             /></span>
                           </div>
                           <div>
-                            <span style="line-height: 1.5; font-size: 15px"
+                            <span style="line-height: 1.5; font-size: 15px; font-family: HelveticaNeue;"
                               ><div>
                                   <span style="font-size: 14px; color: #222a35; "
                                     >Thank you for using Crypto Planet. To start using
@@ -210,16 +210,22 @@ const verifyEmail = function (otp: string | number) {
                                     process.</span
                                   >
                                 </div>
-                                <div>
-                                  <span 
-                                    >Verification code:&nbsp;</span
-                                  ><span
+                                <div style="
+                                background: #5367ff24;
+                                padding: 30px;
+                                display: flex;
+                                margin: 20px 0px;
+                                border-radius: 4px;
+                                ">
+                                 <span
                                     style="
-                                      color: #5367FF;
+                                      color: #5367ff;
                                       font-family: HelveticaNeue-Bold;
                                       font-size: 30px;
                                       letter-spacing: 2px;
                                       font-weight: 700;
+                                      text-align: center;
+                                      width: 100%;
                                     "
                                     >${otp}</span
                                   >
@@ -236,7 +242,7 @@ const verifyEmail = function (otp: string | number) {
                                     ><br
                                   /></span></div>
                                 <div style="margin-bottom: 20px;">
-                                  <span style="font-size: 14px; color: #222a35;"
+                                  <span style="font-size: 14px; color: #222a35; font-family: HelveticaNeue;"
                                     >For security reasons, this code will expire in 5
                                     minutes. Please do not disclose this code to
                                     others.</span
@@ -247,7 +253,7 @@ const verifyEmail = function (otp: string | number) {
                           <div style="margin-bottom: 5px">
                             <br />
                             <div
-                              style="color: #222a35; font-size: 9px; line-height: 1.5"
+                              style="color: #222a35; font-size: 9px; line-height: 1.5; font-family: HelveticaNeue;"
                             >
                               Crypto Planet Team
                             </div>
@@ -259,6 +265,7 @@ const verifyEmail = function (otp: string | number) {
                                   color: #999999;
                                   font-size: 11px;
                                   line-height: 18px;
+                                  font-family: HelveticaNeue;
                                 "
                                 >This is an automated email, please do not
                                 reply.</span
@@ -305,7 +312,7 @@ const verifyEmail = function (otp: string | number) {
                                 >
                                 <img src="http://139.59.63.186/icons/tmb_icon.svg" width="20px" height="20px"/>
                               
-                                <p style="padding: 10px 0; margin: 0 !important;">Google Play</p>
+                                <p style="padding: 10px 0; margin: 0 !important; font-family: HelveticaNeue;">Google Play</p>
                                 </a
                               >
                               <a
@@ -327,7 +334,7 @@ const verifyEmail = function (otp: string | number) {
                                 >
                                
                                 <img src="http://139.59.63.186/icons/tmb_icon.svg" width="20px" height="20px"/>
-                                <p style="padding: 10px 0; margin: 0 !important;">App Store</p>
+                                <p style="padding: 10px 0; margin: 0 !important; font-family: HelveticaNeue;">App Store</p>
                                 </a
                               >
                             
@@ -342,7 +349,7 @@ const verifyEmail = function (otp: string | number) {
                                 font-family: HelveticaNeue;
                               "
                             >
-                              Copyright 2017-2019&nbsp;©&nbsp;<a
+                              Copyright 2017-2024&nbsp;©&nbsp;<a
                                 target="_blank"
                                 >Crypto Planet.com</a
                               >

@@ -115,6 +115,21 @@ class assetsController extends BaseController {
       next(error);
     }
   }
+  /**
+   * get user assets list here by type
+   * @param req
+   * @param res
+   */
+  async assetsOverviewByType(req: Request, res: Response, next: NextFunction) {
+    try {
+      let {type, offset, limit } = req.params
+      let assetPaginate = await service.assets.assetsOverviewByType(req.body.user_id,type, offset, limit);
+      super.ok<any>(res, assetPaginate);
+
+    } catch (error) {
+      next(error);
+    }
+  }
 
   /**
    * get user assets list here
