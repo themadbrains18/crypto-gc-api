@@ -46,6 +46,20 @@ class postController extends BaseController {
   * @param res 
   * @param req 
   */
+  async getPost(req: Request, res: Response) {
+    try {
+      let userPost = await service.ads.getUserAds(req?.body?.user_id);
+
+      super.ok<any>(res, userPost);
+    } catch (error: any) {
+      super.fail(res, error.message);
+    }
+  }
+  /**
+  * 
+  * @param res 
+  * @param req 
+  */
   async getPostByUser(req: Request, res: Response) {
     try {
       let { offset, limit } = req.params;

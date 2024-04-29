@@ -9,6 +9,9 @@ class adsPostservice{
         return await adspostDal.create(payload);
     }
 
+    async getUserAds(payload : string):Promise<postOuput | any>{
+        return await adspostDal.getUserAds(payload);
+    }
     async getUserAdsPost(payload : string,offset:any,limit:any):Promise<postOuput | any>{
         return await adspostDal.getUserAdsPost(payload,offset, limit);
     }

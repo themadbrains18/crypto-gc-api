@@ -64,6 +64,62 @@ class adsPostDal {
      * @param payload 
      * @returns 
      */
+    async getUserAds(payload: string): Promise<postOuput | any> {
+        try {
+            return await postModel.findAll({
+                where: { user_id: payload }, include: [
+                    {
+                        model: tokensModel,
+                        attributes: {
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
+                        model: globalTokensModel,
+                        attributes: {
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
+                        model: userModel,
+                        attributes: {
+                            exclude: [
+                                "password",
+                                "deletedAt",
+                                "cronStatus",
+                                "updatedAt",
+                                "createdAt",
+                                "createdAt",
+                                "UID",
+                                "antiphishing",
+                                "registerType",
+                                "statusType",
+                                "tradingPassword",
+                                "kycstatus",
+                                "TwoFA",
+                                "otpToken", "own_code",
+                                "refeer_code", "secret"
+                            ],
+                        }
+                    }
+                ],
+           
+            })
+         
+
+        } catch (error: any) {
+            throw new Error(error.message)
+        }
+    }
+    /**
+     * Get ads post of specific user_id
+     * @param payload 
+     * @returns 
+     */
     async getUserAdsPost(payload: string,offset: number, limit: number): Promise<postOuput | any> {
         try {
             let posts: any = await postModel.findAll({

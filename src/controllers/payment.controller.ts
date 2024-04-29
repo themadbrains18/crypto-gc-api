@@ -110,6 +110,9 @@ class paymentController extends BaseController {
   async addMethod(req: Request, res: Response) {
     try {
 
+      console.log(req.body,"==req.bdy");
+      
+
       if (
         req.body?.otp === "string" ||
         req.body?.otp === "" ||
@@ -161,7 +164,7 @@ class paymentController extends BaseController {
           pmobj[field.name] = Joi.number().integer().required();
         }
         if (field.type === 'file') {
-          pmobj[field.name] = Joi.string();
+          pmobj[field.name] = Joi.string().optional();
         }
       }
 
