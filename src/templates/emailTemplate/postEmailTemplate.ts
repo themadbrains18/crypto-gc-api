@@ -300,53 +300,10 @@ const PostEmailTemplate = function () {
                                         >
                                           Get the latest Crypto Planet App for your phone
                                         </div>
-                                        <div style="text-align: center; gap:10px; justify-content:center !important; display: flex; ">
-                                          <a
-                                            style="
-                                              display: flex;
-                                              gap:10px;
-                                              width: 100%;
-                                              max-width: 160px;
-                                              margin-right: 10px;
-                                              background-color: #000000;
-                                              border-radius: 8px;
-                                              color: #ffff !important;
-                                              text-decoration: none;
-                                              align-items: center;
-                                              justify-content: center;
-                                            "
-                                            href="/"
-                                            target="_blank"
-                                            >
-                                            <img src="http://139.59.63.186/icons/tmb_icon.svg" width="20px" height="20px"/>
-                                          
-                                            <p style="padding: 10px 0; margin: 0 !important;">Google Play</p>
-                                            </a
-                                          >
-                                          <a
-                                            style="
-                                              display: flex;
-                                              gap:10px;
-                                              width: 100%;
-                                              max-width: 160px;
-                                              margin-right: 10px;
-                                              background-color: #000000;
-                                              border-radius: 8px;
-                                              color: #ffff !important;
-                                              text-decoration: none;
-                                              align-items: center;
-                                              justify-content: center;
-                                            "
-                                            href="/"
-                                            target="_blank"
-                                            >
-                                           
-                                            <img src="http://139.59.63.186/icons/tmb_icon.svg" width="20px" height="20px"/>
-                                            <p style="padding: 10px 0; margin: 0 !important;">App Store</p>
-                                            </a
-                                          >
-                                        
-                                        </div>
+                                        <div style="text-align:center;">
+                                        <img  src="https://ci3.googleusercontent.com/meips/ADKq_Na12W-KR7Pe4DbmDLD1yzLqz0G6JuwgPOu_Sxdat3dxeHSp8ULwGamg_wNF0IkpsJiq1tiwno2vt72gcFeJupbUQkFPcBKXktAYjrstvMkgA_cY=s0-d-e1-ft#https://miro.medium.com/proxy/1*CXKdDEfFShoF6Azy5V8ZKQ@2x.png" width="120px" height="40px"/>
+                                        <img  src="https://ci3.googleusercontent.com/meips/ADKq_NbXF1y8pLBTkQJ0MCcfm5qYrQAeMTNJvygdD0V_aElzAbYJiUuk3y05zrzxuN9qDWkdr_8hzXHWYkMQilTaypbced72pzgMLhnSJ-TKMF1-2Z62=s0-d-e1-ft#https://miro.medium.com/proxy/1*D-oULOaPtKR8A1jatsII4w@2x.png" width="120px" height="40px"/>
+                                      </div>
                                         <div
                                           style="
                                             padding-top: 8px;
