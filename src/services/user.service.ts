@@ -294,7 +294,8 @@ class userServices {
       if (user) {
         let password = await service.bcypt.MDB_crateHash(payload?.new_password);
 
-        return await user.update({ password: password, pwdupdatedAt : new Date(new Date().getTime() + 60 * 60 * 24 * 1000) });
+        await user.update({ password: password, pwdupdatedAt : new Date(new Date().getTime() + 60 * 60 * 24 * 1000) });
+        return await userModel.findOne({ where: { id: payload.user_id }, raw : true });
       } else {
         throw new Error("User not found");
       }

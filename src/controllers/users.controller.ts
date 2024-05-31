@@ -689,6 +689,10 @@ class userController extends BaseController {
 
                   let pwdResponse = await service.user.updatePassword(pwdData);
 
+                  // Delete sensitive fields from the cloned response
+                  await delete pwdResponse?.password;
+                  await delete pwdResponse?.tradingPassword;
+
                   const emailTemplate = service.emailTemplate.passwordMail();
 
                   service.emailService.sendMail(req.headers["X-Request-Id"], {
@@ -865,27 +869,79 @@ class userController extends BaseController {
     try {
 
       // if (req.body.step === 1) {
-        let user = await service.user.checkIfUserExsit(req.body.username);
-        if (user) {
+      let user = await service.user.checkIfUserExsit(req.body.username);
+      if (user) {
         let isMatched;
-      if (req?.body?.old_password) {
-        isMatched = await service.user.confirmTradingPassword(req?.body);
-         
-        if(isMatched && req.body.step===1){
-          
-          return  super.ok<any>(res,"User match")
-        }
-            
-        if (isMatched) {
+        if (req?.body?.old_password) {
+          isMatched = await service.user.confirmTradingPassword(req?.body);
 
+          if (isMatched && req.body.step === 1) {
+
+            return super.ok<any>(res, "User match")
+          }
+
+          if (isMatched) {
+
+            let userOtp;
+            if (
+              req.body?.otp === "string" ||
+              req.body?.otp === "" ||
+              req.body?.otp === null
+            ) {
+              userOtp = { username: req?.body?.username };
+
+              let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+
+              const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+              service.emailService.sendMail(req.headers["X-Request-Id"], {
+                to: userOtp.username,
+                subject: "Verify OTP",
+                html: emailTemplate.html,
+              });
+              delete otp["otp"];
+              super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
+            } else {
+              //  send email otp to user
+              if (req.body?.otp) {
+                userOtp = {
+                  username: req?.body?.username,
+                  otp: req.body?.otp,
+                };
+
+                let result = await service.otpService.matchOtp(userOtp);
+                if (result.success === true) {
+                  let pwdData: updatepassword = req.body;
+
+                  pwdData.new_password = await service.bcypt.MDB_crateHash(pwdData.new_password);
+                  let pwdResponse = await service.user.tradingPassword(pwdData);
+
+                  super.ok<any>(res, {
+                    status: 200,
+                    message: "Trading password update successfully!!.",
+                    result: pwdResponse,
+                  });
+                }
+                else {
+                  super.fail(res, result.message);
+                }
+              }
+            }
+          } else {
+            return super.fail(res, "Old Password not matched. Please try again.");
+          }
+        }
+        else {
+          if (req.body.step === 1) {
+            return super.ok<any>(res, "User match")
+          }
           let userOtp;
           if (
             req.body?.otp === "string" ||
             req.body?.otp === "" ||
             req.body?.otp === null
           ) {
-            userOtp = { username: req?.body?.username };
 
+            userOtp = { username: req?.body?.username };
             let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
             const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
@@ -895,6 +951,7 @@ class userController extends BaseController {
               html: emailTemplate.html,
             });
             delete otp["otp"];
+            // Return a 200
             super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
           } else {
             //  send email otp to user
@@ -905,80 +962,27 @@ class userController extends BaseController {
               };
 
               let result = await service.otpService.matchOtp(userOtp);
-              if (result.success === true) {
+
+              if (result?.success === true) {
                 let pwdData: updatepassword = req.body;
 
                 pwdData.new_password = await service.bcypt.MDB_crateHash(pwdData.new_password);
+
                 let pwdResponse = await service.user.tradingPassword(pwdData);
 
                 super.ok<any>(res, {
                   status: 200,
-                  message: "Trading password update successfully!!.",
+                  message: " Trading password create successfully!!.",
                   result: pwdResponse,
                 });
               }
               else {
-                super.fail(res, result.message);
+                super.fail(res, result?.message);
               }
             }
           }
-        } else {
-          return super.fail(res, "Old Password not matched. Please try again.");
         }
       }
-      else {
-        if ( req.body.step===1) {
-          return  super.ok<any>(res,"User match")
-        }
-        let userOtp;
-        if (
-          req.body?.otp === "string" ||
-          req.body?.otp === "" ||
-          req.body?.otp === null
-        ) {
-
-          userOtp = { username: req?.body?.username };
-          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
-
-          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
-          service.emailService.sendMail(req.headers["X-Request-Id"], {
-            to: userOtp.username,
-            subject: "Verify OTP",
-            html: emailTemplate.html,
-          });
-          delete otp["otp"];
-          // Return a 200
-          super.ok<any>(res, { message: "OTP sent in your inbox. please verify your otp", otp });
-        } else {
-          //  send email otp to user
-          if (req.body?.otp) {
-            userOtp = {
-              username: req?.body?.username,
-              otp: req.body?.otp,
-            };
-
-            let result = await service.otpService.matchOtp(userOtp);
-
-            if (result?.success === true) {
-              let pwdData: updatepassword = req.body;
-
-              pwdData.new_password = await service.bcypt.MDB_crateHash(pwdData.new_password);
-
-              let pwdResponse = await service.user.tradingPassword(pwdData);
-
-              super.ok<any>(res, {
-                status: 200,
-                message: " Trading password create successfully!!.",
-                result: pwdResponse,
-              });
-            }
-            else {
-              super.fail(res, result?.message);
-            }
-          }
-        }
-      }
-    }
     } catch (error: any) {
       super.fail(res, error.message);
     }
