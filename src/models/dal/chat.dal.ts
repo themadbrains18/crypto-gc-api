@@ -13,8 +13,11 @@ class P2PchatDal {
             let chat = [];
             let obj = {};
 
+            const date= new Date();
+
             if (payload.chat !== '') {
-                obj = { from : payload.from, to : payload.to, message:payload.chat };
+
+                obj = { from : payload.from, to : payload.to, message:payload.chat,  createdAt:date};
                 chat.push(obj);
             }
             else {

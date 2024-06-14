@@ -12,6 +12,8 @@ import tokensModel from "../model/tokens.model";
 import userPmethodModel from "../model/user_p_method";
 import userModel from "../model/users.model";
 import tokenDal from "./token.dal";
+import orderModel from "../model/order.model";
+
 
 class adsPostDal {
 
@@ -107,9 +109,9 @@ class adsPostDal {
                         }
                     }
                 ],
-           
+
             })
-         
+
 
         } catch (error: any) {
             throw new Error(error.message)
@@ -120,7 +122,7 @@ class adsPostDal {
      * @param payload 
      * @returns 
      */
-    async getUserAdsPost(payload: string,offset: number, limit: number): Promise<postOuput | any> {
+    async getUserAdsPost(payload: string, offset: number, limit: number): Promise<postOuput | any> {
         try {
             let posts: any = await postModel.findAll({
                 where: { user_id: payload }, include: [
@@ -164,7 +166,7 @@ class adsPostDal {
                     }
                 ],
                 limit: Number(limit),  // Add limit for pagination
-                offset: Number(offset) 
+                offset: Number(offset)
             })
             const totalLength = await postModel.count({ where: { user_id: payload } });
             return { data: posts, total: totalLength };
@@ -178,94 +180,98 @@ class adsPostDal {
      * Get all post create by users
      * @returns 
      */
-    async getAllAdsPost(userid:string | undefined,offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
+    async getAllAdsPost(userid: string | undefined, offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
         try {
             let whereClause: any = { status: true };
-    
+
             if (userid !== undefined && userid !== 'undefined') {
                 whereClause.user_id = { [Op.not]: userid };
             }
-            
-          const data = await postModel.findAll({
-            where: whereClause,
-            include: [
-              {
-                model: tokensModel,
-                attributes: {   
-                  exclude: [
-                    "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
-                  ]
-                }
-              },
-              {
-                model: globalTokensModel,
-                attributes: {
-                  exclude: [
-                    "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
-                  ]
-                }
-              },
-              {
-                model: userModel,
-                attributes: {
-                  exclude: [
-                    "otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"
-                  ]
-                },
+
+            const data = await postModel.findAll({
+                where: whereClause,
                 include: [
-                  {
-                    model: kycModel,
-                    attributes: {
-                      exclude: [
-                        "id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"
-                      ]
-                    }
-                  },
-                  {
-                    model: profileModel
-                  },
-                  {
-                    model: userPmethodModel,
-                    include: [
-                      {
-                        model: paymentMethodModel,
+                    {
+                        model: tokensModel,
                         attributes: {
-                          exclude: ["createdAt", "updatedAt", "deletedAt"]
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
+                        model: globalTokensModel,
+                        attributes: {
+                            exclude: [
+                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+                            ]
+                        }
+                    },
+                    {
+                        model: userModel,
+                        attributes: {
+                            exclude: [
+                                "otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"
+                            ]
                         },
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-            limit: Number(limit),  // Add limit for pagination
-            offset: Number(offset)  // Add offset for pagination
-          });
-      
-          // Count total number of rows
-          const totalLength = await postModel.count({ where: whereClause  });
-      
-          return { data: data, totalLength: totalLength };
+                        include: [
+                            {
+                                model: kycModel,
+                                attributes: {
+                                    exclude: [
+                                        "id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"
+                                    ]
+                                }
+                            },
+                            {
+                                model: profileModel
+                            },
+                            {
+                                model: userPmethodModel,
+                                include: [
+                                    {
+                                        model: paymentMethodModel,
+                                        attributes: {
+                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
+                                        },
+                                    }
+                                ]
+                            },{
+                                model:orderModel
+                            }
+
+                        ],
+                    },],
+                    
+
+                limit: Number(limit),  // Add limit for pagination
+                offset: Number(offset)  // Add offset for pagination
+            });
+
+            // Count total number of rows
+            const totalLength = await postModel.count({ where: whereClause });
+
+            return { data: data, totalLength: totalLength };
         } catch (error: any) {
-          throw new Error(error.message);
+            throw new Error(error.message);
         }
-      }
-      
+    }
+
     /**
      * Get all post create by users and post status
      * @returns 
      */
-    async getUserPostByStatus(payload:string,status:string,offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
+    async getUserPostByStatus(payload: string, status: string, offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
         try {
-            let whereClause:any = {
+            let whereClause: any = {
                 user_id: payload
             };
-            
-            
+
+
             if (status !== "all") {
-                whereClause.status = status === "true"?true:false;
+                whereClause.status = status === "true" ? true : false;
             }
-            
+
             let posts: any = await postModel.findAll({
                 where: whereClause, include: [
                     {
@@ -308,7 +314,7 @@ class adsPostDal {
                     }
                 ],
                 limit: Number(limit),  // Add limit for pagination
-                offset: Number(offset) 
+                offset: Number(offset)
             })
             const totalLength = await postModel.count({ where: whereClause });
             return { data: posts, totalLength: totalLength };
@@ -316,8 +322,8 @@ class adsPostDal {
         } catch (error: any) {
             throw new Error(error.message)
         }
-      }
-      
+    }
+
     /**
      * Delete ads post
      * @param post_id 
