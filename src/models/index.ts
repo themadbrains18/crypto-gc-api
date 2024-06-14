@@ -151,8 +151,14 @@ models.forEach((model) => model.initialize(sequelize));
       /**
        * P2P order table associate with User table
        */
-      userModel.hasMany(orderModel, { foreignKey: "buy_user_id" });
-      orderModel.belongsTo(userModel, { foreignKey: "buy_user_id" });
+      // In your user model file
+      userModel.hasMany(orderModel, { foreignKey: 'sell_user_id' });
+      userModel.hasMany(orderModel, { foreignKey: 'buy_user_id' });
+
+      // In your order model file
+      orderModel.belongsTo(userModel, { foreignKey: 'sell_user_id'});
+      orderModel.belongsTo(userModel, { foreignKey: 'buy_user_id' });
+
       /**
        * User Kyc table associate with User table
        */
