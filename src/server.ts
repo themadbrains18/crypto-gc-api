@@ -44,7 +44,7 @@ wss.on('connection', (ws: WebSocket) => {
 
     if (body?.ws_type === 'buy') {
       wss.clients.forEach(function e(client) {
-        client.send(JSON.stringify({ status: 200, message: 'order created',data : body, type: 'buy' }));
+        client.send(JSON.stringify({ status: 200, message: 'order created', data: body, type: 'buy' }));
       })
     }
 
@@ -55,21 +55,23 @@ wss.on('connection', (ws: WebSocket) => {
     }
 
     if (body.ws_type === 'post') {
-      const userId =body.userId
-      const limit = body.limit; 
-      const offset = body.offset; 
-      await post.socketPostAds(wss, ws,userId, limit, offset);
+      const userId = body.userId
+      const limit = body.limit;
+      const offset = body.offset;
+      await post.socketPostAds(wss, ws, userId, limit, offset);
     }
 
     if (body.ws_type === 'user_withdraw') {
-
       await service.withdrawServices.releaseWithdrawAssets(body.data);
-
       await notify.saveUserNotification(wss, ws, body);
     }
 
     if (body?.ws_type === 'chat') {
       chat.socketChat(wss, ws, body);
+    }
+
+    if (body?.ws_type === 'user_notify') {
+      await notify.saveUserNotification(wss, ws, body);
     }
 
     if (body?.ws_type === 'profile') {
@@ -114,12 +116,12 @@ httpServer
   .listen(port, "localhost", function () {
     console.info(`Server running on : http://localhost:${port}`);
   }).on("error", (err: any) => {
-  if (err.code === "EADDRINUSE") {
-    console.log("server startup error: address already in use");
-  } else {
-    console.log(err);
-  }
-});
+    if (err.code === "EADDRINUSE") {
+      console.log("server startup error: address already in use");
+    } else {
+      console.log(err);
+    }
+  });
 
 process.on("unhandledRejection", (reason: Error, promise: Promise<any>) => {
   throw reason;
