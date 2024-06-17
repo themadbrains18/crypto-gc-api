@@ -201,7 +201,7 @@ class marketDal {
                         volume_usdt: order.volume_usdt,
                         isCanceled: true,
                         status: order.status,
-                        entry_id : count[0].max + 1
+                        entry_id: count[0].max + 1
                     }
 
                     if (assets) {
@@ -354,30 +354,38 @@ class marketDal {
      */
     async socketMarketBuySell(payload: marketPartialExecution): Promise<any> {
         try {
-            console.log('========here 1');
+            console.log('========here 1', payload);
             let activeOrder = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id }, raw: true, order: [['id', "DESC"]] });
             if (activeOrder) {
 
                 //============================================================================//
                 //=============Market Based spot market order partial execution===============//
                 //============================================================================//
-                let marketRequest = activeOrder.filter((item) => {
-                    return item.market_type === marektTypeEnum.market
-                })
+                if (payload?.market_type === marektTypeEnum.market) {
 
-                if (marketRequest.length > 0) {
-                    // buySellOnMarketPrice(marketRequest, token, wss, ws);
-                    let marketbuysell = await service.market.buySellOnMarket(payload);
+                    console.log('=============market base execute');
+
+                    let marketRequest = activeOrder.filter((item) => {
+                        return item.market_type === marektTypeEnum.market
+                    })
+
+                    if (marketRequest.length > 0) {
+                        // buySellOnMarketPrice(marketRequest, token, wss, ws);
+                        let marketbuysell = await service.market.buySellOnMarket(payload);
+                    }
                 }
 
                 //===========================================================================//
                 //=============Limit Based spot market order partial execution===============//
                 //===========================================================================//
-                let limitRequest = activeOrder.filter((item: any) => {
-                    return item?.market_type === marektTypeEnum.limit
-                })
-                if (limitRequest.length > 0) {
-                    let buylimit = await service.market.buySellOnLimit(payload);
+                if (payload?.market_type === marektTypeEnum.limit) {
+                    console.log('=============limit base execute');
+                    let limitRequest = activeOrder.filter((item: any) => {
+                        return item?.market_type === marektTypeEnum.limit
+                    })
+                    if (limitRequest.length > 0) {
+                        let buylimit = await service.market.buySellOnLimit(payload);
+                    }
                 }
             }
         } catch (error: any) {
@@ -442,11 +450,11 @@ class marketDal {
                 volume_usdt: paid_usdt,
                 isCanceled: false,
                 status: true,
-                entry_id : count[0].max + 1
+                entry_id: count[0].max + 1
             }
             await marketOrderHistoryModel.create(sellerhistory);
-            console.log(count[0].max + 1,'----after order execute');
-            
+            console.log(count[0].max + 1, '----after order execute');
+
         } catch (error: any) {
             throw new Error(error.message);
         }

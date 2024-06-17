@@ -84,6 +84,7 @@ class marketService {
     //====================================================
     async buySellOnLimit(payload: marketPartialExecution): Promise<any> {
         try {
+            
             if (payload.order_type === marketOrderEnum.buy) {
                 await this.buyerCode(payload);
             }
@@ -100,6 +101,8 @@ class marketService {
             let previous_seller: any = [];
 
             let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: payload?.user_id, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, order: [['id', "DESC"]] });
+
+            console.log('---------on limit buy order create find buyer code---------------');
 
             // if buyer not exist than return
             if (buyBids == null || buyBids.length == 0) {
@@ -417,6 +420,9 @@ class marketService {
             // if buyer not exist than return
             let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, order: [['id', "DESC"]] })
 
+            console.log('---------on limit sell order create find buyer---------------');
+
+            
             if (buyBids == null || buyBids.length == 0) {
                 throw new Error('No any buyer bids found');
             }
@@ -896,7 +902,7 @@ class marketService {
 
             // if buyer not exist than return
             let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.market, queue: false }, raw: true, order: [['id', "DESC"]] })
-
+            console.log(buyBids,'---------on market sell order create find buyer---------------');
             if (buyBids == null || buyBids.length == 0) {
                 throw new Error('No any buyer bids found');
             }

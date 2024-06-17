@@ -78,6 +78,7 @@ export interface marketPartialExecution {
   token_id: string;
   order_type: string;
   user_id: string;
+  market_type:string;
 }
 
 export interface userAssetData {
