@@ -69,7 +69,12 @@ class adsPostDal {
     async getUserAds(payload: string): Promise<postOuput | any> {
         try {
             return await postModel.findAll({
-                where: { user_id: payload }, include: [
+                where: { 
+                    user_id: {
+                        [Op.ne]: payload // Assuming 'payload' contains the user_id to exclude
+                    }
+                }, 
+                include: [
                     {
                         model: tokensModel,
                         attributes: {
@@ -106,7 +111,20 @@ class adsPostDal {
                                 "otpToken", "own_code",
                                 "refeer_code", "secret"
                             ],
-                        }
+                        },
+                        include: [
+                            {
+                                model: userPmethodModel,
+                                include: [
+                                    {
+                                        model: paymentMethodModel,
+                                        attributes: {
+                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
+                                        },
+                                    }
+                                ]
+                            }
+                        ],
                     }
                 ],
 
@@ -162,7 +180,8 @@ class adsPostDal {
                                 "otpToken", "own_code",
                                 "refeer_code", "secret"
                             ],
-                        }
+                        },
+                        
                     }
                 ],
                 limit: Number(limit),  // Add limit for pagination
