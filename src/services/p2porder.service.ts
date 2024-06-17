@@ -254,9 +254,12 @@ class p2pOrderService {
                 ]
             };
             
-            if (status !== "all") {
+            if (status === "isReleased") {
+                whereClause.status = { [Op.or]: ['isReleased', 'isCompleted'] };
+              } else if (status !== "all") {
                 whereClause.status = status;
-            }
+              }
+        
             
             // Query to fetch paginated data
             let data = await orderModel.findAll({

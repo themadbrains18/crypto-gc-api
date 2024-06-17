@@ -77,7 +77,12 @@ class assetsController extends BaseController {
         return super.fail(res, assetResponse.message === "" ? assetResponse.additionalInfo : assetResponse.message);
       }
 
-      super.ok<any>(res, { message: 'Assets wallet to wallet transfer successfully!', result: assetResponse });
+      const fromWallet = req.body.from === 'main_wallet' ? 'Spot Wallet' : 'Future Wallet';
+      const toWallet = req.body.to === 'main_wallet' ? 'Spot Wallet' : 'Future Wallet';
+  
+  
+      super.ok<any>(res, { message: `Assets transferred successfully from ${fromWallet} to ${toWallet}!`, result: assetResponse });
+  
 
     } catch (error) {
       next(error);
