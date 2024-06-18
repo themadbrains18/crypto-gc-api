@@ -13,4 +13,5 @@ export default interface adsPostDto{
     complete_kyc?: boolean;
     min_btc?: boolean;
     fundcode?:string;
+    price_type?:string;
 }

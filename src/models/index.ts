@@ -355,7 +355,7 @@ models.forEach((model) => model.initialize(sequelize));
 })().catch((err) => console.log(err));
 
 // sequelize.sync({ alter: true });
-// futurePositionModel.sync({ alter: true });
+// postModel.sync({ alter: true });
 
 
 //=============================================================

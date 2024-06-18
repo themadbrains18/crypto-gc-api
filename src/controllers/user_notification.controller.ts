@@ -27,9 +27,7 @@ class userNotificationController extends BaseController {
 
             if (notifyResponse) {
                 wss.clients.forEach(function e(client: any) {
-                    if (client.readyState === ws.OPEN){
-                        client.send(JSON.stringify({ status: 200, data: [], type: 'user_notify' }));
-                    }
+                    client.send(JSON.stringify({ status: 200, data: [], type: 'user_notify' }));
                 })
             }
 

@@ -34,6 +34,9 @@ class postController extends BaseController {
   async create(req: Request, res: Response) {
     try {
       let ads: adsPostDto = req.body;
+
+      console.log(ads,'----------body data');
+      
       let adsReponse = await service.ads.createAds(ads);
       super.ok<any>(res, { message: "Post ads create successfully!!.", result: adsReponse });
     } catch (error: any) {

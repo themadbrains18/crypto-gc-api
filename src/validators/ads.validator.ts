@@ -16,7 +16,8 @@ const adsPostSchema={
         status: Joi.boolean().optional().allow(''),
         fundcode:Joi.string().optional().allow(''),
         condition:Joi.string().optional().allow(''),
-        auto_reply:Joi.string().optional().allow('')
+        auto_reply:Joi.string().optional().allow(''),
+        price_type:Joi.string().optional()
     }),
 
     edit : Joi.object().keys({
@@ -35,7 +36,8 @@ const adsPostSchema={
         status: Joi.boolean().optional().allow(''),
         fundcode:Joi.string().optional().allow(''),
         condition:Joi.string().optional().allow(''),
-        auto_reply:Joi.string().optional().allow('')
+        auto_reply:Joi.string().optional().allow(''),
+        price_type:Joi.string().optional()
     }),
 
     status : Joi.object().keys({

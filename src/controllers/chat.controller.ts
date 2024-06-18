@@ -87,10 +87,7 @@ class chatController extends BaseController {
       let data = await await service.chat.chatList(body?.orderid);
 
       wss.clients.forEach(function e(client:any) {
-        if (client.readyState === ws.OPEN){
-          client.send(JSON.stringify({ status: 200, data: data, type: 'chat' }));
-        }
-        
+        client.send(JSON.stringify({ status: 200, data: data, type: 'chat' }));
       })
     } catch (error) {
       ws.send(JSON.stringify({ status: 500, data: error }))
