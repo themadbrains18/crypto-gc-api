@@ -100,6 +100,9 @@ class kycDal {
             if (payload.isVerified === true) {
                 await userModel.update({ kycstatus: 'approve' }, { where: { id: payload.userid } });
             }
+            if (payload.isReject === true) {
+                await userModel.update({ kycstatus: 'reject' }, { where: { id: payload.userid } });
+            }
             return await this.kycById(payload.userid);
         }
     }
