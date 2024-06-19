@@ -100,7 +100,7 @@ class futurePositionServices {
                             return;
                         }
 
-                        await futurePositionModel.update({ pnl: usdt_pnl, queue: false }, { where: { id: ps?.id } });
+                        await futurePositionModel.update({ pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,7})?/)[0], queue: false }, { where: { id: ps?.id } });
                     }
                     else if (ps?.direction === 'short') {
 
@@ -135,7 +135,7 @@ class futurePositionServices {
                             return;
                         }
 
-                        await futurePositionModel.update({ pnl: usdt_pnl, queue: false }, { where: { id: ps?.id } });
+                        await futurePositionModel.update({ pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,7})?/)[0], queue: false }, { where: { id: ps?.id } });
                     }
                 }
             }

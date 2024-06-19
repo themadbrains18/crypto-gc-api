@@ -95,6 +95,8 @@ class futurePositionDal {
     async createPositionFunction(payload: futurePositionDto) {
         try {
 
+            console.log(payload, '==========db model data');
+
             //================================================
             //=================== Get Token ==================
             //================================================
@@ -140,6 +142,12 @@ class futurePositionDal {
                 }
             }
 
+            console.log(assets_price, '=========assets price');
+            console.log(asset?.balance, '===========asset balance', payload.realized_pnl);
+            console.log(assets_price + Number(payload.realized_pnl), '-----------sum');
+            console.log(asset?.balance - (assets_price + Number(payload.realized_pnl)),'=========new balcance');
+            
+            // return
             payload.assets_margin = assets_price;
             let res = await futurePositionModel.create(payload);
             if (res) {
@@ -189,7 +197,7 @@ class futurePositionDal {
                 //================ Update Assets =================
                 //================================================
                 if (assets_price > 0) {
-                    let newbal: any = asset?.balance - (assets_price + payload.realized_pnl);
+                    let newbal: any = asset?.balance - (assets_price + Number(payload.realized_pnl));
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
                 }
                 if (reward_point > 0) {
@@ -209,7 +217,8 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
             let newbal: number = 0;
-
+            
+            
             //================================================
             //=================== Get Token ==================
             //================================================
@@ -263,7 +272,7 @@ class futurePositionDal {
 
             activePosition = activePosition[0];
 
-
+            
             // ================================================
             // ==================Hedge mode====================
             // ================================================
@@ -296,28 +305,36 @@ class futurePositionDal {
 
                 // if order position same as previous order
                 if (payload?.direction === activePosition.direction) {
-                    activePosition.qty = activePosition.qty + payload.qty;
-                    activePosition.realized_pnl = activePosition.realized_pnl + payload.realized_pnl;
-                    activePosition.size = activePosition.size + payload?.size;
-                    activePosition.margin = activePosition.margin + (payload.margin - payload.realized_pnl);
+                    activePosition.qty = (activePosition.qty + payload.qty);
+                    activePosition.realized_pnl = (activePosition.realized_pnl + Number(payload.realized_pnl)).toString().match(/^-?\d+(?:\.\d{0,7})?/)[0];
+                    activePosition.size = (activePosition.size + payload?.size).toString().match(/^-?\d+(?:\.\d{0,5})?/)[0];
+                    activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
                     activePosition.assets_margin = activePosition.assets_margin + assets_price
-                    newbal = asset?.balance - (assets_price + payload.realized_pnl);
+                    newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
                 }
                 // if order position different from previous order
                 else {
-                    activePosition.qty = activePosition.qty - payload.qty;
-                    activePosition.realized_pnl = activePosition.realized_pnl + payload.realized_pnl;
-                    activePosition.size = activePosition.size - payload?.size;
-                    activePosition.margin = activePosition.margin - (payload.margin - payload.realized_pnl);
+                    let size:any = activePosition.size - payload?.size
+                    activePosition.qty = (activePosition.qty - payload.qty);
+                    activePosition.realized_pnl = (activePosition.realized_pnl + Number(payload.realized_pnl)).toString().match(/^-?\d+(?:\.\d{0,7})?/)[0];
+                    activePosition.size = size.toString().match(/^-?\d+(?:\.\d{0,5})?/)[0];
+                    activePosition.margin = activePosition.margin - (payload.margin - Number(payload.realized_pnl));
                     activePosition.assets_margin = activePosition.assets_margin + assets_price
-                    newbal = asset?.balance + (assets_price - payload.realized_pnl);
+
+                    console.log(assets_price,'==================assets_price');
+                    
+                    console.log(asset?.balance + (assets_price - Number(payload.realized_pnl)),'=========new balance=====');
+                    
+                    newbal = asset?.balance + (assets_price - Number(payload.realized_pnl));
                 }
 
+                console.log(activePosition,'-------------active Position');
+                
                 // if quantity not 0 by new and previous order 
                 if (activePosition.qty !== 0) {
                     await futurePositionModel.update({
                         qty: activePosition.qty, size: activePosition.size, realized_pnl: activePosition.realized_pnl,
-                        entry_price: payload.entry_price, market_price: payload.market_price, margin: activePosition.margin,assets_margin : activePosition.assets_margin
+                        entry_price: payload.entry_price, market_price: payload.market_price, margin: activePosition.margin, assets_margin: activePosition.assets_margin
                     }, { where: { id: activePosition?.id } });
                 }
                 // if qty 0 after opposite direction order
@@ -325,8 +342,10 @@ class futurePositionDal {
                     newbal = newbal + activePosition.pnl;
                     await futurePositionModel.update({ status: true, isDeleted: true }, { where: { id: activePosition?.id } });
                 }
+
+                
             }
-            
+
             //================================================
             //================ Update Assets =================
             //================================================
@@ -356,7 +375,9 @@ class futurePositionDal {
                 }
                 await MarketProfitModel.create(profit);
             } catch (error: any) {
-                throw new Error(error.message);
+                console.log(error,'============errr');
+                
+                throw new Error(error);
             }
 
             //==========================================================
@@ -380,7 +401,8 @@ class futurePositionDal {
             activePosition = await futurePositionModel.findOne({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
             return activePosition;
         } catch (error) {
-
+            console.log(error,'------------');
+            
         }
     }
 
@@ -414,9 +436,15 @@ class futurePositionDal {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
                         let newBal = 0;
-                        newBal = asset?.balance + position?.assets_margin + (position?.pnl - position?.realized_pnl);
+                        console.log(asset?.balance,'==========assets balance');
+                        console.log(position?.margin,'========user assets value');
+                        console.log(position?.pnl,'===========user profit loss value');
+                        console.log(position?.realized_pnl,'=======position released value');
+                        
+                        newBal = asset?.balance + position?.margin + (position?.pnl - position?.realized_pnl);
 
-
+                        console.log(newBal,'===========new balance');
+                        
                         // =========================================================//
                         // ================Fee Deduction from user and add to admin=================//
                         // =========================================================//
