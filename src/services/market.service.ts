@@ -5,6 +5,7 @@ import { marketDto } from "../models/dto/market.dto";
 import marketOrderHistoryModel, { marketOrderHistoryInput } from "../models/model/marketOrderHistory.model";
 import marketOrderModel, { marketOrderOuput } from "../models/model/marketorder.model";
 import { assetsAccountType, assetsWalletType, marektTypeEnum, marketCancel, marketOrderEnum, marketPartialExecution, tokenTypeEnum } from "../utils/interface";
+import { truncateNumber } from "../utils/utility";
 import service from "./service";
 
 interface buyerExecution {
@@ -84,7 +85,7 @@ class marketService {
     //====================================================
     async buySellOnLimit(payload: marketPartialExecution): Promise<any> {
         try {
-            
+
             if (payload.order_type === marketOrderEnum.buy) {
                 await this.buyerCode(payload);
             }
@@ -258,27 +259,31 @@ class marketService {
 
                 let asset = await service.assets.getUserAssetByTokenIdandWallet({ user_id: options.sellerObj.user_id, token_id: token?.id });
                 if (asset) {
-                    let updatedBal = parseFloat(asset.balance) + options.paid_usdt;
+                    console.log(parseFloat(asset.balance),'========previous balance', options.paid_usdt,'========added value');
+                    
+                    let updatedBal: any = truncateNumber(parseFloat(asset.balance) + options.paid_usdt, 8);
+                    console.log(updatedBal, 'seller assets updated Bal 1');
 
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075;
-                    updatedBal = updatedBal - deductFee;
-                    console.log(deductFee, '===============seller 1 processBuyerExecution');
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    console.log(deductFee, '===============seller 1 fee');
+
+                    updatedBal = truncateNumber(updatedBal - deductFee, 8);
+                    console.log(updatedBal, 'seller assets updated Bal 1');
+
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, 'USDT', 'Spot Trading');
-
-                    console.log('seller assets updated Bal', updatedBal);
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } });
                 }
                 else {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075;
-                    options.paid_usdt = options.paid_usdt - deductFee;
-                    console.log(deductFee, '===============seller 2 processBuyerExecution');
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    options.paid_usdt = truncateNumber(options.paid_usdt - deductFee, 8);
+                    console.log(deductFee, '===============seller 1 fee no assets');
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, 'USDT', 'Spot Trading');
 
@@ -293,6 +298,8 @@ class marketService {
                     await assetModel.create(assets);
                 }
             }
+            console.log('=============seller=====================');
+            
 
             let buyerusdtmarket = await this.getMarketOrderById(options.buyerObj.id);
 
@@ -304,9 +311,11 @@ class marketService {
                 let buyerasset = await service.assets.getUserAssetByTokenIdandWallet({ user_id: options.buyerObj.user_id, token_id: options.buyerObj.token_id });
 
                 if (buyerasset) {
-                    let updatedBal = parseFloat(buyerasset.balance) + options.remainingAssets;
-                    let realAmount = options.remainingAssets;
+                    console.log(parseFloat(buyerasset.balance),'========buyer previous balance', options.remainingAssets,'========added value');
+                    let updatedBal: any = truncateNumber(parseFloat(buyerasset.balance) + options.remainingAssets, 8);
+                    console.log(updatedBal, 'buyer assets updated Bal 1');
 
+                    let realAmount = options.remainingAssets;
                     if (options.remainingAssets > options.sellerObj.token_amount) {
                         updatedBal = parseFloat(buyerasset.balance) + parseFloat(options.sellerObj.token_amount);
                         realAmount = parseFloat(options.sellerObj.token_amount);
@@ -315,27 +324,26 @@ class marketService {
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
 
-                    let deductFee = options.remainingAssets * 0.00075;
-                    updatedBal = updatedBal - deductFee;
-                    console.log(deductFee, '===============buyer 1');
+                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    console.log(deductFee, '===============buyer fee 1');
+
+                    updatedBal = truncateNumber(updatedBal - deductFee, 8);
+                    console.log(updatedBal, 'buyer assets updated Bal 1');
+
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, token?.symbol, 'Spot Trading');
-
-                    console.log('buyer assets updated Bal', updatedBal);
                     await assetModel.update({ balance: updatedBal }, { where: { id: buyerasset.id } });
                 }
                 else {
-                    let realAmount = options.remainingAssets;
+                    let realAmount: any = options.remainingAssets;
                     if (options.remainingAssets > parseFloat(options.sellerObj.token_amount)) {
                         realAmount = parseFloat(options.sellerObj.token_amount);
                     }
                     // =========================================================//
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * 0.00075;
-                    realAmount = realAmount - deductFee;
-
-                    console.log(deductFee, '===============buyer 2');
+                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    realAmount = truncateNumber(realAmount - deductFee, 8);
 
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, token?.symbol, 'Spot Trading');
@@ -350,6 +358,8 @@ class marketService {
                     await assetModel.create(assets);
                 }
             }
+            console.log('================Buyer==================');
+            
             //======================================================
             //============= update market order status =============
             //======================================================
@@ -388,7 +398,7 @@ class marketService {
                 if (sellerOrder) {
                     let sellerStatus = false;
                     let remainingAmount = parseFloat(sellerOrder.token_amount) - options.remainingAssets;
-                    let volume_usdt = parseFloat(sellerOrder.volume_usdt) - options.paid_usdt;
+                    let volume_usdt = truncateNumber(parseFloat(sellerOrder.volume_usdt) - options.paid_usdt, 8);
 
                     console.log(remainingAmount, '-----------remainingAmount');
                     console.log(volume_usdt, '-------------------volume_usdt');
@@ -422,7 +432,7 @@ class marketService {
 
             console.log('---------on limit sell order create find buyer---------------');
 
-            
+
             if (buyBids == null || buyBids.length == 0) {
                 throw new Error('No any buyer bids found');
             }
@@ -567,26 +577,28 @@ class marketService {
                 }
                 let asset = await service.assets.getUserAssetByTokenIdandWallet({ user_id: options.sellerObj.user_id, token_id: token?.id });
                 if (asset) {
-                    let updatedBal = parseFloat(asset.balance) + options.paid_usdt;
+                    console.log(parseFloat(asset.balance),'========previous balance', options.paid_usdt,'========added value');
+                    let updatedBal: any = truncateNumber(parseFloat(asset.balance) + options.paid_usdt, 8);
+                    console.log(updatedBal, 'seller assets updated Bal 2');
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075;
-                    updatedBal = updatedBal - deductFee;
-                    console.log(deductFee, '===============seller 1');
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    console.log(deductFee, '===============seller fee 2');
+
+                    updatedBal = truncateNumber(updatedBal - deductFee, 8);
+                    console.log(updatedBal, 'seller assets updated Bal 2');
+
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, 'USDT', 'Spot Trading');
-
-                    console.log('seller assets updated Bal', updatedBal);
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } })
                 }
                 else {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075;
-                    options.paid_usdt = options.paid_usdt - deductFee;
-                    console.log(deductFee, '===============seller 2');
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    options.paid_usdt = truncateNumber(options.paid_usdt - deductFee, 8);
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, 'USDT', 'Spot Trading');
 
@@ -602,6 +614,9 @@ class marketService {
                 }
             }
 
+            console.log('================seller====================');
+            
+
             let buyerusdtmarket = await this.getMarketOrderById(options.buyerObj.id);
             let token: any = await tokensModel.findOne({ where: { id: options?.buyerObj?.token_id }, raw: true });
             if (token === null) {
@@ -610,29 +625,32 @@ class marketService {
             if (buyerusdtmarket?.status === false || buyerusdtmarket?.status === 0) {
                 let asset = await service.assets.getUserAssetByTokenIdandWallet({ user_id: options.buyerObj.user_id, token_id: options.buyerObj.token_id });
                 if (asset) {
-                    let updatedBal = parseFloat(asset.balance) + options.buyerObj.token_amount;
+                    console.log(parseFloat(asset.balance),'========buyer previous balance', options.buyerObj.token_amount,'========added value');
+                    let updatedBal = truncateNumber(parseFloat(asset.balance) + options.buyerObj.token_amount, 8);
+                    console.log(updatedBal, 'buyer assets updated Bal 2');
+
                     let realAmount = parseFloat(options.buyerObj.token_amount);
 
                     if (options.buyerObj.token_amount > options.remainingAssets) {
-                        updatedBal = parseFloat(asset.balance) + options.remainingAssets;
+                        updatedBal = truncateNumber(parseFloat(asset.balance) + options.remainingAssets,8);
                         realAmount = options.remainingAssets;
                     }
 
                     // =========================================================//
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * 0.00075;
-                    updatedBal = updatedBal - deductFee;
-                    console.log(deductFee, '===============buyer 1 processSellerExecution');
+                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    console.log(deductFee, '===============buyer 2 fee');
+
+                    updatedBal = truncateNumber(updatedBal - deductFee, 8);
+                    console.log(updatedBal, 'buyer assets updated Bal 2');
+
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, token?.symbol, 'Spot Trading');
-
-
-                    console.log('buyer assets updated Bal', updatedBal);
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } })
                 }
                 else {
-                    let realAmount = parseFloat(options.buyerObj.token_amount);
+                    let realAmount: any = parseFloat(options.buyerObj.token_amount);
                     if (options.buyerObj.token_amount > options.remainingAssets) {
                         realAmount = options.remainingAssets;
                     }
@@ -640,13 +658,14 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
-                    let deductFee = options.remainingAssets * 0.00075;
-                    realAmount = realAmount - deductFee;
-                    console.log(deductFee, '===============buyer 2 processSellerExecution');
+                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    console.log(deductFee, '===============buyer 2 fee no assets');
+
+                    realAmount = truncateNumber(realAmount - deductFee, 8);
+                    console.log(realAmount, 'buyer 2 real Amount');
+
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, token?.symbol, 'Spot Trading');
-
-
                     let assets: assetsDto = {
                         walletTtype: assetsWalletType.main_wallet,
                         balance: realAmount,
@@ -657,6 +676,9 @@ class marketService {
                     await assetModel.create(assets);
                 }
             }
+
+            console.log('===============buyer=======================');
+            
 
             //======================================================
             //============= update market order status =============
@@ -902,7 +924,7 @@ class marketService {
 
             // if buyer not exist than return
             let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.market, queue: false }, raw: true, order: [['id', "DESC"]] })
-            console.log(buyBids,'---------on market sell order create find buyer---------------');
+            console.log(buyBids, '---------on market sell order create find buyer---------------');
             if (buyBids == null || buyBids.length == 0) {
                 throw new Error('No any buyer bids found');
             }

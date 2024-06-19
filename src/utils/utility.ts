@@ -24,7 +24,7 @@ export function isJson(str: any) {
   return true;
 }
 
-export function isObjectEmpty (objectName: object) {
+export function isObjectEmpty(objectName: object) {
   return (
     objectName &&
     Object.keys(objectName).length === 0 &&
@@ -44,4 +44,9 @@ export function debounce(
       func(...args);
     }, wait);
   };
+}
+
+export function truncateNumber(num: number, decimals: number) {
+  const factor = Math.pow(10, decimals);
+  return (num >= 0 ? Math.floor(num * factor) : Math.ceil(num * factor)) / factor;
 }

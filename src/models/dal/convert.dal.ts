@@ -104,11 +104,10 @@ class convertDal {
                         balance: payload.consumption_amount,
                         account_type: assetsAccountType.main_account,
                         token_id: payload.consumption_token_id,
-                        user_id: '3808e05f-7da6-441d-bf98-7b5ec864c694'
+                        user_id: adminUser.id
                     };
                     let addNewAssets = await assetModel.create(assets);
                 }
-
             }
         }
 

@@ -8,13 +8,13 @@ export enum Direction {
 
 export enum assetsAccountType {
   main_account = "Main Account",
-  funding_account = "Funding Account",
+  funding_account = "Future Account",
   trading_account = "Trading Account",
 }
 
 export enum assetsWalletType {
   main_wallet = "main_wallet",
-  funding_wallet = "funding_wallet",
+  funding_wallet = "future_wallet",
   trading_wallet = "trading_wallet",
 }
 
