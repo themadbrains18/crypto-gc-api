@@ -10,6 +10,7 @@ import tokensModel from "../model/tokens.model";
 import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.model";
 import globalTokensModel from "../model/global_token.model";
 import sequelize from '../index';
+import { truncateNumber } from "../../utils/utility";
 
 class marketDal {
 
@@ -49,7 +50,7 @@ class marketDal {
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
 
-                            let new_bal = assets.balance - payload.token_amount;
+                            let new_bal = truncateNumber(assets.balance - payload.token_amount,8);
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
 
                             return result;
@@ -86,7 +87,7 @@ class marketDal {
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
 
-                            let new_bal = assets.balance - payload.volume_usdt;
+                            let new_bal = truncateNumber(assets.balance - payload.volume_usdt,8);
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
 
                             return result;
@@ -221,7 +222,6 @@ class marketDal {
 
                     if (assets) {
                         await marketOrderHistoryModel.create(history);
-                        // console.log(count[0].max + 1,'----after order cancel');
                         let assetUpdate = await assetModel.update({ balance: balance + mainBalance }, { where: { id: assets.id } });
                         await marketOrderModel.update({ isCanceled: true }, { where: { id: payload.order_id } });
                         return await marketOrderModel.findAll({ where: { user_id: payload.user_id, token_id: order.token_id, status: false, isCanceled: false } });
