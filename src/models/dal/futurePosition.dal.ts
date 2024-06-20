@@ -10,6 +10,7 @@ import futurePositionHistoryModel from "../model/future_position_history.model";
 import marketDal from "./market.dal";
 import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.model";
 import userRewardTotalModel from "../model/rewards_total.model";
+import { truncateNumber } from "../../utils/utility";
 
 class futurePositionDal {
 
@@ -102,12 +103,12 @@ class futurePositionDal {
             //================================================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
 
-            if (payload?.order_type !== 'value') {
-                global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-                if (global_token === null) {
-                    global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-                }
-            }
+            // if (payload?.order_type !== 'value') {
+            //     global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+            //     if (global_token === null) {
+            //         global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+            //     }
+            // }
 
             let asset: any;
             if (global_token) {
@@ -145,8 +146,8 @@ class futurePositionDal {
             console.log(assets_price, '=========assets price');
             console.log(asset?.balance, '===========asset balance', payload.realized_pnl);
             console.log(assets_price + Number(payload.realized_pnl), '-----------sum');
-            console.log(asset?.balance - (assets_price + Number(payload.realized_pnl)),'=========new balcance');
-            
+            console.log(asset?.balance - (assets_price + Number(payload.realized_pnl)), '=========new balcance');
+
             // return
             payload.assets_margin = assets_price;
             let res = await futurePositionModel.create(payload);
@@ -217,19 +218,17 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
             let newbal: number = 0;
-            
-            
             //================================================
             //=================== Get Token ==================
             //================================================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
 
-            if (payload?.order_type !== 'value') {
-                global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-                if (global_token === null) {
-                    global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-                }
-            }
+            // if (payload?.order_type !== 'value') {
+            //     global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+            //     if (global_token === null) {
+            //         global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+            //     }
+            // }
 
             let asset: any;
             if (global_token) {
@@ -272,7 +271,7 @@ class futurePositionDal {
 
             activePosition = activePosition[0];
 
-            
+
             // ================================================
             // ==================Hedge mode====================
             // ================================================
@@ -302,34 +301,30 @@ class futurePositionDal {
             // ==================One way mode==================
             // ================================================
             else if (activePosition?.position_mode === 'oneWay') {
-
+                
                 // if order position same as previous order
                 if (payload?.direction === activePosition.direction) {
-                    activePosition.qty = (activePosition.qty + payload.qty);
-                    activePosition.realized_pnl = (activePosition.realized_pnl + Number(payload.realized_pnl)).toString().match(/^-?\d+(?:\.\d{0,7})?/)[0];
-                    activePosition.size = (activePosition.size + payload?.size).toString().match(/^-?\d+(?:\.\d{0,5})?/)[0];
+                    
+                    let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
+                    activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
+                    activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
+                    activePosition.size = size;
                     activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
                     activePosition.assets_margin = activePosition.assets_margin + assets_price
                     newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
                 }
                 // if order position different from previous order
                 else {
-                    let size:any = activePosition.size - payload?.size
-                    activePosition.qty = (activePosition.qty - payload.qty);
-                    activePosition.realized_pnl = (activePosition.realized_pnl + Number(payload.realized_pnl)).toString().match(/^-?\d+(?:\.\d{0,7})?/)[0];
-                    activePosition.size = size.toString().match(/^-?\d+(?:\.\d{0,5})?/)[0];
+                    let size: any = truncateNumber(activePosition.size - payload?.size, 5)
+                    activePosition.qty = truncateNumber(activePosition.qty - payload.qty, 5);
+                    activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
+                    activePosition.size = size;
                     activePosition.margin = activePosition.margin - (payload.margin - Number(payload.realized_pnl));
-                    activePosition.assets_margin = activePosition.assets_margin + assets_price
-
-                    console.log(assets_price,'==================assets_price');
-                    
-                    console.log(asset?.balance + (assets_price - Number(payload.realized_pnl)),'=========new balance=====');
-                    
+                    activePosition.assets_margin = activePosition.assets_margin + assets_price;
+                    // console.log(asset?.balance + (assets_price - Number(payload.realized_pnl)),'=========new balance=====');
                     newbal = asset?.balance + (assets_price - Number(payload.realized_pnl));
                 }
 
-                console.log(activePosition,'-------------active Position');
-                
                 // if quantity not 0 by new and previous order 
                 if (activePosition.qty !== 0) {
                     await futurePositionModel.update({
@@ -343,7 +338,7 @@ class futurePositionDal {
                     await futurePositionModel.update({ status: true, isDeleted: true }, { where: { id: activePosition?.id } });
                 }
 
-                
+
             }
 
             //================================================
@@ -375,8 +370,7 @@ class futurePositionDal {
                 }
                 await MarketProfitModel.create(profit);
             } catch (error: any) {
-                console.log(error,'============errr');
-                
+                console.log(error, '============errr');
                 throw new Error(error);
             }
 
@@ -401,8 +395,8 @@ class futurePositionDal {
             activePosition = await futurePositionModel.findOne({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
             return activePosition;
         } catch (error) {
-            console.log(error,'------------');
-            
+            console.log(error, '------------');
+
         }
     }
 
@@ -436,15 +430,14 @@ class futurePositionDal {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
                         let newBal = 0;
-                        console.log(asset?.balance,'==========assets balance');
-                        console.log(position?.margin,'========user assets value');
-                        console.log(position?.pnl,'===========user profit loss value');
-                        console.log(position?.realized_pnl,'=======position released value');
-                        
+                        console.log(asset?.balance, '==========assets balance');
+                        console.log(position?.margin, '========user assets value');
+                        console.log(position?.pnl, '===========user profit loss value');
+                        console.log(position?.realized_pnl, '=======position released value');
+
                         newBal = asset?.balance + position?.margin + (position?.pnl - position?.realized_pnl);
 
-                        console.log(newBal,'===========new balance');
-                        
+                        console.log(newBal, '===========new balance');
                         // =========================================================//
                         // ================Fee Deduction from user and add to admin=================//
                         // =========================================================//
