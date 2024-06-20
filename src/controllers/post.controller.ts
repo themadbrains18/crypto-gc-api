@@ -35,8 +35,8 @@ class postController extends BaseController {
     try {
       let ads: adsPostDto = req.body;
 
-      console.log(ads,'----------body data');
-      
+      console.log(ads, '----------body data');
+
       let adsReponse = await service.ads.createAds(ads);
       super.ok<any>(res, { message: "Post ads create successfully!!.", result: adsReponse });
     } catch (error: any) {
@@ -66,7 +66,7 @@ class postController extends BaseController {
   async getPostByUser(req: Request, res: Response) {
     try {
       let { offset, limit } = req.params;
-      let userPost = await service.ads.getUserAdsPost(req?.body?.user_id,offset, limit);
+      let userPost = await service.ads.getUserAdsPost(req?.body?.user_id, offset, limit);
 
       super.ok<any>(res, userPost);
     } catch (error: any) {
@@ -81,8 +81,8 @@ class postController extends BaseController {
   */
   async getAllAds(req: Request, res: Response) {
     try {
-      let {userid, offset, limit } = req.params;
-      let allPost = await service.ads.getAllPost(userid,offset, limit);
+      let { userid, offset, limit } = req.params;
+      let allPost = await service.ads.getAllPost(userid, offset, limit);
       super.ok<any>(res, allPost);
     } catch (error: any) {
       super.fail(res, error.message);
@@ -96,8 +96,8 @@ class postController extends BaseController {
   */
   async getPostByUserByStatus(req: Request, res: Response) {
     try {
-      let {status, offset, limit } = req.params;
-      let allPost = await service.ads.getUserPostByStatus(req.body.user_id,status,offset, limit);
+      let { status, offset, limit } = req.params;
+      let allPost = await service.ads.getUserPostByStatus(req.body.user_id, status, offset, limit);
       super.ok<any>(res, allPost);
     } catch (error: any) {
       super.fail(res, error.message);
@@ -109,11 +109,11 @@ class postController extends BaseController {
       let post_id = req?.params?.id;
       let user_id = req?.body?.user_id;
 
-      let response = await service.ads.getSinglePostById(post_id,user_id);
+      let response = await service.ads.getSinglePostById(post_id, user_id);
 
       super.ok<any>(res, response);
 
-    } catch (error:any) {
+    } catch (error: any) {
       super.fail(res, error.message);
     }
   }
@@ -156,7 +156,7 @@ class postController extends BaseController {
     try {
       let post_id = req?.body?.post_id;
       let user_id = req?.body?.user_id;
-      
+
       let adsReponse = await service.ads.updateAds(post_id, user_id);
       super.ok<any>(res, { message: "Post ads create successfully!!.", result: adsReponse });
     } catch (error: any) {
@@ -169,14 +169,25 @@ class postController extends BaseController {
   * @param res 
   * @param req 
   */
-  async socketPostAds(wss: WebSocket.Server, ws: WebSocket,userid: string | undefined, limit: number, offset: number): Promise<void> {
+  async socketPostAds(wss: WebSocket.Server, ws: WebSocket, userid: string | undefined, limit: number, offset: number): Promise<void> {
     try {
-      const { data, totalLength } = await service.ads.getAllPost(userid,limit, offset);
+      const { data, totalLength } = await service.ads.getAllPost(userid, limit, offset);
       wss.clients.forEach(function e(client: any) {
         client.send(JSON.stringify({ status: 200, data: data, type: 'post' }));
       })
     } catch (error) {
       ws.send(JSON.stringify({ status: 500, data: error }))
+    }
+  }
+
+  async getTotalOrdersByUser(req: Request, res: Response) {
+    try {
+      console.log('-=============',req.params.userid);
+      
+      let orderResponse = await service.ads.getTotalOrdersByUser(req.params.userid);
+      super.ok<any>(res, orderResponse);
+    } catch (error: any) {
+      super.fail(res, error.message);
     }
   }
 }

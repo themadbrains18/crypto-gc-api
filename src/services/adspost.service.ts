@@ -60,6 +60,10 @@ class adsPostservice{
             }
         }
     }
+
+    async getTotalOrdersByUser(user_id:string){
+        return await adspostDal.getTotalOrdersByUser(user_id);
+    }
 }
 
 export default adsPostservice;

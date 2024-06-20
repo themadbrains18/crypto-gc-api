@@ -265,7 +265,16 @@ class adsPostDal {
                 offset: Number(offset)  // Add offset for pagination
             });
 
+            console.log(data,"==data");
+            
+
             // Count total number of rows
+            // const ordersLength= await orderModel.count({
+            //     where:{[Op.or]: [
+            //         { buy_user_id: data?.user?.id },
+            //         { sell_user_id: userid }
+            //     ]}
+            // })
             const totalLength = await postModel.count({ where: whereClause });
 
             return { data: data, totalLength: totalLength };
@@ -427,6 +436,29 @@ class adsPostDal {
             throw new Error(error.message)
         }
     }
+
+
+    async getTotalOrdersByUser(userid: string): Promise<number> {
+        try {
+          if (userid === "") {
+            throw new Error('Please provide userid.');
+          }
+      
+          // Query to count orders where the user is a seller or buyer
+          let totalOrders = await orderModel.count({
+            where: {
+              [Op.or]: [
+                { sell_user_id: userid },
+                { buy_user_id: userid }
+              ]
+            }
+          });
+      
+          return totalOrders;
+        } catch (error: any) {
+          throw new Error(error.message);
+        }
+      }
 }
 
 export default new adsPostDal();

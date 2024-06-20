@@ -26,6 +26,7 @@ class postRoutes  extends BaseController{
         this.router.get('/ads/:id', auth, post.getSingleAdsById);
         this.router.post("/edit",super.Validator(adsPostSchema.edit),auth, post.edit);
         this.router.put("/update/status",super.Validator(adsPostSchema.status),auth, post.updateStatus);
+        this.router.get('/ordertotal/:userid', post.getTotalOrdersByUser);
     }
 }
 
