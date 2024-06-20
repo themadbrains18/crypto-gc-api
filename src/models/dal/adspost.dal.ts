@@ -255,9 +255,7 @@ class adsPostDal {
                                         },
                                     }
                                 ]
-                            },
-                            { model: orderModel, as: 'buyerOrder' },
-                            { model: orderModel, as: 'sellerOrder' }
+                            }
 
                         ],
                     },],
