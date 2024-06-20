@@ -95,9 +95,11 @@ class kycController extends BaseController {
     try {
       let kyc: kycDto = req.body;
 
-      let userKyc = await service.kyc.alreadyExist(kyc);
+      
 
-      if (userKyc.length > 0) {
+      let userKyc = await service.kyc.alreadyExist(kyc);
+      
+      if (userKyc) {
         let kycResponse = await service.kyc.updateStatus(kyc);
         if (kycResponse) {
           let userService = new userDal();
