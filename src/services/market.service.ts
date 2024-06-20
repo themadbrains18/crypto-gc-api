@@ -808,8 +808,6 @@ class marketService {
                     if (tokenFetch !== undefined && tokenFetch?.price !== undefined) {
                         if (buyerObj.token_id === sellerObj.token_id && sellerObj.limit_usdt <= tokenFetch.price) {
 
-                            console.log('============process execute buyer==========');
-
                             if (sellerObj.token_amount === remainingAssets) {
                                 await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                                 await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
