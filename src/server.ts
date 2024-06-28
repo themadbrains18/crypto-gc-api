@@ -88,6 +88,12 @@ wss.on('connection', (ws: WebSocket) => {
       })
     }
 
+    if (body?.ws_type === 'convert') {
+      wss.clients.forEach(function e(client) {
+        client.send(JSON.stringify({ status: 200, data: [], type: 'convert' }));
+      })
+    }
+
   });
 
   ws.on('close', () => {

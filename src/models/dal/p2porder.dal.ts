@@ -41,6 +41,9 @@ class p2pOrderDal {
             let reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id);
             
             if (reserveOrders.length > 0) {
+                if ((post.quantity - reserveOrders[0]?.dataValues?.total) < 0) {
+                    throw new Error(`Whoops! Order not available.`)
+                }
                 if ((post.quantity - reserveOrders[0]?.dataValues?.total) < payload?.quantity) {
                     throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${post.quantity - reserveOrders[0]?.dataValues?.total}. `)
                 }
