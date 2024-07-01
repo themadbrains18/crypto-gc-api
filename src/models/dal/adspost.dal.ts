@@ -441,7 +441,13 @@ class adsPostDal {
                     [Op.or]: [
                         { sell_user_id: userid },
                         { buy_user_id: userid }
+                    ],
+
+                    [Op.and]: [
+                        { status: { [Op.ne]: 'isCanceled' } },
+                        { status: { [Op.ne]: 'isProcess' } }
                     ]
+
                 }
             });
 
