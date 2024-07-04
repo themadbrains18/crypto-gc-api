@@ -182,7 +182,7 @@ class postController extends BaseController {
 
   async getTotalOrdersByUser(req: Request, res: Response) {
     try {
-      console.log('-=============',req.params.userid);
+      // console.log('-=============',req.params.userid);
       
       let orderResponse = await service.ads.getTotalOrdersByUser(req.params.userid);
       super.ok<any>(res, orderResponse);

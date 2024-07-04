@@ -60,7 +60,7 @@ class MailService extends serviceBaseController {
 
         return await transporter
             .sendMail({
-                from: `"The Mad Brains" ${process.env.SMTP_SENDER || options.from}`,
+                from: `The Mad Brains <${process.env.SMTP_SENDER || options.from}>`,
                 to: options.to,
                 cc: options.cc,
                 bcc: options.bcc,
