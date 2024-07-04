@@ -21,7 +21,7 @@ interface futureOpenOrderAttribute {
     isDeleted?: boolean;
     qty?: number;
     isTrigger?: boolean;
-
+    position_mode?: string;
     reduce_only?: string; // TP/SL case Yes, limit order No
     post_only?: string; //No
     status?: boolean;
@@ -36,6 +36,7 @@ class futureOpenOrderModel
     implements futureOpenOrderAttribute {
     public id!: string;
     public position_id!: string;
+    public position_mode!: string;
     public user_id!: string;
     public symbol!: string;
     public side!: string;
@@ -132,6 +133,12 @@ class futureOpenOrderModel
                 market_price: {
                     type: DataTypes.DOUBLE,
                     allowNull: true,
+                },
+                position_mode: {
+                    type: DataTypes.STRING,
+                    allowNull: true,
+                    defaultValue: "oneWay"
+          
                 },
                 liq_price: {
                     type: DataTypes.DOUBLE,

@@ -55,7 +55,7 @@ class futureOpenOrderController extends BaseController {
                 return super.fail(res, orderResponse?.error);
             }
             super.ok<any>(res, {
-                message: "order postion create successfully.",
+                message: "Order position create successfully.",
                 result: orderResponse,
                 status: 200,
             });

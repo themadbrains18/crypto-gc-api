@@ -27,6 +27,7 @@ const futureOpenOrderSchema = {
         isDeleted:Joi.boolean().default("false"),
         qty : Joi.number().required(),
         isTrigger:Joi.boolean().default("false"),
+        position_mode : Joi.string().required()
     }),
 
     edit: Joi.object().keys({
@@ -53,6 +54,7 @@ const futureOpenOrderSchema = {
         isDeleted:Joi.boolean().default("false"),
         qty : Joi.number().required(),
         isTrigger:Joi.boolean().default("false"),
+        position_mode : Joi.string().required()
     }),
 
 
