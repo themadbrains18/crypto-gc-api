@@ -73,6 +73,7 @@ class orderController extends BaseController {
   */
   async cancelOrder(req: Request, res: Response) {
     try {
+      console.log('=========order cancel 1');
       let cancelOrderResponse = await service.p2p.cancelOrder(req.body);
 
       super.ok<any>(res, { message: 'Order cancel successfully!!.', result: cancelOrderResponse });

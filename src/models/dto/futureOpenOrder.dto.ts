@@ -22,4 +22,5 @@ export default interface futureOpenOrderDto {
     isDeleted?:boolean;
     qty?:number;
     isTrigger?:boolean;
+    position_mode?:string;
 }
