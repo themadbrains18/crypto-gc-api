@@ -129,6 +129,8 @@ class p2pOrderDal {
     async orderReleased(payload:any):Promise<orderOuput | any>{
         try {
 
+            console.log(payload,"==payload");
+            
             let userService = new userDal();
             let sellerUser = await userService.checkUserByPk(payload.user_id);
             if (sellerUser === null) {
