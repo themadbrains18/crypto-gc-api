@@ -14,6 +14,7 @@ const futuretradePairSchema = {
         usdt_fee: Joi.number().optional(),
         coin_min_trade: Joi.number().positive().required(),
         usdt_min_trade: Joi.number().positive().required(),
+        coin_max_trade: Joi.number().positive().required(),
         status: Joi.boolean().default("false"),
     }),
 
@@ -27,6 +28,7 @@ const futuretradePairSchema = {
         usdt_fee: Joi.number().optional(),
         coin_min_trade: Joi.number().positive().required(),
         usdt_min_trade: Joi.number().positive().required(),
+        coin_max_trade: Joi.number().positive().required(),
         status: Joi.boolean().default("false"),
     }),
 

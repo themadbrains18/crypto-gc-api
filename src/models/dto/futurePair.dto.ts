@@ -8,6 +8,7 @@ export default interface futureTradePairDto {
     usdt_fee?: number;
     coin_min_trade?: number;
     usdt_min_trade?: number;
+    coin_max_trade?: number;
     status?: boolean;
 
 }

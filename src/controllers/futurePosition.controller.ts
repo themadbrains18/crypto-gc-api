@@ -53,6 +53,7 @@ class futurePositionController extends BaseController {
             let trade: futurePositionDto = req.body;
 
             let orderResponse: any = await service.position.create(trade);
+            
             if (orderResponse.message) {
                return super.fail(res, orderResponse.message);
             }

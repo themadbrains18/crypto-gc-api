@@ -10,6 +10,7 @@ interface futureTradePairAttribute {
   usdt_fee?:number;
   coin_min_trade?:number;
   usdt_min_trade?:number;
+  coin_max_trade?:number;
   status?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -32,6 +33,7 @@ class futureTradePairModel
   public usdt_fee!:number;
   public coin_min_trade!:number;
   public usdt_min_trade!:number;
+  public coin_max_trade!:number;
   public status!: boolean;
   // timestamps!
   public readonly createdAt!: Date;
@@ -78,6 +80,10 @@ class futureTradePairModel
         usdt_min_trade:{
             type: DataTypes.DOUBLE,
             allowNull: false,
+        },
+        coin_max_trade: {
+          type: DataTypes.DOUBLE,
+          allowNull: false,
         },
         status: {
           type: DataTypes.BOOLEAN,
