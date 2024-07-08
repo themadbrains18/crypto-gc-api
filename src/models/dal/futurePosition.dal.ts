@@ -531,7 +531,7 @@ class futurePositionDal {
     async orderbook(coinid: string): Promise<futurePositionOuput | any> {
         try {
             let trades = await futurePositionModel.findAll({
-                where: { coin_id: coinid, status: false, isDeleted: false }, raw: true
+                where: { coin_id: coinid, status: false, isDeleted: false }, order: [['createdAt', 'DESC']],raw: true
             });
             return trades;
         } catch (error: any) {
