@@ -44,6 +44,7 @@ import scannerService from "./scanner.service";
 
 import referProgramService from "./referProgram.service";
 import addressServices from "./address.service";
+import profitLossServices from "./profitloss.service";
 
 class service {
     otpService = new otpService();
@@ -83,6 +84,7 @@ class service {
     scan = new scannerService();
     refer = new referProgramService();
     address = new addressServices();
+    profitLossServices = new profitLossServices()
 }
 
 export default new service()

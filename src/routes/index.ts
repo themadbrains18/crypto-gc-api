@@ -30,6 +30,7 @@ import futureOpenOrderRoutes from "./futureOpenOrder.routes";
 import watchlistRoutes from "./watchlist.routes";
 import pusher from "../utils/pusher";
 import addressRoutes from "./address.routes";
+import profitlossRoutes from "./profitloss.routes";
 
 
 let apiBase = process.env.API_BASE;
@@ -75,6 +76,7 @@ class routes {
     app.use(`${apiBase}/futureorder`,futureOpenOrderRoutes);
     app.use(`${apiBase}/watchlist`,watchlistRoutes);
     app.use(`${apiBase}/address`,addressRoutes);
+    app.use(`${apiBase}/profitloss`,profitlossRoutes);
 
     // app.use(`${apiBase}/blockchain`,new authController().auth, async (req: Request, res: Response) => {
 

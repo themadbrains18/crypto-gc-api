@@ -6,6 +6,7 @@ import kyc from './kyc.validator'
 import stakingSchema from './staking.validator'
 import settingSchema from './setting.validator'
 import profileSchema from './profile.validator'
+import profitLossSchema from './profitloss.validator'
 
 export = {
     register,
@@ -14,5 +15,6 @@ export = {
     kyc,
     stakingSchema,
     settingSchema,
-    profileSchema
+    profileSchema,
+    profitLossSchema
 }

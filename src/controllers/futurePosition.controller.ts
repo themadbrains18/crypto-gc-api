@@ -54,8 +54,8 @@ class futurePositionController extends BaseController {
 
             let orderResponse: any = await service.position.create(trade);
             
-            if (orderResponse.message) {
-               return super.fail(res, orderResponse.message);
+            if (orderResponse?.message) {
+               return super.fail(res, orderResponse?.message);
             }
             super.ok<any>(res, {
                 message: "Order position create successfully.",

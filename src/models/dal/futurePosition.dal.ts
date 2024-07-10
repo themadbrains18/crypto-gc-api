@@ -7,10 +7,10 @@ import futureOpenOrderModel from "../model/future_open_order.model";
 import assetModel from "../model/assets.model";
 import futurePositionHistoryDto from "../dto/future_position_history.dto";
 import futurePositionHistoryModel from "../model/future_position_history.model";
-import marketDal from "./market.dal";
 import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.model";
 import userRewardTotalModel from "../model/rewards_total.model";
 import { truncateNumber } from "../../utils/utility";
+import takeProfitStopLossModel from "../model/takeprofit_stoploss.model";
 
 class futurePositionDal {
 
@@ -30,6 +30,9 @@ class futurePositionDal {
                     },
                     {
                         model: futureOpenOrderModel
+                    },
+                    {
+                        model : takeProfitStopLossModel
                     }
                 ]
             });
@@ -65,25 +68,18 @@ class futurePositionDal {
      * @param payload
      * @returns
      */
-
     async createPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
         try {
-            // ==================================================
             // ===============Get Active position================
-            // ==================================================
-
             let activePosition = await futurePositionModel.findAll({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
-
-            // Existing active position order
+            // ==============Existing active position order==========
             if (activePosition.length > 0) {
                 return await this.updateActivePosition(activePosition, payload);
             }
-
-            // create new position
+            // ===========create new position=======================
             else {
                 return await this.createPositionFunction(payload);
             }
-
         } catch (error: any) {
             console.log(error)
             throw new Error(error.message);
@@ -95,36 +91,21 @@ class futurePositionDal {
     //====================================================
     async createPositionFunction(payload: futurePositionDto) {
         try {
-
-            console.log(payload, '==========db model data');
-
-            //================================================
+            // console.log(payload, '==========db model data');
             //=================== Get Token ==================
-            //================================================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
-
-            // if (payload?.order_type !== 'value') {
-            //     global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-            //     if (global_token === null) {
-            //         global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-            //     }
-            // }
-
             let asset: any;
             if (global_token) {
                 asset = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
             }
-
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
-
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
-
             // if assets and rewards point available than order margin divide in assets and rewards point
             if (asset?.balance > 0 && asset?.balance > margin_price) {
-                if (reward && reward.amount > 0 && reward.amount > margin_price / 2) {
+                if (reward && reward?.amount > 0 && reward?.amount > margin_price / 2) {
                     reward_point = margin_price / 2;
                     assets_price = margin_price / 2
                 }
@@ -142,20 +123,10 @@ class futurePositionDal {
                     return { message: 'Insufficiant Balance' }
                 }
             }
-
-            console.log(assets_price, '=========assets price');
-            console.log(asset?.balance, '===========asset balance', payload.realized_pnl);
-            console.log(assets_price + Number(payload.realized_pnl), '-----------sum');
-            console.log(asset?.balance - (assets_price + Number(payload.realized_pnl)), '=========new balcance');
-
-            // return
             payload.assets_margin = assets_price;
             let res = await futurePositionModel.create(payload);
             if (res) {
-
-                // =========================================================================//
                 // ================Fee Deduction from user and add to admin=================//
-                // =========================================================================//
                 let futureProfit = 0;
                 try {
                     let profit: MarketProfitInput = {
@@ -174,10 +145,7 @@ class futurePositionDal {
                 } catch (error: any) {
                     throw new Error(error.message);
                 }
-
-                //==========================================================
                 //================ create position history =================
-                //==========================================================
                 let historyBody: futurePositionHistoryDto = {
                     position_id: res?.dataValues?.id,
                     symbol: res?.dataValues?.symbol,
@@ -191,12 +159,8 @@ class futurePositionDal {
                     isDeleted: false,
                     qty: res?.dataValues?.qty
                 }
-
                 await futurePositionHistoryModel.create(historyBody);
-
-                //================================================
                 //================ Update Assets =================
-                //================================================
                 if (assets_price > 0) {
                     let newbal: any = asset?.balance - (assets_price + Number(payload.realized_pnl));
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
@@ -207,8 +171,9 @@ class futurePositionDal {
                 }
             }
             return res;
-        } catch (error) {
-
+        } catch (error:any) {
+            console.log(error, '------------');
+            throw new Error(error);
         }
     }
 
@@ -218,30 +183,17 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
             let newbal: number = 0;
-            //================================================
             //=================== Get Token ==================
-            //================================================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
-
-            // if (payload?.order_type !== 'value') {
-            //     global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-            //     if (global_token === null) {
-            //         global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-            //     }
-            // }
-
             let asset: any;
             if (global_token) {
                 asset = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
             }
-
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
-
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
-
             // if assets and rewards point available than order margin divide in assets and rewards point
             if (asset?.balance > 0 && asset?.balance >= margin_price) {
                 if (reward && reward.amount > 0 && reward.amount >= margin_price / 2) {
@@ -257,146 +209,119 @@ class futurePositionDal {
                 if (reward && reward.amount > 0 && reward.amount > margin_price) {
                     reward_point = margin_price;
                 }
-                // when both assets and rewards not available then return insufficiant balance
                 else {
                     return { message: 'Insufficiant Balance' }
                 }
             }
-
             if (activePosition.length > 1) {
                 activePosition = activePosition.filter((item: any) => {
                     return item.position_mode === 'Hedge' && item.direction === payload.direction
                 })
             }
-
             activePosition = activePosition[0];
-
-
-            // ================================================
-            // ==================Hedge mode====================
-            // ================================================
-            if (activePosition?.position_mode === 'Hedge') {
-
-                if (activePosition.direction === payload.direction) {
-                    await futurePositionModel.update({
-                        qty: activePosition.qty + payload.qty,
-                        size: activePosition.size + payload.size,
-                        realized_pnl: activePosition.realized_pnl + payload.realized_pnl,
-                        entry_price: payload.entry_price,
-                        market_price: payload.market_price,
-                        margin: activePosition.margin + (payload.margin - payload.realized_pnl),
-                        assets_margin: activePosition.assets_margin + assets_price
-                    }, { where: { id: activePosition?.id, direction: payload.direction } });
-
-                    newbal = asset?.balance - (assets_price + payload.realized_pnl);
+            if (activePosition) {
+                // ==================Hedge mode====================
+                if (activePosition?.position_mode === 'Hedge') {
+                    if (activePosition.direction === payload.direction) {
+                        await futurePositionModel.update({
+                            qty: activePosition.qty + payload.qty,
+                            size: activePosition.size + Number(payload.size),
+                            realized_pnl: activePosition.realized_pnl + Number(payload.realized_pnl),
+                            entry_price: payload.entry_price,
+                            market_price: payload.market_price,
+                            margin: activePosition.margin + (payload.margin - payload.realized_pnl),
+                            assets_margin: activePosition.assets_margin + assets_price
+                        }, { where: { id: activePosition?.id, direction: payload.direction } });
+                        newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
+                    }
+                    else {
+                       return await this.createPositionFunction(payload);   
+                    }
                 }
-                else {
+                // ==================One way mode==================
+                else if (activePosition?.position_mode === 'oneWay') {
+                    if (payload?.direction === activePosition.direction) {
+                        let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
+                        activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
+                        activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
+                        activePosition.size = size;
+                        activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
+                        activePosition.assets_margin = activePosition.assets_margin + assets_price
+                        newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
+                    }
+                    else {
+                        let size: any = truncateNumber(activePosition.size - payload?.size, 5)
+                        activePosition.qty = truncateNumber(activePosition.qty - payload.qty, 5);
+                        activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
+                        activePosition.size = size;
+                        activePosition.margin = activePosition.margin - (payload.margin - Number(payload.realized_pnl));
+                        activePosition.assets_margin = activePosition.assets_margin + assets_price;
+                        newbal = asset?.balance + (assets_price - Number(payload.realized_pnl));
+                    }
 
-                    this.createPositionFunction(payload);
+                    if (activePosition.qty !== 0) {
+                        await futurePositionModel.update({
+                            qty: activePosition.qty, size: activePosition.size, realized_pnl: activePosition.realized_pnl,
+                            entry_price: payload.entry_price, market_price: payload.market_price, margin: activePosition.margin, assets_margin: activePosition.assets_margin
+                        }, { where: { id: activePosition?.id } });
+                    }
+                    else {
+                        newbal = newbal + activePosition.pnl;
+                        await futurePositionModel.update({ status: true, isDeleted: true }, { where: { id: activePosition?.id } });
+                    }
+
+
                 }
+                //================ Update Assets =================
+                await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
 
+                if (reward_point > 0) {
+                    let newRewardBal = reward?.amount - (reward_point);
+                    let newOrderAmount = reward?.order_amount + (reward_point);
+                    await userRewardTotalModel.update({ amount: newRewardBal, order_amount: newOrderAmount }, { where: { user_id: payload.user_id } });
+                }
+                // ===============================Fee Deduction=============================//
+                let futureProfit = 0;
+                try {
+                    let profit: MarketProfitInput = {
+                        source_id: activePosition?.id,
+                        total_usdt: 0,
+                        paid_usdt: 0,
+                        admin_usdt: 0,
+                        buyer: activePosition?.user_id,
+                        seller: activePosition?.user_id,
+                        profit: futureProfit,
+                        fees: payload?.realized_pnl,
+                        coin_type: 'USDT',
+                        source_type: 'Future Trading',
+                    }
+                    await MarketProfitModel.create(profit);
+                } catch (error: any) {
+                    console.log(error, '============errr');
+                    throw new Error(error);
+                }
+                //================ create position history =================
+                let historyBody: futurePositionHistoryDto = {
+                    position_id: activePosition?.id,
+                    symbol: activePosition?.symbol,
+                    user_id: activePosition?.user_id,
+                    coin_id: activePosition?.coin_id,
+                    market_price: activePosition?.market_price,
+                    status: false,
+                    direction: activePosition?.direction === 'long' ? 'Open Long' : 'Open Short',
+                    order_type: activePosition?.order_type,
+                    market_type: activePosition?.market_type,
+                    isDeleted: false,
+                    qty: payload?.qty
+                }
+                await futurePositionHistoryModel.create(historyBody);
+                activePosition = await futurePositionModel.findOne({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
+                return activePosition;
             }
 
-            // ================================================
-            // ==================One way mode==================
-            // ================================================
-            else if (activePosition?.position_mode === 'oneWay') {
-                
-                // if order position same as previous order
-                if (payload?.direction === activePosition.direction) {
-                    
-                    let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
-                    activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
-                    activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
-                    activePosition.size = size;
-                    activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
-                    activePosition.assets_margin = activePosition.assets_margin + assets_price
-                    newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
-                }
-                // if order position different from previous order
-                else {
-                    let size: any = truncateNumber(activePosition.size - payload?.size, 5)
-                    activePosition.qty = truncateNumber(activePosition.qty - payload.qty, 5);
-                    activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
-                    activePosition.size = size;
-                    activePosition.margin = activePosition.margin - (payload.margin - Number(payload.realized_pnl));
-                    activePosition.assets_margin = activePosition.assets_margin + assets_price;
-                    // console.log(asset?.balance + (assets_price - Number(payload.realized_pnl)),'=========new balance=====');
-                    newbal = asset?.balance + (assets_price - Number(payload.realized_pnl));
-                }
-
-                // if quantity not 0 by new and previous order 
-                if (activePosition.qty !== 0) {
-                    await futurePositionModel.update({
-                        qty: activePosition.qty, size: activePosition.size, realized_pnl: activePosition.realized_pnl,
-                        entry_price: payload.entry_price, market_price: payload.market_price, margin: activePosition.margin, assets_margin: activePosition.assets_margin
-                    }, { where: { id: activePosition?.id } });
-                }
-                // if qty 0 after opposite direction order
-                else {
-                    newbal = newbal + activePosition.pnl;
-                    await futurePositionModel.update({ status: true, isDeleted: true }, { where: { id: activePosition?.id } });
-                }
-
-
-            }
-
-            //================================================
-            //================ Update Assets =================
-            //================================================
-            await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
-
-            if (reward_point > 0) {
-                let newRewardBal = reward?.amount - (reward_point);
-                let newOrderAmount = reward?.order_amount + (reward_point);
-                await userRewardTotalModel.update({ amount: newRewardBal, order_amount: newOrderAmount }, { where: { user_id: payload.user_id } });
-            }
-            // =========================================================================//
-            // ===============================Fee Deduction=============================//
-            // =========================================================================//
-            let futureProfit = 0;
-            try {
-                let profit: MarketProfitInput = {
-                    source_id: activePosition?.id,
-                    total_usdt: 0,
-                    paid_usdt: 0,
-                    admin_usdt: 0,
-                    buyer: activePosition?.user_id,
-                    seller: activePosition?.user_id,
-                    profit: futureProfit,
-                    fees: payload?.realized_pnl,
-                    coin_type: 'USDT',
-                    source_type: 'Future Trading',
-                }
-                await MarketProfitModel.create(profit);
-            } catch (error: any) {
-                console.log(error, '============errr');
-                throw new Error(error);
-            }
-
-            //==========================================================
-            //================ create position history =================
-            //==========================================================
-            let historyBody: futurePositionHistoryDto = {
-                position_id: activePosition?.id,
-                symbol: activePosition?.symbol,
-                user_id: activePosition?.user_id,
-                coin_id: activePosition?.coin_id,
-                market_price: activePosition?.market_price,
-                status: false,
-                direction: activePosition?.direction === 'long' ? 'Open Long' : 'Open Short',
-                order_type: activePosition?.order_type,
-                market_type: activePosition?.market_type,
-                isDeleted: false,
-                qty: payload?.qty
-            }
-            await futurePositionHistoryModel.create(historyBody);
-
-            activePosition = await futurePositionModel.findOne({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
-            return activePosition;
-        } catch (error) {
-            console.log(error, '------------');
-
+        } catch (error:any) {
+            console.log(error, '------------here i am 6');
+            throw new Error(error);
         }
     }
 
@@ -407,9 +332,7 @@ class futurePositionDal {
      */
     async editPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
         try {
-
             return await futurePositionModel.update(payload, { where: { id: payload.id } });
-
         } catch (error) {
             console.log(error)
         }
@@ -422,7 +345,6 @@ class futurePositionDal {
     async closePosition(id: string, userId: string): Promise<futurePositionOuput | any> {
         try {
             let position = await futurePositionModel.findOne({ where: { id: id }, raw: true });
-
             if (position) {
                 let closeResponse = await futurePositionModel.update({ status: true, queue: true }, { where: { id: id } });
                 let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
@@ -430,17 +352,12 @@ class futurePositionDal {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
                         let newBal = 0;
-                        console.log(asset?.balance, '==========assets balance');
-                        console.log(position?.margin, '========user assets value');
-                        console.log(position?.pnl, '===========user profit loss value');
-                        console.log(position?.realized_pnl, '=======position released value');
-
+                        // console.log(asset?.balance, '==========assets balance');
+                        // console.log(position?.margin, '========user assets value');
+                        // console.log(position?.pnl, '===========user profit loss value');
+                        // console.log(position?.realized_pnl, '=======position released value');
                         newBal = asset?.balance + position?.margin + (position?.pnl - position?.realized_pnl);
-
-                        console.log(newBal, '===========new balance');
-                        // =========================================================//
                         // ================Fee Deduction from user and add to admin=================//
-                        // =========================================================//
                         let futureProfit = 0;
                         if (position?.pnl < 0) {
                             futureProfit = position?.pnl * -1;
@@ -481,9 +398,7 @@ class futurePositionDal {
                             isDeleted: true,
                             qty: position?.qty
                         }
-
                         await futurePositionHistoryModel.create(historyBody);
-
                         return position;
                     }
                 }
