@@ -6,17 +6,37 @@ class profileDal extends BaseController {
         try {
             let profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
 
-            if (profile) {
-                let response = await profileModel.update(payload, { where: { user_id: payload.user_id } });
-                if (response) {
-                    profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
-                }
+            let username = await profileModel.findOne({
+                where: {
+                    uName: payload.uName
+                },
+                raw: true
+
+            });
+
+          
+            
+
+            if (username) {
+                
+                return {status: false,message:"Username is already taken"};
             }
-            else {
-                profile = await profileModel.create(payload);
+            else{
+
+                if (profile) {
+    
+                    let response = await profileModel.update(payload, { where: { user_id: payload.user_id } });
+                    if (response) {
+                        profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
+                    }
+                }
+                else {
+                    profile = await profileModel.create(payload);
+                }
+    
+                return profile;
             }
 
-            return profile;
 
         } catch (error: any) {
 
@@ -29,7 +49,7 @@ class profileDal extends BaseController {
             let profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
 
             if (profile) {
-                let response = await profileModel.update({image : payload.image}, { where: { user_id: payload.user_id } });
+                let response = await profileModel.update({ image: payload.image }, { where: { user_id: payload.user_id } });
                 if (response) {
                     profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
                 }
