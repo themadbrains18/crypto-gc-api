@@ -276,37 +276,37 @@ class adsPostDal {
     // }
     async getAllAdsPost(userid: string | undefined, offset: number, limit: number, currency: string, pmMethod: string): Promise<{ data: any[], totalLength: number }> {
         try {
-    
+
             let whereClause: any = { status: true };
-    
+
             if (userid !== undefined && userid !== 'undefined') {
                 whereClause.user_id = { [Op.not]: userid };
             }
-    
+
             // Add currency filter if not 'all'
             if (currency && currency !== 'all') {
                 whereClause.token_id = currency;
             }
-    
+
             // Prepare include for filtering based on payment method
-            let userPmethodInclude: any = {
-                model: userPmethodModel,
-                include: [
-                    {
-                        model: paymentMethodModel,
-                        attributes: {
-                            exclude: ["createdAt", "updatedAt", "deletedAt"]
-                        },
-                    }
-                ]
-            };
-    
-            if (pmMethod && pmMethod !== 'all') {
-                userPmethodInclude.where = { pmid: pmMethod };
+            let userPaymentMethods = await userPmethodModel.findAll({ where: { pmid: pmMethod }, raw: true, attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] } });
+            if (pmMethod === "all") {
+                userPaymentMethods = await userPmethodModel.findAll({ raw:true, attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] } });
             }
-    
+
+            // Extract the IDs of the payment methods
+            const pMethodIds = userPaymentMethods.map(upm => upm.id);
+
+            // Construct the conditions for JSON_CONTAINS
+            const jsonContainsConditions = pMethodIds.map(id => ({
+                [Op.and]: sequelize.literal(`JSON_CONTAINS(p_method, '{"upm_id": "${id}"}')`)
+            }));
+
             const data = await postModel.findAll({
-                where: whereClause,
+                where: {
+                    ...whereClause,
+                    [Op.or]: jsonContainsConditions
+                },
                 include: [
                     {
                         model: tokensModel,
@@ -343,7 +343,18 @@ class adsPostDal {
                             {
                                 model: profileModel
                             },
-                            userPmethodInclude // Include user payment method with optional filter
+                            {
+                                model: userPmethodModel,
+                                include: [
+                                    {
+                                        model: paymentMethodModel,
+                                        attributes: {
+                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
+                                        },
+                                    }
+                                ]
+                            }
+                            // userPmethodInclude // Include user payment method with optional filter
                         ],
                     }
                 ],
@@ -351,21 +362,24 @@ class adsPostDal {
                 offset: Number(offset),
                 // Add offset for pagination
             });
-    
+
             let totalLength = await postModel.count({
-                where: whereClause,
+                where: {
+                    ...whereClause,
+                    [Op.or]: jsonContainsConditions
+                }
             });
-            if(pmMethod && pmMethod !== 'all'){
-                totalLength=data?.length
+            if (pmMethod && pmMethod !== 'all') {
+                totalLength = data?.length
             }
-    
+
             return { data: data, totalLength: totalLength };
         } catch (error: any) {
             console.error("Error:", error.message);
             throw new Error(error.message);
         }
     }
-    
+
 
     /**
      * Get all post create by users and post status
