@@ -72,7 +72,7 @@ class userController extends BaseController {
       if (user?.refeer_code != "") {
         let referCodeExist = await service.user.checkUserReferCodeExist(user?.refeer_code);
         if (!referCodeExist) {
-          return super.fail(res, `Entered refer code not available. Please try again`);
+          return super.fail(res, `Please enter an valid referal code. Please try again`);
         }
       }
       //   check if user already exist
