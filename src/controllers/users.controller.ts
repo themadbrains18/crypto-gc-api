@@ -80,8 +80,8 @@ class userController extends BaseController {
 
       let message;
       if (userExist?.success === true) {
-        let message = flag == "number" ? "Phone number" : "Email";
-        return super.fail(res, `${message} is already used in our system.`);
+        let message = flag == "number" ? "phone number" : "email address";
+        return super.fail(res, `An account with this ${message} already exists.`);
         // throw new Error();
       }
 

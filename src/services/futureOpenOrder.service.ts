@@ -7,6 +7,7 @@ import futurePositionDto from "../models/dto/futurePoistion.dto";
 import futureOpenOrderModel, { futureOpenOrderOuput } from "../models/model/future_open_order.model";
 import service from "./service";
 import MarketProfitModel, { MarketProfitInput } from "../models/model/marketProfit.model";
+import futurePositionDal from "../models/dal/futurePosition.dal";
 
 class futureOpenOrderServices {
 
@@ -28,6 +29,11 @@ class futureOpenOrderServices {
      * @returns 
      */
     async create(payload: futureOpenOrderDto): Promise<any> {
+
+        console.log(payload,'=========TP/SL request====');
+
+        return
+        
         return await futureOpenOrderDal.createOpenOrder(payload)
     }
 
@@ -52,8 +58,6 @@ class futureOpenOrderServices {
 
     async openOrderCron(): Promise<futureOpenOrderOuput | any> {
         try {
-
-            // console.log('============cron limit order');
             let allTokens = await service.token.all();
             let openOrders = await futureOpenOrderModel.findAll({ where: { status: false, isDeleted: false, type: 'limit' }, raw: true });
 
@@ -66,7 +70,7 @@ class futureOpenOrderServices {
 
                     let tt = token[0]?.dataValues;
 
-                    if (Math.round(tt.price) === Math.round(oo.price_usdt)) {
+                    if (Math.round(tt.price) <= Math.round(oo.price_usdt) && oo.side === 'open long') {
 
                         let value: any = (oo.qty * 0.02).toFixed(5);
                         let releazedPnl: any = ((oo.price_usdt * value) / 100);
@@ -82,19 +86,20 @@ class futureOpenOrderServices {
                             queue: false,
                             status: false,
                             size: parseFloat(oo.amount),
-                            margin: oo.margin - releazedPnl,
+                            margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             market_price: oo.market_price,
                             tp_sl: '--',
                             market_type: 'limit',
                             order_type: oo.order_type,
                             pnl: 0.00,
-                            realized_pnl: releazedPnl,
+                            realized_pnl: releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             margin_ratio: 0.01,
-                            direction: oo.side === 'open long' ? 'long' : 'short',
+                            direction: 'long',
                             qty: oo.qty,
-                            assets_margin: oo.margin - releazedPnl
+                            assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0]
                         }
-                        let create = await futurePositionModel.create(body);
+                        let create = await futurePositionDal.createPosition(body)
+                        // futurePositionModel.create(body);
                         if (create) {
                             await futureOpenOrderModel.update({ status: true, isDeleted: false }, { where: { id: oo.id } });
                             // =========================================================//
@@ -120,22 +125,63 @@ class futureOpenOrderServices {
                             }
                         }
                     }
-                    // if (oo.side === 'open long') {
-                    //     if (tt.price > oo.price_usdt || tt.price === oo.price_usdt) {
-                    //         let create = await futurePositionModel.create(body);
-                    //         if (create) {
-                    //             await futureOpenOrderModel.update({ status: true, isDeleted: false }, { where: { id: oo.id } });
-                    //         }
-                    //     }
-                    // }
-                    // if (oo.side === 'open short') {
-                    //     if (tt.price < oo.price_usdt || tt.price === oo.price_usdt) {
-                    //         let create = await futurePositionModel.create(body);
-                    //         if (create) {
-                    //             await futureOpenOrderModel.update({ status: true, isDeleted: true }, { where: { id: oo.id } });
-                    //         }
-                    //     }
-                    // }
+
+                    if (Math.round(tt.price) >= Math.round(oo.price_usdt) && oo.side === 'open short') {
+
+                        let value: any = (oo.qty * 0.02).toFixed(5);
+                        let releazedPnl: any = ((oo.price_usdt * value) / 100);
+
+                        
+                        let body: futurePositionDto = {
+                            symbol: oo.symbol,
+                            coin_id: oo.coin_id,
+                            user_id: oo.user_id,
+                            entry_price: oo.price_usdt,
+                            leverage: oo.leverage,
+                            leverage_type: oo.leverage_type,
+                            liq_price: oo.liq_price,
+                            queue: false,
+                            status: false,
+                            size: parseFloat(oo.amount),
+                            margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            market_price: oo.market_price,
+                            tp_sl: '--',
+                            market_type: 'limit',
+                            order_type: oo.order_type,
+                            pnl: 0.00,
+                            realized_pnl: releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            margin_ratio: 0.01,
+                            direction: 'short',
+                            qty: oo.qty,
+                            assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0]
+                        }
+                        let create = await futurePositionDal.createPosition(body);
+                        // futurePositionModel.create(body);
+                        if (create) {
+                            await futureOpenOrderModel.update({ status: true, isDeleted: false }, { where: { id: oo.id } });
+                            // =========================================================//
+                            // ================Fee Deduction from user and add to admin=================//
+                            // =========================================================//
+                            let futureProfit = 0;
+                            try {
+                                let profit: MarketProfitInput = {
+                                    source_id: oo?.id,
+                                    total_usdt: 0,
+                                    paid_usdt: 0,
+                                    admin_usdt: 0,
+                                    buyer: oo?.user_id,
+                                    seller: oo?.user_id,
+                                    profit: futureProfit,
+                                    fees: releazedPnl,
+                                    coin_type: 'USDT',
+                                    source_type: 'Future Trading',
+                                }
+                                await MarketProfitModel.create(profit);
+                            } catch (error: any) {
+                                throw new Error(error.message);
+                            }
+                        }
+                    }
                 }
             }
 

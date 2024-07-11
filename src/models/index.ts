@@ -46,6 +46,7 @@ import userJwtTokenModel from "./model/userJwtToken.model";
 // future trading history model
 import futurePositionHistoryModel from "./model/future_position_history.model";
 import addressModel from "./model/address.model";
+import takeProfitStopLossModel from "./model/takeprofit_stoploss.model";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -109,7 +110,8 @@ let models = [
   userRewardModel,
   userRewardTotalModel,
   userJwtTokenModel,
-  addressModel
+  addressModel,
+  takeProfitStopLossModel
 ];
 
 /**
@@ -313,6 +315,9 @@ models.forEach((model) => model.initialize(sequelize));
       futurePositionModel.hasMany(futureOpenOrderModel, { foreignKey: "position_id" });
       futureOpenOrderModel.belongsTo(futurePositionModel, { foreignKey: "position_id" });
 
+      futurePositionModel.hasMany(takeProfitStopLossModel, { foreignKey: "position_id" });
+      takeProfitStopLossModel.belongsTo(futurePositionModel, { foreignKey: "position_id" });
+
       /**
        * watchlist table associate with token table
        * 
@@ -355,7 +360,7 @@ models.forEach((model) => model.initialize(sequelize));
 })().catch((err) => console.log(err));
 
 // sequelize.sync({ alter: true });
-// postModel.sync({ alter: true });
+// takeProfitStopLossModel.sync({ alter: true });
 
 
 //=============================================================
@@ -405,7 +410,8 @@ export {
   userRewardModel,
   userRewardTotalModel,
   userJwtTokenModel,
-  addressModel
+  addressModel,
+  takeProfitStopLossModel
 };
 
 export default sequelize;
