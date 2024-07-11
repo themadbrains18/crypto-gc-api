@@ -13,6 +13,7 @@ import userPmethodModel from "../model/user_p_method";
 import userModel from "../model/users.model";
 import tokenDal from "./token.dal";
 import orderModel from "../model/order.model";
+import sequelize from "sequelize";
 
 
 class adsPostDal {
@@ -196,18 +197,114 @@ class adsPostDal {
         }
     }
 
-    /**
-     * Get all post create by users
-     * @returns 
-     */
-    async getAllAdsPost(userid: string | undefined, offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
-        try {
-            let whereClause: any = { status: true };
+    // /**
+    //  * Get all post create by users
+    //  * @returns 
+    //  */
+    // async getAllAdsPost(userid: string | undefined, offset: number, limit: number,currency:string,pmMethod:string): Promise<{ data: any[], totalLength: number }> {
+    //     try {
+    //         let whereClause: any = { status: true };
 
+    //         if (userid !== undefined && userid !== 'undefined') {
+    //             whereClause.user_id = { [Op.not]: userid };
+    //         }
+
+    //         const data = await postModel.findAll({
+    //             where: whereClause,
+    //             include: [
+    //                 {
+    //                     model: tokensModel,
+    //                     attributes: {
+    //                         exclude: [
+    //                             "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+    //                         ]
+    //                     }
+    //                 },
+    //                 {
+    //                     model: globalTokensModel,
+    //                     attributes: {
+    //                         exclude: [
+    //                             "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
+    //                         ]
+    //                     }
+    //                 },
+    //                 {
+    //                     model: userModel,
+    //                     attributes: {
+    //                         exclude: [
+    //                             "otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"
+    //                         ]
+    //                     },
+    //                     include: [
+    //                         {
+    //                             model: kycModel,
+    //                             attributes: {
+    //                                 exclude: [
+    //                                     "id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"
+    //                                 ]
+    //                             }
+    //                         },
+    //                         {
+    //                             model: profileModel
+    //                         },
+    //                         {
+    //                             model: userPmethodModel,
+    //                             include: [
+    //                                 {
+    //                                     model: paymentMethodModel,
+    //                                     attributes: {
+    //                                         exclude: ["createdAt", "updatedAt", "deletedAt"]
+    //                                     },
+    //                                 }
+    //                             ]
+    //                         }
+
+    //                     ],
+    //                 },],
+
+
+    //             limit: Number(limit),  // Add limit for pagination
+    //             offset: Number(offset)  // Add offset for pagination
+    //         });
+
+    //         const totalLength = await postModel.count({ where: whereClause });
+
+    //         return { data: data, totalLength: totalLength };
+    //     } catch (error: any) {
+    //         throw new Error(error.message);
+    //     }
+    // }
+    async getAllAdsPost(userid: string | undefined, offset: number, limit: number, currency: string, pmMethod: string): Promise<{ data: any[], totalLength: number }> {
+        try {
+    
+            let whereClause: any = { status: true };
+    
             if (userid !== undefined && userid !== 'undefined') {
                 whereClause.user_id = { [Op.not]: userid };
             }
-
+    
+            // Add currency filter if not 'all'
+            if (currency && currency !== 'all') {
+                whereClause.token_id = currency;
+            }
+    
+            // Prepare include for filtering based on payment method
+            let userPmethodInclude: any = {
+                model: userPmethodModel,
+                include: [
+                    {
+                        model: paymentMethodModel,
+                        attributes: {
+                            exclude: ["createdAt", "updatedAt", "deletedAt"]
+                        },
+                    }
+                ]
+            };
+    
+            if (pmMethod && pmMethod !== 'all') {
+                userPmethodInclude.where = { pmid: pmMethod };
+            }
+    
             const data = await postModel.findAll({
                 where: whereClause,
                 include: [
@@ -246,33 +343,29 @@ class adsPostDal {
                             {
                                 model: profileModel
                             },
-                            {
-                                model: userPmethodModel,
-                                include: [
-                                    {
-                                        model: paymentMethodModel,
-                                        attributes: {
-                                            exclude: ["createdAt", "updatedAt", "deletedAt"]
-                                        },
-                                    }
-                                ]
-                            }
-
+                            userPmethodInclude // Include user payment method with optional filter
                         ],
-                    },],
-
-
+                    }
+                ],
                 limit: Number(limit),  // Add limit for pagination
-                offset: Number(offset)  // Add offset for pagination
+                offset: Number(offset),
+                // Add offset for pagination
             });
-
-            const totalLength = await postModel.count({ where: whereClause });
-
+    
+            let totalLength = await postModel.count({
+                where: whereClause,
+            });
+            if(pmMethod && pmMethod !== 'all'){
+                totalLength=data?.length
+            }
+    
             return { data: data, totalLength: totalLength };
         } catch (error: any) {
+            console.error("Error:", error.message);
             throw new Error(error.message);
         }
     }
+    
 
     /**
      * Get all post create by users and post status

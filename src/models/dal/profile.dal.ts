@@ -13,9 +13,7 @@ class profileDal extends BaseController {
                 raw: true
 
             });
-
-          
-            
+  
 
             if (username) {
                 

@@ -81,8 +81,8 @@ class postController extends BaseController {
   */
   async getAllAds(req: Request, res: Response) {
     try {
-      let { userid, offset, limit } = req.params;
-      let allPost = await service.ads.getAllPost(userid, offset, limit);
+      let { userid, offset, limit, currency,pmMethod } = req.params;
+      let allPost = await service.ads.getAllPost(userid, offset, limit,currency,pmMethod);
       super.ok<any>(res, allPost);
     } catch (error: any) {
       super.fail(res, error.message);
@@ -169,9 +169,9 @@ class postController extends BaseController {
   * @param res 
   * @param req 
   */
-  async socketPostAds(wss: WebSocket.Server, ws: WebSocket, userid: string | undefined, limit: number, offset: number): Promise<void> {
+  async socketPostAds(wss: WebSocket.Server, ws: WebSocket, userid: string | undefined, limit: number, offset: number,currency:string,pmMethod:string): Promise<void> {
     try {
-      const { data, totalLength } = await service.ads.getAllPost(userid, limit, offset);
+      const { data, totalLength } = await service.ads.getAllPost(userid, limit, offset, currency,pmMethod);
       wss.clients.forEach(function e(client: any) {
         client.send(JSON.stringify({ status: 200, data: data, type: 'post' }));
       })

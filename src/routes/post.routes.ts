@@ -21,7 +21,7 @@ class postRoutes  extends BaseController{
         this.router.get('/get/all',auth, post.getPost);
         this.router.get('/get/:offset/:limit',auth, post.getPostByUser);
         this.router.delete('/delete/:postid/:userid',auth,post.deletePost);
-        this.router.get('/all/:userid/:offset/:limit',post.getAllAds);
+        this.router.get('/all/:userid/:offset/:limit/:currency/:pmMethod',post.getAllAds);
         this.router.get('/get/:status/:offset/:limit',auth,post.getPostByUserByStatus);
         this.router.get('/ads/:id', auth, post.getSingleAdsById);
         this.router.post("/edit",super.Validator(adsPostSchema.edit),auth, post.edit);
