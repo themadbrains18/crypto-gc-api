@@ -24,7 +24,7 @@ class futureTradePairController extends BaseController {
 
   async allPairs(req: Request, res: Response, next: NextFunction) {
     try {
-      let pairs = await service.future.all();
+      let pairs = await service.future.all(req?.params?.name);
 
       super.ok<any>(res, pairs);
     } catch (error: any) {
@@ -35,7 +35,7 @@ class futureTradePairController extends BaseController {
   async allPairsByLimit(req: Request, res: Response, next: NextFunction) {
     try {
       let { offset, limit } = req.params;
-      let pairs = await service.future.all();
+      let pairs = await service.future.all('all');
       let pairsPaginate = await service.future.allByLimit(offset, limit);
       super.ok<any>(res, { data: pairsPaginate, total: pairs?.length });
     } catch (error: any) {
@@ -92,7 +92,7 @@ class futureTradePairController extends BaseController {
 
       let statusResponse = await service.future.changeStatus(data);
       if (statusResponse) {
-        let trades = await service.future.all();
+        let trades = await service.future.all('all');
         return super.ok<any>(res, trades);
       } else {
         super.fail(res, statusResponse);
@@ -116,7 +116,7 @@ class futureTradePairController extends BaseController {
       if (tradePairAlreadyRegister) {
         let tradeResponse = await service.future.edit(trade);
         if (tradeResponse) {
-          let trades = await service.future.all();
+          let trades = await service.future.all('all');
           return super.ok<any>(res, { trades, status: 200 });
         }
         // super.ok<any>(res, { message: "Token successfully registered.", data: tokenResponse })

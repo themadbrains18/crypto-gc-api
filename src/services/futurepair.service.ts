@@ -10,8 +10,8 @@ class futureTradePairServices {
      * 
      * @returns return all published token 
      */
-    async all(): Promise<any> {
-        return await futureTradePairDal.all();
+    async all(name:string): Promise<any> {
+        return await futureTradePairDal.all(name);
     }
 
     async allByLimit(offset: any, limit: any): Promise<any> {

@@ -5,6 +5,7 @@ import { updateFuturePairStatus } from "../../utils/interface";
 import tokensModel from "../model/tokens.model";
 import globalTokensModel from "../model/global_token.model";
 import service from "../../services/service";
+import { Op } from "sequelize";
 
 class futureTradePairDal {
 
@@ -12,10 +13,17 @@ class futureTradePairDal {
      * return all tokens data
      * @returns
      */
-    async all(): Promise<any> {
+    async all(name: string): Promise<any> {
         try {
+            let whereClause: any = { status: true };
+            /** Add currency filter if not '' */
+            if (name && name !== 'all') {
+                whereClause.coin_symbol = {
+                    [Op.like]: `%${name}%`
+                };
+            }
             let trades = await futureTradePairModel.findAll({
-                where: { status: true }, include: [
+                where: whereClause, include: [
                     {
                         model: tokensModel
                     },

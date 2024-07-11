@@ -74,7 +74,7 @@ class futurePositionController extends BaseController {
 
             let orderResponse = await service.position.edit(trade);
             if (orderResponse) {
-                let trades = await service.future.all();
+                let trades = await service.future.all('all');
                 return super.ok<any>(res, { trades, status: 200 });
             }
         } catch (error) {

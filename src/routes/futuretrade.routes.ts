@@ -22,7 +22,7 @@ class futureTradePairRoutes extends BaseController {
         // Frontend client routes
         // ===============================================
 
-        this.router.get('/', tradePair.allPairs);
+        this.router.get('/:name', tradePair.allPairs);
         this.router.get('/:offset/:limit', middleware.auth, tradePair.allPairsByLimit);
 
         /**
