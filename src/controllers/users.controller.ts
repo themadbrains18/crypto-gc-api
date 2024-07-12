@@ -166,6 +166,8 @@ class userController extends BaseController {
           //SENDING RESPONSE
           return super.ok<any>(res, newuser);
         } else {
+
+
           return super.fail(res, result.message);
         }
       }
@@ -201,6 +203,12 @@ class userController extends BaseController {
         return super.fail(res, 'You have not access to admin account.');
       }
 
+      if (login.lockUntil && login.lockUntil > new Date()) {
+       
+        throw new Error(
+          "Your account is susceptible to high risk. Please try again after 4 hours.",
+        );
+      }
       if (login && req.body?.step === 1) {
         return super.ok<any>(res, { message: "User Matched!!", login });
       }
@@ -260,6 +268,10 @@ class userController extends BaseController {
           let result = await service.otpService.matchOtp(userOtp);
 
           if (result.success === true) {
+            await userModel.update(
+              { loginAttempts: 0, lockUntil: null as any },
+              { where: { id: login.id } }
+            );
             lastLoginModel
               .findOne({
                 where: { user_id: login?.id },
@@ -342,6 +354,19 @@ class userController extends BaseController {
               user: login,
             });
           } else {
+            // Update login attempts and lock account if necessary
+            let userRecord:any = await userModel.findOne({ where: { id: login.id }, raw: true });
+            let loginAttempts = userRecord.loginAttempts || 0;
+            loginAttempts += 1;
+
+            let updateData: any = { loginAttempts: loginAttempts };
+            if (loginAttempts >= 10) {
+              updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
+            }
+
+            await userModel.update(updateData, { where: { id: login.id } });
+
+
             return super.fail(res, result.message);
           }
         }

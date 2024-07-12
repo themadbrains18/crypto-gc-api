@@ -28,6 +28,8 @@ interface UsersAttributes {
   cronStatus?: string;
   otpToken?: string;
   referral_id?:string;
+  loginAttempts?:number;
+  lockUntil?:Date;
   pwdupdatedAt?:Date;
   whitelist?: boolean;
   
@@ -69,9 +71,11 @@ class userModel
   public antiphishing!: string;
   public UID!: string;
   public cronStatus!: string;
+  public loginAttempts!: number;
   public otpToken!: string;
   public referral_id!:string;
   public whitelist!:boolean;
+  public lockUntil!:Date;
   public pwdupdatedAt!:Date;
 
   // timestamps!
@@ -164,9 +168,17 @@ class userModel
           type: DataTypes.BOOLEAN,
           defaultValue: false
         },
+        loginAttempts:{
+          type: DataTypes.INTEGER,
+          defaultValue: 0
+        },
         cronStatus: {
           type: DataTypes.BIGINT,
           allowNull: true,
+        },
+        lockUntil:{
+          type :DataTypes.DATE,
+          allowNull:true
         },
         pwdupdatedAt:{
           type :DataTypes.DATE,
