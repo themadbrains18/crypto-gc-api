@@ -274,35 +274,36 @@ class adsPostDal {
     //         throw new Error(error.message);
     //     }
     // }
+
     async getAllAdsPost(userid: string | undefined, offset: number, limit: number, currency: string, pmMethod: string): Promise<{ data: any[], totalLength: number }> {
         try {
-
             let whereClause: any = { status: true };
-
+    
             if (userid !== undefined && userid !== 'undefined') {
                 whereClause.user_id = { [Op.not]: userid };
             }
-
+    
             // Add currency filter if not 'all'
             if (currency && currency !== 'all') {
                 whereClause.token_id = currency;
             }
-
+    
             // Prepare include for filtering based on payment method
-            let userPaymentMethods = await userPmethodModel.findAll({ where: { pmid: pmMethod }, raw: true, attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] } });
-            if (pmMethod === "all") {
-                userPaymentMethods = await userPmethodModel.findAll({ raw:true, attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] } });
-            }
-
-            // Extract the IDs of the payment methods
+            let userPaymentMethods = await userPmethodModel.findAll({
+                where: pmMethod !== 'all' ? { pmid: pmMethod } : {},
+                raw: true,
+                attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] }
+            });
+    
             const pMethodIds = userPaymentMethods.map(upm => upm.id);
-
+    
             // Construct the conditions for JSON_CONTAINS
-            const jsonContainsConditions = pMethodIds.map(id => ({
+            const jsonContainsConditions = pMethodIds.length > 0 ? pMethodIds.map(id => ({
                 [Op.and]: sequelize.literal(`JSON_CONTAINS(p_method, '{"upm_id": "${id}"}')`)
-            }));
-
-            const data = await postModel.findAll({
+            })) : [];
+    
+            // Fetch all filtered records to get the total length
+            const allFilteredRecords = await postModel.findAll({
                 where: {
                     ...whereClause,
                     [Op.or]: jsonContainsConditions
@@ -311,33 +312,25 @@ class adsPostDal {
                     {
                         model: tokensModel,
                         attributes: {
-                            exclude: [
-                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
-                            ]
+                            exclude: ["fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"]
                         }
                     },
                     {
                         model: globalTokensModel,
                         attributes: {
-                            exclude: [
-                                "fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"
-                            ]
+                            exclude: ["fullName", "minimum_withdraw", "decimals", "tokenType", "status", "networks", "type", "createdAt", "updatedAt", "deletedAt"]
                         }
                     },
                     {
                         model: userModel,
                         attributes: {
-                            exclude: [
-                                "otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"
-                            ]
+                            exclude: ["otpToken", "dial_code", "password", "TwoFA", "kycstatus", "tradingPassword", "statusType", "registerType", "role", "secret", "own_code", "refeer_code", "antiphishing", "UID", "cronStatus", "createdAt", "updatedAt", "deletedAt"]
                         },
                         include: [
                             {
                                 model: kycModel,
                                 attributes: {
-                                    exclude: [
-                                        "id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"
-                                    ]
+                                    exclude: ["id", "user_id", "doctype", "docnumber", "dob", "idfront", "idback", "statement", "isVerified", "isReject", "destinationPath", "createdAt", "updatedAt", "deletedAt"]
                                 }
                             },
                             {
@@ -354,38 +347,29 @@ class adsPostDal {
                                     }
                                 ]
                             }
-                            // userPmethodInclude // Include user payment method with optional filter
                         ],
                     }
                 ],
-                limit: Number(limit),  // Add limit for pagination
-                offset: Number(offset),
-                // Add offset for pagination
             });
-
-            let totalLength = await postModel.count({
-                where: {
-                    ...whereClause,
-                    [Op.or]: jsonContainsConditions
-                }
-            });
-            if (pmMethod && pmMethod !== 'all') {
-                totalLength = data?.length
-            }
-
-            return { data: data, totalLength: totalLength };
+    
+            // Get total length of filtered records
+            const totalLength = allFilteredRecords.length;
+    
+            // Paginate the filtered records
+            const paginatedData = allFilteredRecords.slice(offset, offset + limit);
+    
+            return { data: paginatedData, totalLength: totalLength };
         } catch (error: any) {
             console.error("Error:", error.message);
             throw new Error(error.message);
         }
     }
-
-
+    
     /**
      * Get all post create by users and post status
      * @returns 
      */
-    async getUserPostByStatus(payload: string, status: string, offset: number, limit: number): Promise<{ data: any[], totalLength: number }> {
+    async getUserPostByStatus(payload: string, status: string, offset: number, limit: number,currency:string,pmMethod:string, date:string): Promise<{ data: any[], totalLength: number }> {
         try {
             let whereClause: any = {
                 user_id: payload
@@ -396,8 +380,34 @@ class adsPostDal {
                 whereClause.status = status === "true" ? true : false;
             }
 
+            if (currency && currency !== 'all') {
+                whereClause.token_id = currency;
+            }
+    
+            // Prepare include for filtering based on payment method
+            let userPaymentMethods = await userPmethodModel.findAll({
+                where: pmMethod !== 'all' ? { pmid: pmMethod } : {},
+                raw: true,
+                attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] }
+            });
+    
+            const pMethodIds = userPaymentMethods.map(upm => upm.id);
+    
+            // Construct the conditions for JSON_CONTAINS
+            const jsonContainsConditions = pMethodIds.length > 0 ? pMethodIds.map(id => ({
+                [Op.and]: sequelize.literal(`JSON_CONTAINS(p_method, '{"upm_id": "${id}"}')`)
+            })) : [];
+    
+            if (date && date !=="all") {
+                whereClause.createdAt = {
+                    [Op.gte]: new Date(date as string) // Filter posts from the given date
+                };
+            }
             let posts: any = await postModel.findAll({
-                where: whereClause, include: [
+                where: {
+                    ...whereClause,
+                    [Op.or]: jsonContainsConditions
+                }, include: [
                     {
                         model: tokensModel,
                         attributes: {
@@ -437,11 +447,15 @@ class adsPostDal {
                         }
                     }
                 ],
-                limit: Number(limit),  // Add limit for pagination
-                offset: Number(offset)
+                // limit: Number(limit),  // Add limit for pagination
+                // offset: Number(offset)
             })
-            const totalLength = await postModel.count({ where: whereClause });
-            return { data: posts, totalLength: totalLength };
+            const totalLength = posts.length;
+    
+            // Paginate the filtered records
+            const paginatedData = posts.slice(offset, offset + limit);
+    
+            return { data: paginatedData, totalLength: totalLength };
 
         } catch (error: any) {
             throw new Error(error.message)

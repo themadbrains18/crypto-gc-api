@@ -6,6 +6,9 @@ class profileDal extends BaseController {
         try {
             let profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
 
+            // console.log(payload,'==payload');
+            
+
             let username = await profileModel.findOne({
                 where: {
                     uName: payload.uName
@@ -13,9 +16,10 @@ class profileDal extends BaseController {
                 raw: true
 
             });
-  
+            // console.log(username,'==username');
 
-            if (username) {
+
+            if (username && username.user_id!== payload?.user_id) {
                 
                 return {status: false,message:"Username is already taken"};
             }

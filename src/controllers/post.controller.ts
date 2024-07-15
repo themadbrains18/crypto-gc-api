@@ -96,8 +96,9 @@ class postController extends BaseController {
   */
   async getPostByUserByStatus(req: Request, res: Response) {
     try {
-      let { status, offset, limit } = req.params;
-      let allPost = await service.ads.getUserPostByStatus(req.body.user_id, status, offset, limit);
+     
+      let { status, offset, limit,currency,pmMethod ,date } = req.params;
+      let allPost = await service.ads.getUserPostByStatus(req.body.user_id, status, offset, limit,currency,pmMethod ,date);
       super.ok<any>(res, allPost);
     } catch (error: any) {
       super.fail(res, error.message);

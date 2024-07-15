@@ -32,20 +32,28 @@ class authController extends BaseController {
 
 
       let reslt = await service.jwt.verify(token);
-      // console.log(reslt,"==reslt auth");
 
-      if (reslt.status !== undefined && reslt.status === 404)
+      if (reslt.status !== undefined && reslt.status === 404){
+
         return super.fail(res, "Unuthorized User");
+      }
 
       let previousToken = await userJwtTokenModel.findOne({ where: { token: reqToken, user_id : reslt?.user_id }, raw: true });
 
+      // console.log("prev",previousToken);
+      
+
       if (previousToken === null) {
+        // console.log("here in error");
+        
         return super.fail(res, "Unuthorized User");
       }
       req.headers.user = reslt;
       req.body.user_id = reslt.user_id
       next();
     } catch (error) {
+      // console.log(error,"==shdkjh");
+      
       next(error);
     }
   }

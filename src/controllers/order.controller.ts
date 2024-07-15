@@ -141,9 +141,9 @@ class orderController extends BaseController {
   */
   async getOrderListByStatusByLimit(req: Request, res: Response) {
     try {
-      let { status, offset, limit } = req.params
+      let { status, offset, limit,currency, date } = req.params
       let orderResponse = await service.p2p.getOrderList(req.params.userid);
-      let orderpaginate = await service.p2p.getOrderListByStatusByLimit(req.params.userid,status, offset, limit);
+      let orderpaginate = await service.p2p.getOrderListByStatusByLimit(req.params.userid,status, offset, limit, currency,date);
       super.ok<any>(res,  orderpaginate);
     } catch (error: any) {
       super.fail(res, error.message);

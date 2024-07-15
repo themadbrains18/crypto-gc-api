@@ -75,16 +75,16 @@ class p2pOrderService {
     async getOrderByid(payload: string): Promise<orderOuput | any> {
         try {
             let order = await orderModel.findOne({
-                where: { id: payload }, 
+                where: { id: payload },
                 include: [
                     {
                         model: postModel,
-                        attributes:{
-                            exclude:[
-                                "user_id","token_id","price","quantity","min_limit","max_limit","checked","status","createdAt","updatedAt","deletedAt"
+                        attributes: {
+                            exclude: [
+                                "user_id", "token_id", "price", "quantity", "min_limit", "max_limit", "checked", "status", "createdAt", "updatedAt", "deletedAt"
                             ]
                         },
-                        include:[
+                        include: [
                             {
                                 model: userModel,
                                 attributes: {
@@ -102,15 +102,15 @@ class p2pOrderService {
                                         }
                                     },
                                     {
-                                        model : profileModel
+                                        model: profileModel
                                     },
                                     {
-                                        model : userPmethodModel,
+                                        model: userPmethodModel,
                                         include: [
                                             {
                                                 model: paymentMethodModel,
                                                 attributes: {
-                                                    exclude: ["createdAt", "updatedAt","deletedAt"]
+                                                    exclude: ["createdAt", "updatedAt", "deletedAt"]
                                                 },
                                             }
                                         ]
@@ -136,7 +136,7 @@ class p2pOrderService {
                                 }
                             },
                             {
-                                model : profileModel
+                                model: profileModel
                             },
                         ]
                     }
@@ -148,22 +148,24 @@ class p2pOrderService {
         }
     }
 
-    async getOrderList(userid: string):Promise<orderOuput | any>{
+    async getOrderList(userid: string): Promise<orderOuput | any> {
         try {
-            if(userid===""){
+            if (userid === "") {
                 throw new Error('Please provide userid.')
             }
             return await orderModel.findAll({
-                where:{[Op.or]: [
-                    { buy_user_id: userid },
-                    { sell_user_id: userid }
-                ]},
+                where: {
+                    [Op.or]: [
+                        { buy_user_id: userid },
+                        { sell_user_id: userid }
+                    ]
+                },
                 include: [
                     {
                         model: postModel,
-                        attributes:{
-                            exclude:[
-                                "user_id","token_id","price","quantity","min_limit","max_limit","checked","status","createdAt","updatedAt","deletedAt"
+                        attributes: {
+                            exclude: [
+                                "user_id", "token_id", "price", "quantity", "min_limit", "max_limit", "checked", "status", "createdAt", "updatedAt", "deletedAt"
                             ]
                         },
                         include: [
@@ -206,114 +208,131 @@ class p2pOrderService {
                         ]
                     }
                 ],
-                order:[["createdAt","desc"]]
+                order: [["createdAt", "desc"]]
             });
-        } catch (error:any) {
+        } catch (error: any) {
             throw new Error(error.message);
         }
-        
+
     }
-    async getOrderListByLimit(userid: string,offset:string,limit:string):Promise<orderOuput | any>{
+    async getOrderListByLimit(userid: string, offset: string, limit: string): Promise<orderOuput | any> {
         try {
 
-            let limits=parseInt(limit)
-            let offsets=parseInt(offset)
+            let limits = parseInt(limit)
+            let offsets = parseInt(offset)
 
-            if(userid===""){
+            if (userid === "") {
                 throw new Error('Please provide userid.')
             }
             return await orderModel.findAll({
-                where:{[Op.or]: [
-                    { buy_user_id: userid },
-                    { sell_user_id: userid }
-                ]},
-                    include:{
-                    model: tokensModel
+                where: {
+                    [Op.or]: [
+                        { buy_user_id: userid },
+                        { sell_user_id: userid }
+                    ]
                 },
-                limit:limits,
-                offset:offsets
-                
-            });
-        } catch (error:any) {
-            throw new Error(error.message);
-        }
-        
-    }
-    async getOrderListByStatusByLimit(userid: string,status:string,offset:string,limit:string):Promise<orderOuput | any>{
-        try {
-
-            let limits=parseInt(limit)
-            let offsets=parseInt(offset)
-
-            if(userid===""){
-                throw new Error('Please provide userid.')
-            }
-            let whereClause:any = {
-                [Op.or]: [
-                    { buy_user_id: userid },
-                    { sell_user_id: userid }
-                ]
-            };
-            
-            if (status === "isReleased") {
-                whereClause.status = { [Op.or]: ['isReleased', 'isCompleted'] };
-              } else if (status !== "all") {
-                whereClause.status = status;
-              }
-        
-            
-            // Query to fetch paginated data
-            let data = await orderModel.findAll({
-                where: whereClause,
                 include: {
                     model: tokensModel
                 },
                 limit: limits,
                 offset: offsets
+
             });
-            
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+
+    }
+    async getOrderListByStatusByLimit(userid: string, status: string, offset: string, limit: string, currency:string, date:string): Promise<orderOuput | any> {
+        try {
+
+            let limits = parseInt(limit)
+            let offsets = parseInt(offset)
+
+            if (userid === "") {
+                throw new Error('Please provide userid.')
+            }
+            let whereClause: any = {
+                [Op.or]: [
+                    { buy_user_id: userid },
+                    { sell_user_id: userid }
+                ]
+            };
+
+            if (status === "isReleased") {
+                whereClause.status = { [Op.or]: ['isReleased', 'isCompleted'] };
+            } else if (status !== "all") {
+                whereClause.status = status;
+            }
+
+            if (currency && currency !== 'all') {
+                whereClause.token_id = currency;
+            }
+            if (date && date !=="all") {
+                whereClause.createdAt = {
+                    [Op.gte]: new Date(date as string) // Filter posts from the given date
+                };
+            }
+    
+            // Query to fetch paginated data
+            let data = await orderModel.findAll({
+                where: {
+                    ...whereClause,
+        
+                },
+                include: {
+                    model: tokensModel
+                }
+            });
+
             // Query to fetch total count
-            let countQuery = await orderModel.count({
-                where: whereClause
-            })
-            return {data, total:countQuery}
-        } catch (error:any) {
+         // Get total length of filtered records
+         
+         const totalLength = data.length;
+    
+         // Paginate the filtered records
+         const paginatedData = data.slice(offsets, offsets + limits);
+ 
+         return { data: paginatedData, total: totalLength };
+           
+        } catch (error: any) {
             throw new Error(error.message);
         }
-        
+
     }
-    async getAllOrderList():Promise<orderOuput | any>{
+    async getAllOrderList(): Promise<orderOuput | any> {
         try {
-            
-            return await orderModel.findAll
-            ({
-                include:{
-                model: tokensModel
-            }});
-        } catch (error:any) {
-            throw new Error(error.message);
-        }
-        
-    }
-    async getAllOrderListByLimit(offset:string,limit:string):Promise<orderOuput | any>{
-        try {
-            
-            let offsets=parseInt(offset);
-            let limits=parseInt(limit)
 
             return await orderModel.findAll
-            ({
-                include:{
-                model: tokensModel
-            },
-            limit:limits,
-            offset:offsets
-        
-        });
-        } catch (error:any) {
+                ({
+                    include: {
+                        model: tokensModel
+                    }
+                });
+        } catch (error: any) {
             throw new Error(error.message);
         }
-        
+
+    }
+    async getAllOrderListByLimit(offset: string, limit: string): Promise<orderOuput | any> {
+        try {
+
+            let offsets = parseInt(offset);
+            let limits = parseInt(limit)
+
+            return await orderModel.findAll
+                ({
+                    include: {
+                        model: tokensModel
+                    },
+                    limit: limits,
+                    offset: offsets
+
+                });
+        } catch (error: any) {
+            throw new Error(error.message);
+        }
+
     }
 }
 

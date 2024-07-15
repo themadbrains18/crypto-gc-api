@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import BaseController from "./main.controller";
 import withdrawDto from "../models/dto/withdraw.dto";
 import service from "../services/service";
-import { networkModel } from "../models";
+import { networkModel, userModel } from "../models";
 import WAValidator from 'multicoin-address-validator';
 // import { validate } from 'crypto-address-validator-ts';
 
@@ -54,6 +54,8 @@ class withdrawController extends BaseController {
 
       // let isValid = await validAddress.json();
 
+      let user= await userModel?.findOne({where:{}})
+
       if (valid && payload.step === 1) {
         return super.ok<any>(res, 'valid');
       }
@@ -61,9 +63,12 @@ class withdrawController extends BaseController {
         return super.fail(res, 'Invalid Address');
       }
 
+      
       let userOtp;
       if (payload?.otp === '' || payload?.otp === 'string' || payload.otp === null) {
         userOtp = { username: req?.body?.username };
+
+
 
         let otp:any = await service.otpGenerate.createOtpForUser(userOtp);
 
@@ -93,7 +98,25 @@ class withdrawController extends BaseController {
             super.ok<any>(res, responseData);
           }
           else{
-            super.fail(res, result.message);      
+
+            let userRecord:any = await userModel.findOne({ where: { email: req?.body?.username }, raw: true });
+            if (userRecord.lockUntil && userRecord.lockUntil > new Date()) {
+              throw new Error(
+                "Your account is susceptible to high risk. Please try again after 4 hours.",
+              );
+            }
+            let loginAttempts = userRecord.loginAttempts || 0;
+            loginAttempts += 1;
+
+            let updateData: any = { loginAttempts: loginAttempts };
+            if (loginAttempts >= 10) {
+              updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
+            }
+
+            await userModel.update(updateData, { where: { email: req?.body?.username } });
+
+
+            return super.fail(res, result.message);
           }
         }
       }

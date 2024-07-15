@@ -19,8 +19,8 @@ class adsPostservice{
     async getAllPost(userid:string | undefined,offset:any,limit:any, currency:string,pmMethod:string):Promise<postOuput | any>{
         return await adspostDal.getAllAdsPost(userid,offset,limit,currency,pmMethod);
     }
-    async getUserPostByStatus(payload : string,status:string,offset:any,limit:any):Promise<postOuput | any>{
-        return await adspostDal.getUserPostByStatus(payload,status,offset,limit);
+    async getUserPostByStatus(payload : string,status:string,offset:any,limit:any,currency:string,pmMethod:string ,date:string):Promise<postOuput | any>{
+        return await adspostDal.getUserPostByStatus(payload,status,offset,limit,currency,pmMethod,date);
     }
 
     async deletePost(post_id : string, user_id:string):Promise<postOuput |any>{
