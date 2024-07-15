@@ -277,7 +277,7 @@ class adsPostDal {
 
     async getAllAdsPost(userid: string | undefined, offset: number, limit: number, currency: string, pmMethod: string): Promise<{ data: any[], totalLength: number }> {
         try {
-            let whereClause: any = { status: true };
+            let whereClause: any = { status: true, quantity: { [Op.gt]: 0 } };
     
             if (userid !== undefined && userid !== 'undefined') {
                 whereClause.user_id = { [Op.not]: userid };
@@ -306,7 +306,9 @@ class adsPostDal {
             const allFilteredRecords = await postModel.findAll({
                 where: {
                     ...whereClause,
-                    [Op.or]: jsonContainsConditions
+                
+                    [Op.or]: jsonContainsConditions,
+                    
                 },
                 include: [
                     {

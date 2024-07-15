@@ -8,8 +8,13 @@ import userDal from "./users.dal";
 import assetsDto from "../dto/assets.dto";
 import { assetsAccountType, assetsWalletType } from "../../utils/interface";
 
+const truncateToSixDecimals = (num: number): number => {
+    const numStr = num.toFixed(10); // Convert number to string with sufficient precision
+    const decimalIndex = numStr.indexOf('.');
+    if (decimalIndex === -1) return num; // No decimal point found, return the number as is
+    return Number(numStr.substring(0, decimalIndex + 7)); // Truncate to 6 decimal places
+};
 class p2pOrderDal {
-
     /**
      * Create P2P order by seller
      * @param payload 
@@ -17,45 +22,47 @@ class p2pOrderDal {
      */
     async create(payload: P2POrderDto): Promise<orderOuput | any> {
         try {
-
             let userService = new userDal();
             let buyerUser = await userService.checkUserByPk(payload.buy_user_id);
             if (buyerUser === null) {
-                throw new Error("Buyer user not exist.Please verify your account.");
+                throw new Error("Buyer user not exist. Please verify your account.");
             }
 
             let cancelOrder = await service.p2p.checkCancelOrderCurrentDay(payload.buy_user_id);
             if (cancelOrder.length >= 3) {
                 throw new Error("You exceed your order limit today. Please try after 24 hours");
             }
-            
+
             let post = await service.ads.getPostByid(payload.post_id);
             if (payload.spend_amount < post.min_limit || payload.spend_amount > post.max_limit) {
                 throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
             }
 
             if (post.quantity < payload.quantity) {
-                throw new Error(`Please add quantity less or equal to ${post.quantity}`)
+                throw new Error(`Please add quantity less or equal to ${post.quantity}`);
             }
 
             let reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id);
-            
+
+            const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
+            const availableQuantity = truncateToSixDecimals(post.quantity - reservedQuantity);
+
             if (reserveOrders.length > 0) {
-                if ((post.quantity - reserveOrders[0]?.dataValues?.total) <= 0) {
-                    throw new Error(`Whoops! Order not available.`)
+                if (availableQuantity <= 0) {
+                    throw new Error(`Whoops! Order not available.`);
                 }
-                if ((post.quantity - reserveOrders[0]?.dataValues?.total) < payload?.quantity) {
-                    throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${post.quantity - reserveOrders[0]?.dataValues?.total}. `)
+                if (availableQuantity < payload.quantity) {
+                    throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${availableQuantity}.`);
                 }
             }
 
-            var remainingqty = (1 / post.price) * post.min_limit;
+            const remainingQty = truncateToSixDecimals((1 / post.price) * post.min_limit);
 
             let ordercreate = await orderModel.create(payload);
             if (ordercreate) {
-
-                if ((post.quantity - (reserveOrders[0]?.dataValues?.total + payload.quantity)) < remainingqty) {
-                    await postModel?.update({ status: false }, { where: { id: payload.post_id } });
+                const newAvailableQuantity = truncateToSixDecimals(post.quantity - (reservedQuantity + payload.quantity));
+                if (newAvailableQuantity < remainingQty) {
+                    await postModel.update({ status: false }, { where: { id: payload.post_id } });
                 }
                 return ordercreate?.dataValues;
             }
@@ -74,7 +81,7 @@ class p2pOrderDal {
         try {
 
             console.log('=========order cancel 3');
-            
+
             let userLayout = new userDal();
             let buyerUser = await userLayout.checkUserByPk(payload.user_id);
             if (buyerUser === null) {
@@ -82,7 +89,7 @@ class p2pOrderDal {
             }
 
             let order = await service.p2p.getOrderByid(payload?.order_id);
-            
+
             if (order) {
                 let updateOrder = await orderModel.update({ status: 'isCanceled' }, { where: { id: payload.order_id } });
                 let postUpdate = await postModel.update({ status: true }, { where: { id: order?.post_id } });
@@ -126,11 +133,11 @@ class p2pOrderDal {
         }
     }
 
-    async orderReleased(payload:any):Promise<orderOuput | any>{
+    async orderReleased(payload: any): Promise<orderOuput | any> {
         try {
 
-            console.log(payload,"==payload");
-            
+            console.log(payload, "==payload");
+
             let userService = new userDal();
             let sellerUser = await userService.checkUserByPk(payload.user_id);
             if (sellerUser === null) {
@@ -142,27 +149,27 @@ class p2pOrderDal {
                 sellerUser.tradingPassword
             );
 
-            if( pass === false){
+            if (pass === false) {
                 throw new Error("Funding code not match.");
             }
 
             let order = await service.p2p.getOrderByid(payload.order_id);
-            if(order){
+            if (order) {
                 if (order.status === 'isReleased') {
                     throw new Error(`Please don't try again you already released assets to buyer.`);
                 }
                 let post = await service.ads.getPostByid(order.post_id);
-                let released = await orderModel.update({status : 'isReleased'},{where : {id : payload.order_id, sell_user_id : payload.user_id}});
-                if(released){
-                    let postUpdate = postModel.update({quantity : post.quantity - order.quantity},{where:{id : order.post_id, user_id : order.sell_user_id}});
+                let released = await orderModel.update({ status: 'isReleased' }, { where: { id: payload.order_id, sell_user_id: payload.user_id } });
+                if (released) {
+                    let postUpdate = postModel.update({ quantity: post.quantity - order.quantity }, { where: { id: order.post_id, user_id: order.sell_user_id } });
 
-                    let obj : assetsDto = {
-                        user_id : order.buy_user_id,
-                        walletTtype : assetsWalletType.main_wallet,
-                        token_id : order.token_id,
-                        account_type : assetsAccountType.main_account,
-                        balance : order.receive_amount
-                    }   
+                    let obj: assetsDto = {
+                        user_id: order.buy_user_id,
+                        walletTtype: assetsWalletType.main_wallet,
+                        token_id: order.token_id,
+                        account_type: assetsAccountType.main_account,
+                        balance: order.receive_amount
+                    }
                     let assets = await service.assets.create(obj);
 
                     order.status = 'isReleased';
@@ -173,7 +180,7 @@ class p2pOrderDal {
             else {
                 throw new Error('Order not found!!.')
             }
-        } catch (error:any) {
+        } catch (error: any) {
             throw new Error(error.message);
         }
     }
