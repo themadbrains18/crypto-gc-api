@@ -19,7 +19,8 @@ class profileDal extends BaseController {
             // console.log(username,'==username');
 
 
-            if (username && username.user_id!== payload?.user_id) {
+
+            if (username && (username?.uName!==payload.uName || username.user_id!== payload?.user_id)) {
                 
                 return {status: false,message:"Username is already taken"};
             }
