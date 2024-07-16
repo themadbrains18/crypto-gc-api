@@ -90,7 +90,7 @@ class p2pOrderDal {
 
             let order = await service.p2p.getOrderByid(payload?.order_id);
 
-            if (order) {
+            if (order && order.status==="isProcess") {
                 let updateOrder = await orderModel.update({ status: 'isCanceled' }, { where: { id: payload.order_id } });
                 let postUpdate = await postModel.update({ status: true }, { where: { id: order?.post_id } });
                 if (postUpdate) {
