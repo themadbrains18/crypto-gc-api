@@ -185,7 +185,7 @@ class paymentController extends BaseController {
       }
 
       let userpMethodResponse = await service.p_method.createUserPaymentMethod(uMethod);
-      super.ok<any>(res, { message: "User payment method added successfully!!!.", result: userpMethodResponse });
+      super.ok<any>(res, {result: userpMethodResponse });
 
     } catch (error: any) {
       super.fail(res, error.message)
