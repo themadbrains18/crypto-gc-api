@@ -246,6 +246,8 @@ class p2pOrderService {
     async getOrderListByStatusByLimit(userid: string, status: string, offset: string, limit: string, currency:string, date:string): Promise<orderOuput | any> {
         try {
 
+            console.log("========date",date);
+            
             let limits = parseInt(limit)
             let offsets = parseInt(offset)
 
@@ -296,6 +298,8 @@ class p2pOrderService {
          return { data: paginatedData, total: totalLength };
            
         } catch (error: any) {
+            console.log("eror", error.message);
+            
             throw new Error(error.message);
         }
 

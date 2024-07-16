@@ -80,8 +80,7 @@ class p2pOrderDal {
     async cancelOrder(payload: any): Promise<orderOuput | any> {
         try {
 
-            console.log('=========order cancel 3');
-
+            console.log('=========order cancel 3', payload);
             let userLayout = new userDal();
             let buyerUser = await userLayout.checkUserByPk(payload.user_id);
             if (buyerUser === null) {
@@ -90,7 +89,8 @@ class p2pOrderDal {
 
             let order = await service.p2p.getOrderByid(payload?.order_id);
 
-            if (order && order.status==="isProcess") {
+            if (order && (order.status === "isProcess" || payload?.cancelType === 'mannual')) {
+                console.log("hi===");
                 let updateOrder = await orderModel.update({ status: 'isCanceled' }, { where: { id: payload.order_id } });
                 let postUpdate = await postModel.update({ status: true }, { where: { id: order?.post_id } });
                 if (postUpdate) {

@@ -373,6 +373,8 @@ class adsPostDal {
      */
     async getUserPostByStatus(payload: string, status: string, offset: number, limit: number,currency:string,pmMethod:string, date:string): Promise<{ data: any[], totalLength: number }> {
         try {
+            // console.log("here in ad post dal",date);
+            
             let whereClause: any = {
                 user_id: payload
             };
@@ -460,6 +462,8 @@ class adsPostDal {
             return { data: paginatedData, totalLength: totalLength };
 
         } catch (error: any) {
+            // console.log(error.message,"==message");
+            
             throw new Error(error.message)
         }
     }
