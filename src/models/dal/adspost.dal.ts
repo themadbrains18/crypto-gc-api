@@ -376,12 +376,17 @@ class adsPostDal {
             // console.log("here in ad post dal",date);
             
             let whereClause: any = {
-                user_id: payload
+                user_id: payload,
+              
             };
 
 
             if (status !== "all") {
                 whereClause.status = status === "true" ? true : false;
+                whereClause.quantity = {
+                    [Op.gt]: 0
+                };
+           
             }
 
             if (currency && currency !== 'all') {
