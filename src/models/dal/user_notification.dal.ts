@@ -22,12 +22,26 @@ class userNotificationDal extends BaseController {
     async getNotifications(user_id : string): Promise<userNotificationOuput | any> {
 
         try {
-            return await userNotificationModel.findAll({where  :{user_id : user_id}, raw : true});
+            return await userNotificationModel.findAll(
+                {where  :{user_id : user_id}, raw : true}
+            );
 
         } catch (error) {
             console.log(error);
         }
     }
+    // async function getNotifications(user_id : string):  Promise<userNotificationOuput | any> {
+    //     try {
+    //         const notifications = await userNotificationModel.findAll({
+    //             where: { user_id: user_id },
+    //             attributes: ['user_name'], // Include only the user name
+    //             raw: true
+    //         });
+    //         return notifications;
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
 }
 

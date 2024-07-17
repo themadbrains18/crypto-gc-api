@@ -18,7 +18,8 @@ const p2pOrderSchema = {
     }),
     cancel : Joi.object().keys({
         order_id : Joi.string().required(),
-        user_id : Joi.string().required()
+        user_id : Joi.string().required(),
+        cancelType : Joi.string().required()
     }),
     update : Joi.object().keys({
         order_id : Joi.string().required(),
