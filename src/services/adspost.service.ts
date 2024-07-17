@@ -2,6 +2,8 @@ import { where } from "sequelize";
 import adspostDal from "../models/dal/adspost.dal";
 import adsPostDto from "../models/dto/adspost.dto";
 import postModel, { postOuput } from "../models/model/post.model";
+import { assetModel } from "../models";
+import { assetsWalletType } from "../utils/interface";
 
 class adsPostservice{
 
@@ -41,9 +43,20 @@ class adsPostservice{
     async editAds(payload : adsPostDto):Promise<postOuput| any>{
 
         let post = await postModel.findOne({where : {id : payload.id}, raw:true});
+        let userAssets: any = await assetModel.findOne({ where: { user_id: payload.user_id, token_id: payload.token_id, walletTtype: assetsWalletType.main_wallet }, raw: true });
+
         if(post){
             let updatePost = await postModel.update(payload,{where: {id : payload?.id}});
             if(updatePost){
+              
+                console.log(userAssets?.balance, "balance");
+                console.log(post, "balance");
+                console.log(payload, "balance");
+                
+
+                    let newBal = (userAssets?.balance + Number(post.quantity)) - payload.quantity;
+    
+                    await assetModel.update({ balance: newBal }, { where: { user_id: payload.user_id, token_id: payload.token_id, walletTtype: assetsWalletType.main_wallet } });
                 return await postModel.findOne({where : {id : payload.id}, raw:true});
             }
         }
