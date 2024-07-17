@@ -277,38 +277,41 @@ class adsPostDal {
 
     async getAllAdsPost(userid: string | undefined, offset: number, limit: number, currency: string, pmMethod: string): Promise<{ data: any[], totalLength: number }> {
         try {
-            let whereClause: any = { status: true, quantity: { [Op.gt]: 0 } };
-    
+            let whereClause: any = {
+                status: true,
+                quantity: { [Op.gt]: 0 }
+            };
+
             if (userid !== undefined && userid !== 'undefined') {
                 whereClause.user_id = { [Op.not]: userid };
             }
-    
+
             // Add currency filter if not 'all'
             if (currency && currency !== 'all') {
                 whereClause.token_id = currency;
             }
-    
+
             // Prepare include for filtering based on payment method
             let userPaymentMethods = await userPmethodModel.findAll({
                 where: pmMethod !== 'all' ? { pmid: pmMethod } : {},
                 raw: true,
                 attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] }
             });
-    
+
             const pMethodIds = userPaymentMethods.map(upm => upm.id);
-    
+
             // Construct the conditions for JSON_CONTAINS
             const jsonContainsConditions = pMethodIds.length > 0 ? pMethodIds.map(id => ({
                 [Op.and]: sequelize.literal(`JSON_CONTAINS(p_method, '{"upm_id": "${id}"}')`)
             })) : [];
-    
+
             // Fetch all filtered records to get the total length
             const allFilteredRecords = await postModel.findAll({
                 where: {
                     ...whereClause,
-                
+
                     [Op.or]: jsonContainsConditions,
-                    
+
                 },
                 include: [
                     {
@@ -353,30 +356,32 @@ class adsPostDal {
                     }
                 ],
             });
-    
+
             // Get total length of filtered records
             const totalLength = allFilteredRecords.length;
-    
+
             // Paginate the filtered records
             const paginatedData = allFilteredRecords.slice(offset, offset + limit);
-    
+
             return { data: paginatedData, totalLength: totalLength };
         } catch (error: any) {
             console.error("Error:", error.message);
             throw new Error(error.message);
         }
     }
-    
+
     /**
      * Get all post create by users and post status
      * @returns 
      */
-    async getUserPostByStatus(payload: string, status: string, offset: number, limit: number,currency:string,pmMethod:string, date:string): Promise<{ data: any[], totalLength: number }> {
+    async getUserPostByStatus(payload: string, status: string, offset: number, limit: number, currency: string, pmMethod: string, date: string): Promise<{ data: any[], totalLength: number }> {
         try {
             let whereClause: any = {
                 user_id: payload
             };
 
+            console.log("=here i am",date);
+            
 
             if (status !== "all") {
                 whereClause.status = status === "true" ? true : false;
@@ -385,22 +390,22 @@ class adsPostDal {
             if (currency && currency !== 'all') {
                 whereClause.token_id = currency;
             }
-    
+
             // Prepare include for filtering based on payment method
             let userPaymentMethods = await userPmethodModel.findAll({
                 where: pmMethod !== 'all' ? { pmid: pmMethod } : {},
                 raw: true,
                 attributes: { exclude: ["user_id", "pmid", "status", "pm_name", "pmObject", "createdAt", "updatedAt", "deletedAt"] }
             });
-    
+
             const pMethodIds = userPaymentMethods.map(upm => upm.id);
-    
+
             // Construct the conditions for JSON_CONTAINS
             const jsonContainsConditions = pMethodIds.length > 0 ? pMethodIds.map(id => ({
                 [Op.and]: sequelize.literal(`JSON_CONTAINS(p_method, '{"upm_id": "${id}"}')`)
             })) : [];
-    
-            if (date && date !=="all") {
+
+            if (date && date !== "all") {
                 whereClause.createdAt = {
                     [Op.gte]: new Date(date as string) // Filter posts from the given date
                 };
@@ -452,11 +457,12 @@ class adsPostDal {
                 // limit: Number(limit),  // Add limit for pagination
                 // offset: Number(offset)
             })
+        
             const totalLength = posts.length;
-    
+
             // Paginate the filtered records
             const paginatedData = posts.slice(offset, offset + limit);
-    
+
             return { data: paginatedData, totalLength: totalLength };
 
         } catch (error: any) {
