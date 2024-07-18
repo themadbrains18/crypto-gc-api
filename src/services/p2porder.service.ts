@@ -84,6 +84,7 @@ class p2pOrderService {
                                 "user_id", "token_id", "price", "quantity", "min_limit", "max_limit", "checked", "status", "createdAt", "updatedAt", "deletedAt"
                             ]
                         },
+                        paranoid: false,
                         include: [
                             {
                                 model: userModel,
