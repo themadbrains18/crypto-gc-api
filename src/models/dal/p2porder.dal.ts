@@ -61,7 +61,7 @@ class p2pOrderDal {
 
             let ordercreate = await orderModel.create(payload);
             if (ordercreate) {
-                const newAvailableQuantity = truncateToSixDecimals(truncateToSixDecimals(post.quantity) - (reservedQuantity + truncateToSixDecimals(payload.quantity)));
+                const newAvailableQuantity = truncateToSixDecimals(truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity))));
                 if (newAvailableQuantity < remainingQty) {
                     await postModel.update({ status: false }, { where: { id: payload.post_id } });
                 }
@@ -163,7 +163,7 @@ class p2pOrderDal {
                 let released = await orderModel.update({ status: 'isReleased' }, { where: { id: payload.order_id, sell_user_id: payload.user_id } });
                 if (released) {
                   
-                    let postUpdate = postModel.update({ quantity: truncateToSixDecimals(post.quantity) - truncateToSixDecimals(order.quantity) }, { where: { id: order.post_id, user_id: order.sell_user_id } });
+                    let postUpdate = postModel.update({ quantity: truncateToSixDecimals(Number(post.quantity)) - truncateToSixDecimals(Number(order.quantity)) }, { where: { id: order.post_id, user_id: order.sell_user_id } });
 
                     let obj: assetsDto = {
                         user_id: order.buy_user_id,

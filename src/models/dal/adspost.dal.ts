@@ -41,7 +41,7 @@ class adsPostDal {
                 userVerify!.tradingPassword
             );
             
-            payload.quantity=truncateToSixDecimals(payload.quantity)
+            payload.quantity=truncateToSixDecimals(Number(payload.quantity))
 
             if (pass === false) {
                 throw new Error('Trading password you enter not correct.Please verify trading password');
@@ -393,9 +393,14 @@ class adsPostDal {
 
             if (status !== "all") {
                 whereClause.status = status === "true" ? true : false;
-                whereClause.quantity = {
-                    [Op.gt]: 0
-                };
+                if(status==="true"){
+                    console.log("=here i am ");
+                    
+                    whereClause.quantity = {
+                        [Op.gt]: 0
+                    };
+
+                }
            
             }
 

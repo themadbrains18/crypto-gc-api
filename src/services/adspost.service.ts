@@ -47,7 +47,7 @@ class adsPostservice {
         let userAssets: any = await assetModel.findOne({ where: { user_id: payload.user_id, token_id: payload.token_id, walletTtype: assetsWalletType.main_wallet }, raw: true });
 
         if (post) {
-            payload.quantity = truncateToSixDecimals(payload.quantity)
+            payload.quantity = truncateToSixDecimals(Number(payload.quantity))
 
             let updatePost = await postModel.update(payload, { where: { id: payload?.id } });
             if (updatePost) {
