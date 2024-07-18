@@ -163,7 +163,7 @@ class assetsDal extends BaseController {
                 ]
             });
         } catch (error: any) {
-            console.log(error);
+            // console.log(error);
             throw new Error(error.message);
         }
     }
@@ -229,7 +229,7 @@ class assetsDal extends BaseController {
 
             return { data: data, totalAmount: assetTotal };
         } catch (error: any) {
-            console.log(error);
+            // console.log(error);
             throw new Error(error.message);
         }
     }
@@ -240,7 +240,7 @@ class assetsDal extends BaseController {
      */
     async assetsOverviewByType(payload: string,type:string, offset: string, limit: string): Promise<assetOuput | any> {
         try {
-            console.log("here");
+            // console.log("here");
             
         
             let data = await assetModel.findAll({

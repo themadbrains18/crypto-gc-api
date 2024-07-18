@@ -11,6 +11,7 @@ import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.mode
 import globalTokensModel from "../model/global_token.model";
 import sequelize from '../index';
 import { truncateNumber } from "../../utils/utility";
+import { Op } from "sequelize";
 
 class marketDal {
 
@@ -50,7 +51,7 @@ class marketDal {
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
 
-                            let new_bal = truncateNumber(assets.balance - payload.token_amount,8);
+                            let new_bal = truncateNumber(assets.balance - payload.token_amount, 8);
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
 
                             return result;
@@ -87,7 +88,7 @@ class marketDal {
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
 
-                            let new_bal = truncateNumber(assets.balance - payload.volume_usdt,8);
+                            let new_bal = truncateNumber(assets.balance - payload.volume_usdt, 8);
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
 
                             return result;
@@ -138,12 +139,23 @@ class marketDal {
      * @param userid by limit
      * @returns 
      */
-    async getOrderListByLimit(userid: string, offset: string, limit: string): Promise<marketOrderOuput | any> {
+    async getOrderListByLimit(userid: string, offset: string, limit: string, currency: string, date: string): Promise<marketOrderOuput | any> {
         try {
             let offsets = parseInt(offset)
             let limits = parseInt(limit)
-            return await marketOrderModel.findAll({
-                where: { user_id: userid },
+            let whereClause: any = {
+                user_id: userid
+            };
+            if (currency && currency !== 'all') {
+                whereClause.token_id = currency;
+            }
+            if (date && date !== "all") {
+                whereClause.createdAt = {
+                    [Op.gte]: new Date(date as string) // Filter posts from the given date
+                };
+            }
+           let data=  await marketOrderModel.findAll({
+                where: whereClause,
                 include: [
                     {
                         model: tokensModel
@@ -155,9 +167,14 @@ class marketDal {
                         model: marketOrderHistoryModel,
                     }
                 ], order: [['createdAt', 'ASC']],
-                offset: offsets,
-                limit: limits
+          
             });
+            const totalLength = data.length;
+    
+            // Paginate the filtered records
+            const paginatedData = data.slice(offsets, offsets + limits);
+    
+            return { data: paginatedData, total: totalLength };
         } catch (error: any) {
             throw new Error(error.message);
         }
@@ -354,7 +371,7 @@ class marketDal {
      */
     async socketMarketBuySell(payload: marketPartialExecution): Promise<any> {
         try {
-            console.log('========here 1', payload);
+            // console.log('========here 1', payload);
             let activeOrder = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id }, raw: true, order: [['id', "DESC"]] });
             if (activeOrder) {
 
@@ -363,7 +380,7 @@ class marketDal {
                 //============================================================================//
                 if (payload?.market_type === marektTypeEnum.market) {
 
-                    console.log('=============market base execute');
+                    // console.log('=============market base execute');
 
                     let marketRequest = activeOrder.filter((item) => {
                         return item.market_type === marektTypeEnum.market
@@ -379,7 +396,7 @@ class marketDal {
                 //=============Limit Based spot market order partial execution===============//
                 //===========================================================================//
                 if (payload?.market_type === marektTypeEnum.limit) {
-                    console.log('=============limit base execute');
+                    // console.log('=============limit base execute');
                     let limitRequest = activeOrder.filter((item: any) => {
                         return item?.market_type === marektTypeEnum.limit
                     })
@@ -453,7 +470,7 @@ class marketDal {
                 entry_id: count[0].max + 1
             }
             await marketOrderHistoryModel.create(sellerhistory);
-            console.log(count[0].max + 1, '----after order execute');
+            // console.log(count[0].max + 1, '----after order execute');
 
         } catch (error: any) {
             throw new Error(error.message);

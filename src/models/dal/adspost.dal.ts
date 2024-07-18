@@ -14,6 +14,8 @@ import userModel from "../model/users.model";
 import tokenDal from "./token.dal";
 import orderModel from "../model/order.model";
 import sequelize from "sequelize";
+import { truncateNumber } from "../../utils/utility";
+import { truncateToSixDecimals } from "./p2porder.dal";
 
 
 class adsPostDal {
@@ -38,6 +40,8 @@ class adsPostDal {
                 `${payload.fundcode}`,
                 userVerify!.tradingPassword
             );
+            
+            payload.quantity=truncateToSixDecimals(payload.quantity)
 
             if (pass === false) {
                 throw new Error('Trading password you enter not correct.Please verify trading password');
@@ -49,6 +53,8 @@ class adsPostDal {
             if (userAssets != null && userAssets!.balance < payload.quantity) {
                 throw new Error('You have unsufficiant balance!!.');
             }
+
+
             let post = await postModel.create(payload);
 
             if (post) {
@@ -355,6 +361,7 @@ class adsPostDal {
                         ],
                     }
                 ],
+            
             });
 
             // Get total length of filtered records
@@ -381,9 +388,7 @@ class adsPostDal {
             let whereClause: any = {
                 user_id: payload
             };
-
-            console.log("=here i am",date);
-            
+           
 
             if (status !== "all") {
                 whereClause.status = status === "true" ? true : false;
@@ -456,6 +461,8 @@ class adsPostDal {
                         }
                     }
                 ],
+                order: [['createdAt', 'DESC']] // Order by createdAt descending
+
                 // limit: Number(limit),  // Add limit for pagination
                 // offset: Number(offset)
             })
@@ -483,6 +490,10 @@ class adsPostDal {
     async deletePostByUserPostId(post_id: string, user_id: string): Promise<postOuput | any> {
 
         try {
+            let orders= await orderModel.findAll({where:{post_id:post_id},raw:true})
+            if(orders.length>0){
+                throw new Error('Orders are associated with selected post ads.')
+            }
             let post = await postModel.findOne({ where: { id: post_id, user_id: user_id }, raw: true });
             if (post != null) {
                 let balance: number = post.quantity;

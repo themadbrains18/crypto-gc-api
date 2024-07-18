@@ -84,19 +84,19 @@ class orderModel
           allowNull: false,
         },
         price: {
-          type: DataTypes.DOUBLE,
+          type: DataTypes.DOUBLE(10,6),
           allowNull: false,
         },
         quantity: {
-          type: DataTypes.DOUBLE,
+          type: DataTypes.DOUBLE(10,6),
           allowNull: false,
         },
         spend_amount: {
-          type: DataTypes.DOUBLE,
+          type: DataTypes.DOUBLE(10,6),
           allowNull: false,
         },
         receive_amount: {
-          type: DataTypes.DOUBLE,
+          type: DataTypes.DOUBLE(10,6),
           allowNull: false,
         },
         spend_currency: {

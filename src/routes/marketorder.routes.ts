@@ -39,7 +39,7 @@ class marketOrderRoutes  extends BaseController{
         // =======================================================//
         // get all trade history by user id 
         this.router.get("/order/list/:userid",middleware.auth,market.getorders);
-        this.router.get("/order/list/:userid/:offset/:limit",middleware.auth,market.getordersByLimit);
+        this.router.get("/order/list/:userid/:offset/:limit/:currency/:date",middleware.auth,market.getordersByLimit);
 
 
         this.router.put('/trasfer/cron',market.socketMarket);

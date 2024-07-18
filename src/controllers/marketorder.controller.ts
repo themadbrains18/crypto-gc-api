@@ -96,11 +96,11 @@ class marketOrderController extends BaseController {
   async getordersByLimit(req: Request, res: Response) {
     try {
            
-      let { offset, limit } = req?.params
+      let { offset, limit, currency, date } = req?.params
       let orderResponse = await service.market.getList(req.params.userid);
-      let orderPaginate = await service.market.getListByLimit(req.params.userid, offset, limit);
+      let orderPaginate = await service.market.getListByLimit(req.params.userid, offset, limit,currency,date);
 
-      super.ok<any>(res, { data: orderPaginate, total: orderResponse.length });
+      super.ok<any>(res,orderPaginate);
     } catch (error: any) {
       super.fail(res, error.message);
     }

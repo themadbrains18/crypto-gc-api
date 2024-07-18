@@ -284,7 +284,8 @@ class p2pOrderService {
                 },
                 include: {
                     model: tokensModel
-                }
+                },            order: [['createdAt', 'DESC']] // Order by createdAt descending
+
             });
 
             // Query to fetch total count

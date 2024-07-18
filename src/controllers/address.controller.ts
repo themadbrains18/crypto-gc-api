@@ -100,12 +100,10 @@ class addressController extends BaseController {
           userOtp = {
             username: req?.body?.username,
             otp: req.body?.otp,
-          };
-          console.log("==herere");
-          let result = await service.otpService.matchOtp(userOtp);
+          };     
+            let result = await service.otpService.matchOtp(userOtp);
 
           if (result.success === true) {
-            console.log("==hi");
             delete payload?.username
             let responseData = await service.address.create(payload);
             super.ok<any>(res, responseData);

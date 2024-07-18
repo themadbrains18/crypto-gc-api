@@ -7,8 +7,9 @@ import postModel, { postOuput } from "../model/post.model";
 import userDal from "./users.dal";
 import assetsDto from "../dto/assets.dto";
 import { assetsAccountType, assetsWalletType } from "../../utils/interface";
+import { truncateNumber } from "../../utils/utility";
 
-const truncateToSixDecimals = (num: number): number => {
+export const truncateToSixDecimals = (num: number): number => {
     const numStr = num.toFixed(10); // Convert number to string with sufficient precision
     const decimalIndex = numStr.indexOf('.');
     if (decimalIndex === -1) return num; // No decimal point found, return the number as is
@@ -60,7 +61,7 @@ class p2pOrderDal {
 
             let ordercreate = await orderModel.create(payload);
             if (ordercreate) {
-                const newAvailableQuantity = truncateToSixDecimals(post.quantity - (reservedQuantity + payload.quantity));
+                const newAvailableQuantity = truncateToSixDecimals(truncateToSixDecimals(post.quantity) - (reservedQuantity + truncateToSixDecimals(payload.quantity)));
                 if (newAvailableQuantity < remainingQty) {
                     await postModel.update({ status: false }, { where: { id: payload.post_id } });
                 }
@@ -90,7 +91,7 @@ class p2pOrderDal {
             let order = await service.p2p.getOrderByid(payload?.order_id);
 
             if (order && (order.status === "isProcess" || payload?.cancelType === 'mannual')) {
-                console.log("hi===");
+                // console.log("hi===");
                 let updateOrder = await orderModel.update({ status: 'isCanceled' }, { where: { id: payload.order_id } });
                 let postUpdate = await postModel.update({ status: true }, { where: { id: order?.post_id } });
                 if (postUpdate) {
@@ -136,7 +137,7 @@ class p2pOrderDal {
     async orderReleased(payload: any): Promise<orderOuput | any> {
         try {
 
-            console.log(payload, "==payload");
+            // console.log(payload, "==payload");
 
             let userService = new userDal();
             let sellerUser = await userService.checkUserByPk(payload.user_id);
@@ -161,7 +162,8 @@ class p2pOrderDal {
                 let post = await service.ads.getPostByid(order.post_id);
                 let released = await orderModel.update({ status: 'isReleased' }, { where: { id: payload.order_id, sell_user_id: payload.user_id } });
                 if (released) {
-                    let postUpdate = postModel.update({ quantity: post.quantity - order.quantity }, { where: { id: order.post_id, user_id: order.sell_user_id } });
+                  
+                    let postUpdate = postModel.update({ quantity: truncateToSixDecimals(post.quantity) - truncateToSixDecimals(order.quantity) }, { where: { id: order.post_id, user_id: order.sell_user_id } });
 
                     let obj: assetsDto = {
                         user_id: order.buy_user_id,

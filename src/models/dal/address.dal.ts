@@ -68,7 +68,7 @@ class addressDal {
     try {
       return await addressModel.create(payload);
     } catch (error: any) {
-      console.log(error, "==error here");
+      // console.log(error, "==error here");
 
       throw new Error(error.message)
     }

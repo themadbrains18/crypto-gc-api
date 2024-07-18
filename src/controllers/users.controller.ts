@@ -124,7 +124,7 @@ class userController extends BaseController {
 
           let response = await fetch('https://www.fast2sms.com/dev/bulkV2?authorization=6ElMeqCL34x7iskWctpVyGRZ52PfKbJNhuOoFUYvnrjXI8T0AaI64E2FnHjecMJXPqDbTd7QCKiWhuZg&route=otp&variables_values=' + Number(otp.otp) + '&flash=1&numbers=' + user?.username)
 
-          console.log(await response.json(), "===fdjkhfjkdh");
+          // console.log(await response.json(), "===fdjkhfjkdh");
 
 
           delete otp["otp"];
@@ -250,7 +250,7 @@ class userController extends BaseController {
           let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
           let response = await fetch('https://www.fast2sms.com/dev/bulkV2?authorization=6ElMeqCL34x7iskWctpVyGRZ52PfKbJNhuOoFUYvnrjXI8T0AaI64E2FnHjecMJXPqDbTd7QCKiWhuZg&route=otp&variables_values=' + Number(otp.otp) + '&flash=1&numbers=' + userOtp?.username)
 
-          console.log(await response.json(), "===fdjkhfjkdh");
+          // console.log(await response.json(), "===fdjkhfjkdh");
 
 
           delete otp["otp"];

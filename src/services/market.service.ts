@@ -26,8 +26,8 @@ class marketService {
         return await marketDal.getOrderList(userid);
     }
 
-    async getListByLimit(userid: string, offset: string, limit: string): Promise<marketOrderOuput | any> {
-        return await marketDal.getOrderListByLimit(userid, offset, limit);
+    async getListByLimit(userid: string, offset: string, limit: string, currency:string, date:string): Promise<marketOrderOuput | any> {
+        return await marketDal.getOrderListByLimit(userid, offset, limit, currency,date);
     }
 
     async getAllMarketOrder(): Promise<marketOrderOuput | any> {
