@@ -394,7 +394,7 @@ class adsPostDal {
             if (status !== "all") {
                 whereClause.status = status === "true" ? true : false;
                 if(status==="true"){
-                    console.log("=here i am ");
+                    // console.log("=here i am ");
                     
                     whereClause.quantity = {
                         [Op.gt]: 0
@@ -500,7 +500,9 @@ class adsPostDal {
     async deletePostByUserPostId(post_id: string, user_id: string): Promise<postOuput | any> {
 
         try {
-            let orders= await orderModel.findAll({where:{post_id:post_id},raw:true})
+            let orders= await orderModel.findAll({where:{post_id:post_id, status: {
+                [Op.or]: ['isProcess', 'isCompleted']
+              }},raw:true})
             if(orders.length>0){
                 throw new Error('Orders are associated with selected post ads.')
             }

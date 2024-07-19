@@ -81,7 +81,7 @@ class p2pOrderDal {
     async cancelOrder(payload: any): Promise<orderOuput | any> {
         try {
 
-            console.log('=========order cancel 3', payload);
+            // console.log('=========order cancel 3', payload);
             let userLayout = new userDal();
             let buyerUser = await userLayout.checkUserByPk(payload.user_id);
             if (buyerUser === null) {

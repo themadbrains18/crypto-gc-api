@@ -12,7 +12,7 @@ class p2pOrderService {
     }
 
     async cancelOrder(payload: any): Promise<orderOuput | any> {
-        console.log('=========order cancel 2');
+        // console.log('=========order cancel 2');
         return await p2porderDal.cancelOrder(payload);
     }
 
@@ -247,7 +247,7 @@ class p2pOrderService {
     async getOrderListByStatusByLimit(userid: string, status: string, offset: string, limit: string, currency:string, date:string): Promise<orderOuput | any> {
         try {
 
-            console.log("========date",date);
+            // console.log("========date",date);
             
             let limits = parseInt(limit)
             let offsets = parseInt(offset)
