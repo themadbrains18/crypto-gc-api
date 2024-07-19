@@ -114,7 +114,7 @@ class p2pOrderService {
                                                     exclude: ["createdAt", "updatedAt", "deletedAt"]
                                                 },
                                             }
-                                        ]
+                                        ],paranoid: false,
                                     }
                                 ]
                             }
