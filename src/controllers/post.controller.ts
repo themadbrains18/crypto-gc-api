@@ -51,7 +51,7 @@ class postController extends BaseController {
   */
   async getPost(req: Request, res: Response) {
     try {
-\
+
       
       let { userid }= req?.params
       let userPost = await service.ads.getUserAds(userid);
