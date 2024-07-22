@@ -129,6 +129,9 @@ class userServices {
           user.password
         );
 
+        console.log(pass,"============pass");
+        
+
         if (pass) {
           await delete payload?.password;
           await delete payload?.secret;
@@ -139,10 +142,7 @@ class userServices {
           // console.log(res[0]);
           return true;
         } else {
-          return {
-            success: false,
-            message: "Opps! please check your password",
-          };
+          return false;
         }
       } else {
         throw new Error("User not found");
