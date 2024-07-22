@@ -486,12 +486,22 @@ class userController extends BaseController {
                   user.number = req.body.data;
                 }
                 let userResponse = await service.user.updateUser(user);
-                // console.log(userResponse);
+             
+                console.log(userResponse,"this is outside the if block");
+                
+                if(userResponse){
 
-                // if(userResponse)
-                super.ok<any>(res, {
-                  data: "User update successfully.",
-                });
+                  console.log("this is in the if");
+                  return super.ok<any>(res, {
+                    data: "User update successfully.",
+                  });
+
+                }else{
+                  console.log("this is in the else");
+                  return super.fail(res, 
+                  "Opps! please check your password"
+                  );
+                }
               }
             } else {
               return super.fail(res, result.message);
