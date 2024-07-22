@@ -51,7 +51,8 @@ class postController extends BaseController {
   */
   async getPost(req: Request, res: Response) {
     try {
-      let userPost = await service.ads.getUserAds(req?.body?.user_id);
+      let { userid }= req?.params
+      let userPost = await service.ads.getUserAds(userid);
 
       super.ok<any>(res, userPost);
     } catch (error: any) {
