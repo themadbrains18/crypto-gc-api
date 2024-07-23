@@ -182,7 +182,8 @@ class orderController extends BaseController {
   */
   async getOrderById(req: Request, res: Response) {
     try {
-      let orderResponse = await service.p2p.getOrderByid(req.params.orderid);
+      let userid = req.body.user_id;
+      let orderResponse = await service.p2p.getOrderByid(req.params.orderid, userid);
 
       super.ok<any>(res, orderResponse);
     } catch (error: any) {
@@ -204,7 +205,7 @@ class orderController extends BaseController {
     try {
 
       if (body?.orderid === undefined || body?.orderid === "") return
-      let data = await service.p2p.getOrderByid(body.orderid);
+      let data = await service.p2p.getOrderByid(body.orderid, body?.user_id);
 
       wss.clients.forEach(function e(client: any) {
         client.send(JSON.stringify({ status: 200, data: data, type: 'order' }));

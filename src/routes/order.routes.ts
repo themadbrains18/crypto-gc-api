@@ -23,7 +23,7 @@ class orderRoutes  extends BaseController{
         this.router.get('/all/:userid',middleware.auth, order.getOrderList);
         this.router.get('/all/:userid/:offset/:limit',middleware.auth, order.getOrderListByLimit);
         this.router.get('/list/:userid/:status/:offset/:limit/:currency/:date',middleware.auth, order.getOrderListByStatusByLimit);
-        this.router.get('/order/:orderid', order.getOrderById);
+        this.router.get('/order/:orderid',middleware.auth, order.getOrderById);
         this.router.get('/slugverify/:orderid',middleware.auth, order.slugverify);
         this.router.post('/payment/method',middleware.auth, order.updatePaymentMethod);
         this.router.get('/admin/all', order.getAllOrderList);

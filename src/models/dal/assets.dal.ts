@@ -223,7 +223,6 @@ class assetsDal extends BaseController {
                 for (const as of allData) {
                     if (as.token_id === ls.id && as.balance > 0) {
                         ls.avail_bal = as.balance;
-                        console.log(as.balanace, "===", ls?.price);
                         
                         assetTotal = assetTotal + (as.balance * truncateToSixDecimals(ls?.price))
                     }
