@@ -9,6 +9,7 @@ import tokenstakeModel from "../model/tokenstake.model";
 import tradePairModel from "../model/tradePair.model";
 import futureTradePairModel from "../model/futuretrade.model";
 import tokenDal from "./token.dal";
+import { truncateToSixDecimals } from "./p2porder.dal";
 
 class assetsDal extends BaseController {
 
@@ -222,7 +223,8 @@ class assetsDal extends BaseController {
                 for (const as of allData) {
                     if (as.token_id === ls.id && as.balance > 0) {
                         ls.avail_bal = as.balance;
-                        assetTotal = assetTotal + (as.balance * ls?.price)
+                        
+                        assetTotal = assetTotal + (as.balance * truncateToSixDecimals(ls?.price))
                     }
                 }
             }

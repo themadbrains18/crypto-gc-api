@@ -88,7 +88,7 @@ class p2pOrderDal {
                 throw new Error("Buyer user not exist.Please verify your account.");
             }
 
-            let order = await service.p2p.getOrderByid(payload?.order_id);
+            let order = await service.p2p.getOrderByid(payload?.order_id, payload.user_id);
 
             if (order && (order.status === "isProcess" || payload?.cancelType === 'mannual')) {
                 // console.log("hi===");
@@ -114,7 +114,7 @@ class p2pOrderDal {
      */
     async updateOrder(payload: any): Promise<orderOuput | any> {
         try {
-            let order = await service.p2p.getOrderByid(payload.order_id);
+            let order = await service.p2p.getOrderByid(payload.order_id, payload.user_id);
             if (order) {
                 if (order.status === 'isCanceled') {
                     throw new Error(`This order is canceled. Please try to create new order and pay payment.`)
@@ -123,7 +123,7 @@ class p2pOrderDal {
                     throw new Error(`You aleady paid payment for this order.`);
                 }
                 await orderModel.update({ status: 'isCompleted' }, { where: { id: payload.order_id } });
-                let updatedOrder = await service.p2p.getOrderByid(payload.order_id);
+                let updatedOrder = await service.p2p.getOrderByid(payload.order_id, payload.user_id);
                 return updatedOrder;
             }
             else {
@@ -154,7 +154,7 @@ class p2pOrderDal {
                 throw new Error("Funding code not match.");
             }
 
-            let order = await service.p2p.getOrderByid(payload.order_id);
+            let order = await service.p2p.getOrderByid(payload.order_id, payload.user_id);
             if (order) {
                 if (order.status === 'isReleased') {
                     throw new Error(`Please don't try again you already released assets to buyer.`);

@@ -72,10 +72,18 @@ class p2pOrderService {
      * @param payload 
      * @returns 
      */
-    async getOrderByid(payload: string): Promise<orderOuput | any> {
+    async getOrderByid(payload: string, userid: string): Promise<orderOuput | any> {
         try {
             let order = await orderModel.findOne({
-                where: { id: payload },
+                where: {
+                    id: payload,
+                    ...(userid && {
+                        [Op.or]: [
+                            { buy_user_id: userid },
+                            { sell_user_id: userid }
+                        ]
+                    })
+                },
                 include: [
                     {
                         model: postModel,
@@ -114,7 +122,7 @@ class p2pOrderService {
                                                     exclude: ["createdAt", "updatedAt", "deletedAt"]
                                                 },
                                             }
-                                        ],paranoid: false,
+                                        ], paranoid: false,
                                     }
                                 ]
                             }
@@ -244,11 +252,11 @@ class p2pOrderService {
         }
 
     }
-    async getOrderListByStatusByLimit(userid: string, status: string, offset: string, limit: string, currency:string, date:string): Promise<orderOuput | any> {
+    async getOrderListByStatusByLimit(userid: string, status: string, offset: string, limit: string, currency: string, date: string): Promise<orderOuput | any> {
         try {
 
             // console.log("========date",date);
-            
+
             let limits = parseInt(limit)
             let offsets = parseInt(offset)
 
@@ -271,37 +279,37 @@ class p2pOrderService {
             if (currency && currency !== 'all') {
                 whereClause.token_id = currency;
             }
-            if (date && date !=="all") {
+            if (date && date !== "all") {
                 whereClause.createdAt = {
                     [Op.gte]: new Date(date as string) // Filter posts from the given date
                 };
             }
-    
+
             // Query to fetch paginated data
             let data = await orderModel.findAll({
                 where: {
                     ...whereClause,
-        
+
                 },
                 include: {
                     model: tokensModel
-                },            order: [['createdAt', 'DESC']] // Order by createdAt descending
+                }, order: [['createdAt', 'DESC']] // Order by createdAt descending
 
             });
 
             // Query to fetch total count
-         // Get total length of filtered records
-         
-         const totalLength = data.length;
-    
-         // Paginate the filtered records
-         const paginatedData = data.slice(offsets, offsets + limits);
- 
-         return { data: paginatedData, total: totalLength };
-           
+            // Get total length of filtered records
+
+            const totalLength = data.length;
+
+            // Paginate the filtered records
+            const paginatedData = data.slice(offsets, offsets + limits);
+
+            return { data: paginatedData, total: totalLength };
+
         } catch (error: any) {
             console.log("eror", error.message);
-            
+
             throw new Error(error.message);
         }
 
