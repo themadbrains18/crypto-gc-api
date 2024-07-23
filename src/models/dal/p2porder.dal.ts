@@ -8,6 +8,7 @@ import userDal from "./users.dal";
 import assetsDto from "../dto/assets.dto";
 import { assetsAccountType, assetsWalletType } from "../../utils/interface";
 import { truncateNumber } from "../../utils/utility";
+import sequelize from "..";
 
 export const truncateToSixDecimals = (num: number): number => {
     const numStr = num.toFixed(10); // Convert number to string with sufficient precision
@@ -22,7 +23,10 @@ class p2pOrderDal {
      * @returns 
      */
     async create(payload: P2POrderDto): Promise<orderOuput | any> {
+        const transaction = await  sequelize.transaction();
         try {
+        
+            
             let userService = new userDal();
             let buyerUser = await userService.checkUserByPk(payload.buy_user_id);
             if (buyerUser === null) {
@@ -65,10 +69,13 @@ class p2pOrderDal {
                 if (newAvailableQuantity < remainingQty) {
                     await postModel.update({ status: false }, { where: { id: payload.post_id } });
                 }
+                await transaction.commit();
                 return ordercreate?.dataValues;
             }
 
         } catch (error: any) {
+            await transaction.rollback();
+
             throw new Error(error.message);
         }
     }
