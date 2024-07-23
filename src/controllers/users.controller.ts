@@ -487,17 +487,17 @@ class userController extends BaseController {
                 }
                 let userResponse = await service.user.updateUser(user);
              
-                console.log(userResponse,"this is outside the if block");
+                // console.log(userResponse,"this is outside the if block");
                 
                 if(userResponse){
 
-                  console.log("this is in the if");
+                  // console.log("this is in the if");
                   return super.ok<any>(res, {
                     data: "User update successfully.",
                   });
 
                 }else{
-                  console.log("this is in the else");
+                  // console.log("this is in the else");
                   return super.fail(res, 
                   "Opps! please check your password"
                   );
