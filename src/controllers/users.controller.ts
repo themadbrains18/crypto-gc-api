@@ -441,7 +441,7 @@ class userController extends BaseController {
           // const newEmailTemplate = service.emailTemplate.otpVerfication(
           //   `${otp2?.otp}`
           // );
-
+          
           service.emailService.sendMail(
             req.headers["X-Request-Id"],
             {
@@ -450,6 +450,7 @@ class userController extends BaseController {
               html: emailTemplate.html,
             }
           );
+          delete otp["otp"];
 
           // let emailResponse2 = service.emailService.sendMail(
           //   req.headers["X-Request-Id"],
