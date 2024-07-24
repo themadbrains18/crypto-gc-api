@@ -23,61 +23,69 @@ class p2pOrderDal {
      * @returns 
      */
     async create(payload: P2POrderDto): Promise<orderOuput | any> {
-        const transaction = await  sequelize.transaction();
-        try {
-        
-            
-            let userService = new userDal();
-            let buyerUser = await userService.checkUserByPk(payload.buy_user_id);
-            if (buyerUser === null) {
-                throw new Error("Buyer user not exist. Please verify your account.");
-            }
-
-            let cancelOrder = await service.p2p.checkCancelOrderCurrentDay(payload.buy_user_id);
-            if (cancelOrder.length >= 3) {
-                throw new Error("You exceed your order limit today. Please try after 24 hours");
-            }
-
-            let post = await service.ads.getPostByid(payload.post_id);
-            if (payload.spend_amount < post.min_limit || payload.spend_amount > post.max_limit) {
-                throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
-            }
-
-            if (post.quantity < payload.quantity) {
-                throw new Error(`Please add quantity less or equal to ${post.quantity}`);
-            }
-
-            let reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id);
-
-            const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
-            const availableQuantity = truncateToSixDecimals(post.quantity - reservedQuantity);
-
-            if (reserveOrders.length > 0) {
-                if (availableQuantity <= 0) {
-                    throw new Error(`Whoops! Order not available.`);
+        // const transaction = await sequelize.transaction();
+        // try {
+            sequelize.transaction(async (t) => {
+                // Sequelize queries within the transaction
+                let userService = new userDal();
+                let buyerUser = await userService.checkUserByPk(payload.buy_user_id);
+                if (buyerUser === null) {
+                    throw new Error("Buyer user not exist. Please verify your account.");
                 }
-                if (availableQuantity < payload.quantity) {
-                    throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${availableQuantity}.`);
+    
+                let cancelOrder = await service.p2p.checkCancelOrderCurrentDay(payload.buy_user_id);
+                if (cancelOrder.length >= 3) {
+                    throw new Error("You exceed your order limit today. Please try after 24 hours");
                 }
-            }
-
-            const remainingQty = truncateToSixDecimals((1 / post.price) * post.min_limit);
-
-            let ordercreate = await orderModel.create(payload);
-            if (ordercreate) {
-                const newAvailableQuantity = truncateToSixDecimals(truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity))));
-                if (newAvailableQuantity < remainingQty) {
-                    await postModel.update({ status: false }, { where: { id: payload.post_id } });
+    
+                let post = await service.ads.getPostByid(payload.post_id);
+                if (payload.spend_amount < post.min_limit || payload.spend_amount > post.max_limit) {
+                    throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
                 }
-                await transaction.commit();
-                return ordercreate?.dataValues;
-            }
+    
+                if (post.quantity < payload.quantity) {
+                    throw new Error(`Please add quantity less or equal to ${post.quantity}`);
+                }
+    
+                let reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id);
+    
+                const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
+                const availableQuantity = truncateToSixDecimals(post.quantity - reservedQuantity);
+    
+                if (reserveOrders.length > 0) {
+                    if (availableQuantity <= 0) {
+                        throw new Error(`Whoops! Order not available.`);
+                    }
+                    if (availableQuantity < payload.quantity) {
+                        throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${availableQuantity}.`);
+                    }
+                }
+    
+                const remainingQty = truncateToSixDecimals((1 / post.price) * post.min_limit);
+    
+                let ordercreate = await orderModel.create(payload);
+                if (ordercreate) {
+                    const newAvailableQuantity = truncateToSixDecimals(truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity))));
+                    if (newAvailableQuantity < remainingQty) {
+                        await postModel.update({ status: false }, { where: { id: payload.post_id } });
+                    }
+                    await t.commit();
+                    return ordercreate?.dataValues;
+                }
+            }).catch((err) => {
+                // Handle transaction errors
+                console.error('Transaction error:', err);
+                // Rollback transaction on error
+                // await t.rollback();
+            });
 
-        } catch (error: any) {
-            await transaction.rollback();
+          
 
-            throw new Error(error.message);
-        }
+        // } catch (error: any) {
+        //     await transaction.rollback();
+
+        //     throw new Error(error.message);
+        // }
     }
 
     /**
@@ -169,7 +177,7 @@ class p2pOrderDal {
                 let post = await service.ads.getPostByid(order.post_id);
                 let released = await orderModel.update({ status: 'isReleased' }, { where: { id: payload.order_id, sell_user_id: payload.user_id } });
                 if (released) {
-                  
+
                     let postUpdate = postModel.update({ quantity: truncateToSixDecimals(Number(post.quantity)) - truncateToSixDecimals(Number(order.quantity)) }, { where: { id: order.post_id, user_id: order.sell_user_id } });
 
                     let obj: assetsDto = {
