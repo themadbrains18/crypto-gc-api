@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import p2porderDal from "../models/dal/p2porder.dal";
 import P2POrderDto from "../models/dto/p2porder.dto";
 import orderModel, { orderOuput } from "../models/model/order.model";
@@ -29,7 +29,7 @@ class p2pOrderService {
      * @param user_id 
      * @returns 
      */
-    async checkCancelOrderCurrentDay(user_id: string): Promise<orderOuput | any> {
+    async checkCancelOrderCurrentDay(user_id: string, t?: Transaction): Promise<orderOuput | any> {
 
         const START = new Date();
         START.setHours(0, 0, 0, 0);
@@ -39,7 +39,7 @@ class p2pOrderService {
                 buy_user_id: user_id, status: "isCanceled", createdAt: {
                     [Op.between]: [START.toISOString(), NOW.toISOString()]
                 }
-            }
+            }, transaction: t
         });
         return orders;
     }
@@ -49,7 +49,7 @@ class p2pOrderService {
      * @param post_id 
      * @returns 
      */
-    async checkReserveOrderByPost(post_id: string): Promise<orderOuput | any> {
+    async checkReserveOrderByPost(post_id: string, t?: Transaction): Promise<orderOuput | any> {
         let order = await orderModel.findAll(
             {
                 attributes: ['post_id', [
@@ -62,7 +62,7 @@ class p2pOrderService {
                         { status: 'isProcess' },
                         { status: 'isCompleted' }
                     ]
-                }
+                }, transaction: t
             });
         return order;
     }

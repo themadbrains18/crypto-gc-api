@@ -28,38 +28,38 @@ class orderController extends BaseController {
       let p2pOrder: P2POrderDto = req.body;
 
       let p2pResponse = await service.p2p.createOrder(p2pOrder);
+      if (p2pResponse) {
+        let user = await userModel.findOne({
+          where: { id: p2pResponse.buy_user_id },
+          raw: true,
+        });
 
-      let user = await userModel.findOne({
-        where: { id: p2pResponse.buy_user_id },
-        raw: true,
-      });
+        let seller = await profileModel.findOne({
+          where: { user_id: p2pResponse.sell_user_id },
+          raw: true,
+        });
 
-      let seller = await profileModel.findOne({ 
-        where: { user_id: p2pResponse.sell_user_id },
-        raw: true,
-      });
+        let sellerName = seller?.fName || "" + seller?.lName || '';
+        let spend = p2pResponse.spend_amount + ' ' + p2pResponse.spend_currency;
 
-      let sellerName = seller?.fName || "" + seller?.lName || '';
-      let spend = p2pResponse.spend_amount + ' ' + p2pResponse.spend_currency;
+        const emailTemplate = service.emailTemplate.p2pBuyEmail(
+          p2pResponse.post_id,
+          spend,
+          sellerName,
+          // '',
+          p2pResponse.receive_amount + p2pResponse.receive_currency
+        );
 
-      const emailTemplate = service.emailTemplate.p2pBuyEmail(
-        p2pResponse.post_id,
-        spend,
-        sellerName,
-        // '',
-        p2pResponse.receive_amount + p2pResponse.receive_currency
-      );
+        service.emailService.sendMail(req.headers["X-Request-Id"], {
+          to: user?.email || '',
+          subject: "P2P Buy Order Confirmation",
+          html: emailTemplate.html,
+        });
 
-      service.emailService.sendMail(req.headers["X-Request-Id"], {
-        to: user?.email || '',
-        subject: "P2P Buy Order Confirmation",
-        html: emailTemplate.html,
-      });
-
-      pusher.trigger("crypto-channel", "p2p", {
-        message: "hello world", data : p2pResponse
-      })
-
+        // pusher.trigger("crypto-channel", "p2p", {
+        //   message: "hello world", data : p2pResponse
+        // })
+      }
       super.ok<any>(res, { message: 'P2P order create successfully!!.', result: p2pResponse });
 
     } catch (error: any) {
@@ -141,10 +141,10 @@ class orderController extends BaseController {
   */
   async getOrderListByStatusByLimit(req: Request, res: Response) {
     try {
-      let { status, offset, limit,currency, date } = req.params
+      let { status, offset, limit, currency, date } = req.params
       let orderResponse = await service.p2p.getOrderList(req.params.userid);
-      let orderpaginate = await service.p2p.getOrderListByStatusByLimit(req.params.userid,status, offset, limit, currency,date);
-      super.ok<any>(res,  orderpaginate);
+      let orderpaginate = await service.p2p.getOrderListByStatusByLimit(req.params.userid, status, offset, limit, currency, date);
+      super.ok<any>(res, orderpaginate);
     } catch (error: any) {
       super.fail(res, error.message);
     }

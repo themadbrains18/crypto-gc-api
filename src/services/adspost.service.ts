@@ -1,4 +1,4 @@
-import { where } from "sequelize";
+import { Transaction, where } from "sequelize";
 import adspostDal from "../models/dal/adspost.dal";
 import adsPostDto from "../models/dto/adspost.dto";
 import postModel, { postOuput } from "../models/model/post.model";
@@ -30,8 +30,8 @@ class adsPostservice {
         return await adspostDal.deletePostByUserPostId(post_id, user_id);
     }
 
-    async getPostByid(post_id: string): Promise<postOuput | any> {
-        let post = await postModel.findOne({ where: { id: post_id } }).then(data => {
+    async getPostByid(post_id: string, t?: Transaction): Promise<postOuput | any> {
+        let post = await postModel.findOne({ where: { id: post_id }, transaction: t }).then(data => {
             return data?.dataValues;
         });
         return post;
