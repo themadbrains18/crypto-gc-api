@@ -6,6 +6,9 @@ import { orderModel, postModel, userModel } from "../models";
 import { Op } from "sequelize";
 import profileModel from "../models/model/profile.model";
 import pusher from "../utils/pusher";
+import AsyncLock from 'async-lock';
+
+const lock = new AsyncLock();
 
 class orderController extends BaseController {
   protected async executeImpl(
@@ -26,44 +29,56 @@ class orderController extends BaseController {
     try {
 
       let p2pOrder: P2POrderDto = req.body;
+      const key = `create-order-${p2pOrder.post_id}`;
 
-      let p2pResponse = await service.p2p.createOrder(p2pOrder);
-      console.log(p2pResponse,'==========P2p Response===========');
+      console.log(key,'=================key');
       
-      if (p2pResponse) {
-        let user = await userModel.findOne({
-          where: { id: p2pResponse.buy_user_id },
-          raw: true,
-        });
+      lock.acquire(key, async () => {
+        try {
+          let p2pResponse = await service.p2p.createOrder(p2pOrder);
+          console.log(p2pResponse, '==========P2p Response===========');
 
-        let seller = await profileModel.findOne({
-          where: { user_id: p2pResponse.sell_user_id },
-          raw: true,
-        });
+          if (p2pResponse) {
+            let user = await userModel.findOne({
+              where: { id: p2pResponse.buy_user_id },
+              raw: true,
+            });
 
-        let sellerName = seller?.fName || "" + seller?.lName || '';
-        let spend = p2pResponse.spend_amount + ' ' + p2pResponse.spend_currency;
+            let seller = await profileModel.findOne({
+              where: { user_id: p2pResponse.sell_user_id },
+              raw: true,
+            });
 
-        const emailTemplate = service.emailTemplate.p2pBuyEmail(
-          p2pResponse.post_id,
-          spend,
-          sellerName,
-          // '',
-          p2pResponse.receive_amount + p2pResponse.receive_currency
-        );
+            let sellerName = seller?.fName || "" + seller?.lName || '';
+            let spend = p2pResponse.spend_amount + ' ' + p2pResponse.spend_currency;
 
-        service.emailService.sendMail(req.headers["X-Request-Id"], {
-          to: user?.email || '',
-          subject: "P2P Buy Order Confirmation",
-          html: emailTemplate.html,
-        });
+            const emailTemplate = service.emailTemplate.p2pBuyEmail(
+              p2pResponse.post_id,
+              spend,
+              sellerName,
+              // '',
+              p2pResponse.receive_amount + p2pResponse.receive_currency
+            );
 
-        // pusher.trigger("crypto-channel", "p2p", {
-        //   message: "hello world", data : p2pResponse
-        // })
-      }
-      super.ok<any>(res, { message: 'P2P order create successfully!!.', result: p2pResponse });
+            service.emailService.sendMail(req.headers["X-Request-Id"], {
+              to: user?.email || '',
+              subject: "P2P Buy Order Confirmation",
+              html: emailTemplate.html,
+            });
 
+            // pusher.trigger("crypto-channel", "p2p", {
+            //   message: "hello world", data : p2pResponse
+            // })
+          }
+          super.ok<any>(res, { message: 'P2P order create successfully!!.', result: p2pResponse });
+        } catch (error: any) {
+          super.fail(res, error.message);
+        }
+      }, (err: any) => {
+        if (err) {
+          super.fail(res, err.message);
+        }
+      });
     } catch (error: any) {
       super.fail(res, error.message);
     }
