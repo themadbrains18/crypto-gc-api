@@ -63,6 +63,8 @@ class p2pOrderDal {
             const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
             const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
 
+            console.log(availableQuantity,'=================available Quantity');
+
             if (reserveOrders.length > 0) {
                 if (availableQuantity <= 0) {
                     throw new Error(`Whoops! Order not available.`);

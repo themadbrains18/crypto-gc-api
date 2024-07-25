@@ -28,6 +28,8 @@ class orderController extends BaseController {
       let p2pOrder: P2POrderDto = req.body;
 
       let p2pResponse = await service.p2p.createOrder(p2pOrder);
+      console.log(p2pResponse,'==========P2p Response===========');
+      
       if (p2pResponse) {
         let user = await userModel.findOne({
           where: { id: p2pResponse.buy_user_id },
