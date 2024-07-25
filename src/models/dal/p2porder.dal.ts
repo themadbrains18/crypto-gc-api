@@ -24,7 +24,7 @@ class p2pOrderDal {
      */
     async create(payload: P2POrderDto): Promise<orderOuput | any> {
 
-        const t = await sequelize.transaction();
+        const t: Transaction = await sequelize.transaction();
         try {
             const userService = new userDal();
             const buyerUser = await userService.checkUserByPk(payload.buy_user_id, t);
@@ -44,8 +44,8 @@ class p2pOrderDal {
                 raw: true
             });
 
-            console.log(post,'==================post');
-            
+            console.log(post, '==================post');
+
             // await service.ads.getPostByid(payload.post_id, t);
             if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
                 throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
@@ -57,13 +57,13 @@ class p2pOrderDal {
 
             const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
 
-            console.log(reserveOrders,'===============reserve Orders');
-            
+            console.log(reserveOrders, '===============reserve Orders');
+
 
             const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
             const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
 
-            console.log(availableQuantity,'=================available Quantity');
+            console.log(availableQuantity, '=================available Quantity');
 
             if (reserveOrders.length > 0) {
                 if (availableQuantity <= 0) {
@@ -74,29 +74,23 @@ class p2pOrderDal {
                 }
             }
 
-            const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
+            const ordercreate = await orderModel.create(payload, { transaction: t });
+            if (ordercreate && post) {
+                const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
+                console.log(remainingQty, '=================remaining Qty');
+                const newAvailableQuantity = truncateToSixDecimals(
+                    truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
+                );
+                console.log(newAvailableQuantity, '=================remaining Qty');
+                // if (newAvailableQuantity < remainingQty) {
+                //     await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
+                // }
+            }
+            console.log("here");
 
-            console.log(remainingQty,'=================remaining Qty');
-            
-            return null
-
-            // const ordercreate = await orderModel.create(payload, { transaction: t });
-            // if (ordercreate && post) {
-
-            //     const newAvailableQuantity = truncateToSixDecimals(
-            //         truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
-            //     );
-            //     if (newAvailableQuantity < remainingQty) {
-            //         await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
-            //     }
-
-            // }
-            // console.log("here");
-
-            // await t.commit();
-            // return ordercreate?.dataValues;
+            await t.commit();
+            return ordercreate?.dataValues;
         } catch (err) {
-
             console.log("here i am error catch");
             console.error('Transaction error:', err);
             await t.rollback();
