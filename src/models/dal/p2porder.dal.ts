@@ -51,6 +51,15 @@ class p2pOrderDal {
                 console.log(post, '==================post');
                 if (post) {
                     await postModel.update({ queue: true }, { where: { id: payload.post_id }, transaction: t });
+                    let postUpdate = await postModel.findOne({
+                        where: { id: payload.post_id },
+                        transaction: t,// Lock the row for update
+                        lock: t.LOCK.UPDATE,
+                        raw: true
+                    });
+
+                    console.log(postUpdate,'======================post Update');
+                    
                     // await service.ads.getPostByid(payload.post_id, t);
                     if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
                         throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
