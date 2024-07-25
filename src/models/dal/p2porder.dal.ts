@@ -24,83 +24,98 @@ class p2pOrderDal {
      */
     async create(payload: P2POrderDto): Promise<orderOuput | any> {
 
-        const t: Transaction = await sequelize.transaction();
-        try {
-            const userService = new userDal();
-            const buyerUser = await userService.checkUserByPk(payload.buy_user_id, t);
-            if (buyerUser === null) {
-                throw new Error("Buyer user not exist. Please verify your account.");
-            }
-
-            const cancelOrder: any[] = await service.p2p.checkCancelOrderCurrentDay(payload.buy_user_id, t);
-            if (cancelOrder.length >= 3) {
-                throw new Error("You exceed your order limit today. Please try after 24 hours");
-            }
-
-            let post = await postModel.findOne({
-                where: { id: payload.post_id, status: true },
-                transaction: t,// Lock the row for update
-                lock: t.LOCK.UPDATE,
-                raw: true
-            });
-
-            console.log(post, '==================post');
-
-            if (post) {
-                // await service.ads.getPostByid(payload.post_id, t);
-                if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
-                    throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
+        const MAX_RETRIES = 3;
+        const BASE_DELAY = 200; // in milliseconds
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            const t: Transaction = await sequelize.transaction();
+            try {
+                const userService = new userDal();
+                const buyerUser = await userService.checkUserByPk(payload.buy_user_id, t);
+                if (buyerUser === null) {
+                    throw new Error("Buyer user not exist. Please verify your account.");
                 }
-
-                if (post && post.quantity < payload.quantity) {
-                    throw new Error(`Please add quantity less or equal to ${post.quantity}`);
+    
+                const cancelOrder: any[] = await service.p2p.checkCancelOrderCurrentDay(payload.buy_user_id, t);
+                if (cancelOrder.length >= 3) {
+                    throw new Error("You exceed your order limit today. Please try after 24 hours");
                 }
-
-                const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
-
-                console.log(reserveOrders, '===============reserve Orders');
-
-                const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
-                const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
-
-                console.log(availableQuantity, '=================available Quantity');
-
-                if (reserveOrders.length > 0) {
-                    if (availableQuantity <= 0) {
-                        throw new Error(`Whoops! Order not available.`);
+    
+                let post = await postModel.findOne({
+                    where: { id: payload.post_id, status: true },
+                    transaction: t,// Lock the row for update
+                    lock: t.LOCK.UPDATE,
+                    raw: true
+                });
+    
+                console.log(post, '==================post');
+    
+                if (post) {
+                    // await service.ads.getPostByid(payload.post_id, t);
+                    if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
+                        throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
                     }
-                    if (availableQuantity < payload.quantity) {
-                        throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${availableQuantity}.`);
+    
+                    if (post && post.quantity < payload.quantity) {
+                        throw new Error(`Please add quantity less or equal to ${post.quantity}`);
                     }
-                }
-
-                const ordercreate = await orderModel.create(payload, { transaction: t });
-                if (ordercreate && post) {
-                    const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
-                    console.log(remainingQty, '=================remaining Qty');
-                    const newAvailableQuantity = truncateToSixDecimals(
-                        truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
-                    );
-                    console.log(newAvailableQuantity, '=================remaining Qty');
-                    if (newAvailableQuantity < remainingQty) {
-                        await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
+    
+                    const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
+    
+                    console.log(reserveOrders, '===============reserve Orders');
+    
+                    const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
+    
+                    console.log(reservedQuantity, '==============reserved Quantity');
+    
+                    const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
+    
+                    console.log(availableQuantity, '=================available Quantity');
+    
+                    if (reserveOrders.length > 0) {
+                        if (availableQuantity <= 0) {
+                            throw new Error(`Whoops! Order not available.`);
+                        }
+                        if (availableQuantity < payload.quantity) {
+                            throw new Error(`Whoops! Partial order is reserved by another user. You can only order ${availableQuantity}.`);
+                        }
                     }
+    
+                    const ordercreate = await orderModel.create(payload, { transaction: t });
+                    if (ordercreate && post) {
+                        const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
+                        console.log(remainingQty, '=================remaining Qty');
+                        const newAvailableQuantity = truncateToSixDecimals(
+                            truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
+                        );
+                        console.log(newAvailableQuantity, '=================remaining Qty');
+                        if (newAvailableQuantity < remainingQty) {
+                            await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
+                        }
+                    }
+                    console.log("here");
+    
+                    await t.commit();
+                    return ordercreate?.dataValues;
                 }
-                console.log("here");
-
-                await t.commit();
-                return ordercreate?.dataValues;
+                else {
+                    throw new Error(`Whoops! Order not available.`);
+                }
+    
+            } catch (err:any) {
+                console.log("here i am error catch");
+                console.error('Transaction error:', err);
+               await t.rollback();
+                if (err.name === 'SequelizeLockTimeoutError' && attempt < MAX_RETRIES) {
+                    const delay = BASE_DELAY * 2 ** (attempt - 1);
+                    console.log(`Retrying transaction (${attempt}/${MAX_RETRIES}) after ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                } else {
+                    console.error('Transaction error:', err);
+                    throw err;
+                }
             }
-            else {
-                throw new Error(`Whoops! Order not available.`);
-            }
-
-        } catch (err) {
-            console.log("here i am error catch");
-            console.error('Transaction error:', err);
-            await t.rollback();
-            throw err;
         }
+        
     }
 
     /**
