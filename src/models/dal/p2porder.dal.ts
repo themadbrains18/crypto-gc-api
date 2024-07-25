@@ -72,6 +72,8 @@ class p2pOrderDal {
                 }
 
             }
+            console.log("here");
+            
             await t.commit();
             return ordercreate?.dataValues;
         } catch (err) {
