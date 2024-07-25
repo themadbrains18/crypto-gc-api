@@ -91,6 +91,9 @@ class p2pOrderDal {
                 await t.commit();
                 return ordercreate?.dataValues;
             }
+            else {
+                throw new Error(`Whoops! Order not available.`);
+            }
 
         } catch (err) {
             console.log("here i am error catch");
