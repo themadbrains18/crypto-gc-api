@@ -18,6 +18,7 @@ interface postAtteribute {
   min_btc?: boolean;
   status?: boolean;
   price_type?: string;
+  queue?:boolean;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -45,6 +46,7 @@ class postModel
   public min_btc!: boolean;
   public status!: boolean;
   public price_type!: string;
+  public queue!:boolean;
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -109,6 +111,10 @@ class postModel
           type: DataTypes.STRING,
           defaultValue: 'fixed'
         },
+        queue:{
+          type : DataTypes.BOOLEAN,
+          defaultValue:false
+        }
       },
       {
         timestamps: true,
