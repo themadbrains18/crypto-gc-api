@@ -43,6 +43,9 @@ class p2pOrderDal {
                 lock: t.LOCK.UPDATE,
                 raw: true
             });
+
+            console.log(post,'==================post');
+            
             // await service.ads.getPostByid(payload.post_id, t);
             if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
                 throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
@@ -53,6 +56,9 @@ class p2pOrderDal {
             }
 
             const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
+
+            console.log(reserveOrders,'===============reserve Orders');
+            
 
             const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
             const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
@@ -68,21 +74,25 @@ class p2pOrderDal {
 
             const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
 
-            const ordercreate = await orderModel.create(payload, { transaction: t });
-            if (ordercreate && post) {
+            console.log(remainingQty,'=================remaining Qty');
+            
+            return null
 
-                const newAvailableQuantity = truncateToSixDecimals(
-                    truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
-                );
-                if (newAvailableQuantity < remainingQty) {
-                    await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
-                }
+            // const ordercreate = await orderModel.create(payload, { transaction: t });
+            // if (ordercreate && post) {
 
-            }
-            console.log("here");
+            //     const newAvailableQuantity = truncateToSixDecimals(
+            //         truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
+            //     );
+            //     if (newAvailableQuantity < remainingQty) {
+            //         await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
+            //     }
 
-            await t.commit();
-            return ordercreate?.dataValues;
+            // }
+            // console.log("here");
+
+            // await t.commit();
+            // return ordercreate?.dataValues;
         } catch (err) {
 
             console.log("here i am error catch");
