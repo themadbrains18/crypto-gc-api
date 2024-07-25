@@ -37,19 +37,25 @@ class p2pOrderDal {
                 throw new Error("You exceed your order limit today. Please try after 24 hours");
             }
 
-            const post = await service.ads.getPostByid(payload.post_id, t);
-            if (payload.spend_amount < post.min_limit || payload.spend_amount > post.max_limit) {
+            let post = await postModel.findOne({
+                where: { id: payload.post_id },
+                transaction: t,// Lock the row for update
+                lock: t.LOCK.UPDATE,
+                raw: true
+            });
+            // await service.ads.getPostByid(payload.post_id, t);
+            if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
                 throw new Error(`Please enter amount greater than ${post.min_limit} and less than ${post.max_limit}`);
             }
 
-            if (post.quantity < payload.quantity) {
+            if (post && post.quantity < payload.quantity) {
                 throw new Error(`Please add quantity less or equal to ${post.quantity}`);
             }
 
             const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
 
             const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
-            const availableQuantity = truncateToSixDecimals(post.quantity - reservedQuantity);
+            const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
 
             if (reserveOrders.length > 0) {
                 if (availableQuantity <= 0) {
@@ -60,10 +66,11 @@ class p2pOrderDal {
                 }
             }
 
-            const remainingQty = truncateToSixDecimals((1 / post.price) * post.min_limit);
+            const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
 
             const ordercreate = await orderModel.create(payload, { transaction: t });
-            if (ordercreate) {
+            if (ordercreate && post) {
+
                 const newAvailableQuantity = truncateToSixDecimals(
                     truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
                 );
@@ -73,7 +80,7 @@ class p2pOrderDal {
 
             }
             console.log("here");
-            
+
             await t.commit();
             return ordercreate?.dataValues;
         } catch (err) {
