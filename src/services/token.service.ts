@@ -89,21 +89,22 @@ class tokenServices {
 
             let data = await coinList.json();
 
+
             for await (const num of data) {
-                // console.log(num);
-                let exist: any = await globalTokensModel.findOne({ where: { symbol: num.code === 'BTC' ? 'BTCB' : num.code }, raw: true });
+                let symbol = num.code === 'BTC' ? 'BTCB' : num.code === 'BNB' ? 'BNBT' : num.code;
+                let exist: any = await globalTokensModel.findOne({ where: { symbol: symbol }, raw: true });
                 if (exist) {
                     let payload = {
                         id: exist?.id,
-                        symbol: num.code === 'BTC' ? 'BTCB' : num.code,
+                        symbol: symbol,
                         fullName: num.name,
                         image: num.png32,
                         price: num.rate,
                         maxSupply: num.maxSupply,
                         totalSupply: num.totalSupply,
                         circulatingSupply: num.circulatingSupply,
-                        marketcap:num?.cap,
-                        volume : num?.volume,
+                        marketcap: num?.cap,
+                        volume: num?.volume,
                         rank: num.rank
                     }
                     await globalTokensModel.update(payload, { where: { id: exist?.id } });
