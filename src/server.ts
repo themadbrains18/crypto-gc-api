@@ -95,6 +95,11 @@ wss.on('connection', (ws: WebSocket) => {
         client.send(JSON.stringify({ status: 200, data: [], type: 'convert' }));
       })
     }
+    if (body?.ws_type === 'transfer') {
+      wss.clients.forEach(function e(client) {
+        client.send(JSON.stringify({ status: 200, data: [], type: 'transfer' }));
+      })
+    }
 
   });
 
