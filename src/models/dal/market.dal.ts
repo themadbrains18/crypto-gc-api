@@ -58,7 +58,7 @@ class marketDal {
                         }
                     }
                     else {
-                        throw new Error('You have unsufficiant balance!.');
+                        throw new Error('You have insufficient balance!.');
                     }
                 }
                 if (payload.order_type === marketOrderEnum.buy) {
@@ -95,7 +95,7 @@ class marketDal {
                         }
                     }
                     else {
-                        throw new Error('You have unsufficiant balance!.')
+                        throw new Error('You have insufficient balance!.')
                     }
                 }
             }

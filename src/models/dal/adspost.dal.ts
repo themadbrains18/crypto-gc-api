@@ -51,7 +51,7 @@ class adsPostDal {
             }
 
             if (userAssets != null && userAssets!.balance < payload.quantity) {
-                throw new Error('You have unsufficiant balance!!.');
+                throw new Error('You have insufficient balance!!.');
             }
 
 

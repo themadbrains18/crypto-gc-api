@@ -267,7 +267,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 6);
                     console.log(deductFee, '===============seller 1 fee');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -281,7 +281,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 6);
                     options.paid_usdt = truncateNumber(options.paid_usdt - deductFee, 8);
                     console.log(deductFee, '===============seller 1 fee no assets');
                     // ============Here fee add to admin wallet==================//
@@ -324,7 +324,7 @@ class marketService {
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
 
-                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 6);
                     console.log(deductFee, '===============buyer fee 1');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -342,7 +342,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 6);
                     realAmount = truncateNumber(realAmount - deductFee, 8);
 
                     // ============Here fee add to admin wallet==================//
@@ -583,7 +583,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 6);
                     console.log(deductFee, '===============seller fee 2');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -597,7 +597,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 6);
                     options.paid_usdt = truncateNumber(options.paid_usdt - deductFee, 8);
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, 'USDT', 'Spot Trading');
@@ -639,7 +639,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 6);
                     console.log(deductFee, '===============buyer 2 fee');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -658,7 +658,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * 0.00075, 8);
+                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 6);
                     console.log(deductFee, '===============buyer 2 fee no assets');
 
                     realAmount = truncateNumber(realAmount - deductFee, 8);
