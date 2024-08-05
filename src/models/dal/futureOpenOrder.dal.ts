@@ -46,15 +46,21 @@ class futureOpenOrderDal extends BaseController {
             //================================================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
 
-            if (payload?.order_type !== 'value') {
-                global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-                if (global_token === null) {
-                    global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
-                }
-            }
+            // if (payload?.order_type !== 'value' && payload?.side==="open short") {
+            //     global_token = await globalTokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+            //     if (global_token === null) {
+            //         global_token = await tokensModel.findOne({ where: { id: payload?.coin_id }, raw: true });
+            //     }
+            // }
 
             if (global_token) {
+                console.log(payload?.user_id,"payload?.user_id");
+                console.log(global_token?.id,"global_token?.id");
+                
                 let asset: any = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
+
+                console.log(asset,"==assete");
+                
 
                 let margin_price: any = payload?.margin;
 

@@ -32,7 +32,7 @@ class futureOpenOrderServices {
 
         console.log(payload,'=========TP/SL request====');
 
-        return
+        // return
         
         return await futureOpenOrderDal.createOpenOrder(payload)
     }
