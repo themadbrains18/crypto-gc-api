@@ -439,6 +439,11 @@
   resolved "https://registry.npmjs.org/@tsconfig/node16/-/node16-1.0.4.tgz"
   integrity sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==
 
+"@types/async-lock@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.npmjs.org/@types/async-lock/-/async-lock-1.4.2.tgz"
+  integrity sha512-HlZ6Dcr205BmNhwkdXqrg2vkFMN2PluI7Lgr8In3B3wE5PiQHhjRqtW/lGdVU9gw+sM0JcIDx2AN+cW8oSWIcw==
+
 "@types/bcrypt@^5.0.0":
   version "5.0.0"
   resolved "https://registry.npmjs.org/@types/bcrypt/-/bcrypt-5.0.0.tgz"
@@ -814,6 +819,11 @@ array-flatten@1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/array-flatten/-/array-flatten-1.1.1.tgz"
   integrity sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==
+
+async-lock@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/async-lock/-/async-lock-1.4.1.tgz"
+  integrity sha512-Az2ZTpuytrtqENulXwO3GGv1Bztugx6TT37NIo7imr/Qo0gsYiGtSdBa2B6fsXhTpVZDNfu1Qn3pk531e3q+nQ==
 
 async@^3.2.3:
   version "3.2.4"
