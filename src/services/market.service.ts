@@ -101,7 +101,7 @@ class marketService {
         try {
             let previous_seller: any = [];
 
-            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: payload?.user_id, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, order: [['id', "DESC"]] });
+            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: payload?.user_id, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, order: [['createdAt', "DESC"]] });
 
             console.log('---------on limit buy order create find buyer code---------------');
 
@@ -110,7 +110,7 @@ class marketService {
                 throw new Error('No any buyer bids found');
             }
 
-            let sellBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.sell, market_type: marektTypeEnum.limit, queue: false }, order: [['id', "DESC"]] })
+            let sellBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.sell, market_type: marektTypeEnum.limit, queue: false }, order: [['createdAt', "DESC"]] })
 
             // if seller not exist than return
             if (sellBids == null || sellBids.length == 0) {
@@ -428,7 +428,7 @@ class marketService {
             console.log('========here 2');
             let previous_buyer: any = [];
             // if buyer not exist than return
-            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, order: [['id', "DESC"]] })
+            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, order: [['createdAt', "DESC"]] })
 
             console.log('---------on limit sell order create find buyer---------------');
 
@@ -438,7 +438,7 @@ class marketService {
             }
 
             // if seller not exist than return
-            let sellBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: payload?.user_id, token_id: payload?.token_id, order_type: marketOrderEnum.sell, market_type: marektTypeEnum.limit, queue: false }, order: [['id', "DESC"]] })
+            let sellBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: payload?.user_id, token_id: payload?.token_id, order_type: marketOrderEnum.sell, market_type: marektTypeEnum.limit, queue: false }, order: [['createdAt', "DESC"]] })
 
             if (sellBids == null || sellBids.length == 0) {
                 throw new Error('No any seller bids found');

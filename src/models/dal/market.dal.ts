@@ -372,7 +372,10 @@ class marketDal {
     async socketMarketBuySell(payload: marketPartialExecution): Promise<any> {
         try {
             // console.log('========here 1', payload);
-            let activeOrder = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id }, raw: true, order: [['id', "DESC"]] });
+            let activeOrder = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id }, raw: true, order: [['createdAt', "DESC"]] });
+            // console.log(activeOrder,"=========activeOrder");
+            // return;
+            
             if (activeOrder) {
 
                 //============================================================================//
