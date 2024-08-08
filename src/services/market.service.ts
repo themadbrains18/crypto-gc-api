@@ -133,6 +133,8 @@ class marketService {
                 }
 
                 let remainingAssets = buyerObj.token_amount;
+                console.log(remainingAssets,"remainingAssets");
+                
                 let paid_usdt = 0;
                 let is_fee_remove = false;
 
@@ -160,6 +162,8 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
+                            console.log(remainingAssets,"remainingAssets buyer1");
+                            
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
 
                             //======================================================
@@ -190,6 +194,8 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
+                            console.log(remainingAssets,"remainingAssets buyer2");
+
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
 
                             //======================================================
@@ -222,8 +228,10 @@ class marketService {
                             //=============Buyer and seller asset execution=========
                             //======================================================
 
-                            remainingAssets = remainingAssets - sellerObj.token_amount;
+                            console.log(remainingAssets,"remainingAssets buyer3");
+                            
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
+                            remainingAssets = remainingAssets - sellerObj.token_amount;
                             
                             //======================================================
                             //=============Create buyer market order history========
@@ -268,7 +276,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 8);
+                    let deductFee = truncateNumber(options.sellerObj?.token_amount * options.sellerObj?.limit_usdt * 0.001, 8);
                     console.log(deductFee, '===============seller 1 fee');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -325,7 +333,7 @@ class marketService {
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
 
-                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 8);
+                    let deductFee = truncateNumber(options.sellerObj?.token_amount * 0.001, 8);
                     console.log(deductFee, '===============buyer fee 1');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -343,7 +351,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 8);
+                    let deductFee = truncateNumber(options.sellerObj?.token_amount * 0.001, 8);
                     realAmount = truncateNumber(realAmount - deductFee, 8);
 
                     // ============Here fee add to admin wallet==================//
@@ -456,6 +464,9 @@ class marketService {
                 }
 
                 let remainingAssets = sellerObj.token_amount;
+
+                console.log(remainingAssets,"=remainingAssets");
+                
                 // let counter = 0;
                 let paid_usdt = 0;
 
@@ -482,6 +493,8 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
+                            console.log(remainingAssets,"remainingAssets seller1");
+
                             await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
 
                             //======================================================
@@ -513,6 +526,7 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
+                            console.log(remainingAssets,"remainingAssets seller2");
                             await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
 
                             //======================================================
@@ -543,8 +557,9 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            remainingAssets = remainingAssets - buyerObj.token_amount;
+                            console.log(remainingAssets,"remainingAssets seller3");
                             await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
+                            remainingAssets = remainingAssets - buyerObj.token_amount;
                             
 
                             //======================================================
@@ -585,7 +600,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 8);
+                    let deductFee = truncateNumber(options.buyerObj?.token_amount * options.sellerObj?.limit_usdt * 0.001, 8);
                     console.log(deductFee, '===============seller fee 2');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -599,7 +614,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * options.sellerObj?.limit_usdt * 0.001, 8);
+                    let deductFee = truncateNumber(options.buyerObj?.token_amount * options.sellerObj?.limit_usdt * 0.001, 8);
                     options.paid_usdt = truncateNumber(options.paid_usdt - deductFee, 8);
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, deductFee, 'USDT', 'Spot Trading');
@@ -641,7 +656,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 8);
+                    let deductFee = truncateNumber(options.buyerObj?.token_amount * 0.001, 8);
                     console.log(deductFee, '===============buyer 2 fee');
 
                     updatedBal = truncateNumber(updatedBal - deductFee, 8);
@@ -660,7 +675,7 @@ class marketService {
                     // =========================================================//
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
-                    let deductFee = truncateNumber(options.remainingAssets * 0.001, 8);
+                    let deductFee = truncateNumber(options.buyerObj?.token_amount * 0.001, 8);
                     console.log(deductFee, '===============buyer 2 fee no assets');
 
                     realAmount = truncateNumber(realAmount - deductFee, 8);
