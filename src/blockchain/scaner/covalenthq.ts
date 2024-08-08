@@ -35,6 +35,7 @@ export default class covalenthq {
     userid: string
   ): Promise<any | null> {
     let obj = this;
+console.log("here 2");
 
     try {
 
@@ -144,6 +145,8 @@ export default class covalenthq {
     allTokens: any
   ) {
     try {
+      console.log("here token based");
+      
 
       if (!data.successful) return; // check transaction status
 
@@ -246,9 +249,17 @@ export default class covalenthq {
               //============================================================//
               // Add record to user assets table
               //============================================================//
+
+              console.log(tokenid,"token id");
+              console.log(userid,"user id");
+              
+
               let exist = await assetModel.findOne({
                 where: { user_id: userid, token_id: tokenid }, raw: true
               });
+
+              console.log(exist,"==exist");
+              
 
               if (exist !== null) {
                 let obj = {
@@ -305,6 +316,8 @@ export default class covalenthq {
     userid: string,
     allTokens: any
   ) {
+    console.log("here main transaction");
+    
     if (!data.successful) return; // check transaction status
 
     //============================================================//
@@ -313,6 +326,8 @@ export default class covalenthq {
     let wallet: any = process?.env?.MASTER_WALLET_BEP20;
     let masterWallet = await service.watchlist.decrypt(wallet);
     if (data?.from_address?.toLowerCase() === masterWallet.toLowerCase()) {
+      console.log("in this");
+      
       return;
     }
 
@@ -369,9 +384,15 @@ export default class covalenthq {
           //============================================================//
           // update user assets table
           //============================================================//
+          
+          console.log(tokenid,"token id1");
+          console.log(userid,"user id1");
           let exist = await assetModel.findOne({
             where: { user_id: userid, token_id: tokenid }, raw: true
           });
+
+          console.log(exist,"===exist 1");
+          
 
           if (exist !== null) {
             let obj = {
