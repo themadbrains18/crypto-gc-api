@@ -221,9 +221,10 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
-                            remainingAssets = remainingAssets - sellerObj.token_amount;
 
+                            remainingAssets = remainingAssets - sellerObj.token_amount;
+                            await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
+                            
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
@@ -542,8 +543,9 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
                             remainingAssets = remainingAssets - buyerObj.token_amount;
+                            await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, remainingAssets, paid_to_admin });
+                            
 
                             //======================================================
                             //=============Create buyer market order history========
