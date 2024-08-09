@@ -75,21 +75,21 @@ class MonitorEth {
       let lastBlock: BigInt | number | undefined = await this.getLastBlockNumber();
       lastBlock = Number(lastBlock);
       if(this.lastSyncedBlock === null || this.lastSyncedBlock === 1) return;
-      console.log(this.lastSyncedBlock, " ==== lastSyncedBlock");
-      console.log(`Searching blocks: ${this.lastSyncedBlock + 1} - ${lastBlock}`);
+      // console.log(this.lastSyncedBlock, " ==== lastSyncedBlock");
+      // console.log(`Searching blocks: ${this.lastSyncedBlock + 1} - ${lastBlock}`);
 
      let rc : any= await  service.jsonFileReadWrite.EXall(`SELECT * FROM address_records WHERE walletType='eth'`)
       for (let blockNumber = this.lastSyncedBlock + 1;
         blockNumber < lastBlock+1;
         blockNumber++) {
-          console.log(blockNumber,'inside ------------------------')
+          // console.log(blockNumber,'inside ------------------------')
           let tos = rc[0]?.records ? JSON.parse(rc[0]?.records) : {}
         this.getBlockInfo(lastBlock,tos)
       }
       this.lastSyncedBlock = lastBlock;
-      console.log(`Finished searching blocks: ${this.lastSyncedBlock + 1} - ${lastBlock}`);
+      // console.log(`Finished searching blocks: ${this.lastSyncedBlock + 1} - ${lastBlock}`);
     } catch (error) {
-      console.log(error, " ------------------ i am in ---------------");
+      // console.log(error, " ------------------ i am in ---------------");
       this.searchTransaction()
     }
   }
@@ -108,15 +108,15 @@ class MonitorEth {
         }
   
         if (to.address.includes(tx.to.toLowerCase())) {
-          console.log(
-            "===========================native transaction================================="
-          );
+          // console.log(
+          //   "===========================native transaction================================="
+          // );
           this.enternalTransaction(tx);
         }
         if (to.contarct.includes(tx.to.toLowerCase())) {
-          console.log(
-            "============================contract================================"
-          );
+          // console.log(
+          //   "============================contract================================"
+          // );
           this.extranalTransaction(tx?.hash);
         }
       }
@@ -705,7 +705,7 @@ export async function watchEtherTransfers(wss: any) {
               (partialSum, a) => partialSum + a,
               0
             );
-            console.log(sum);
+            // console.log(sum);
 
             if (+sum === 2) {
               // recive
@@ -717,7 +717,7 @@ export async function watchEtherTransfers(wss: any) {
 
         // You do not need the next line if you like to keep notified for every new block
         // await subscription.unsubscribe();
-        console.log("Unsubscribed from new block headers.");
+        // console.log("Unsubscribed from new block headers.");
       });
       subscription.on("error", (error) =>
         console.log("Error when subscribing to New block header: ", error)
@@ -732,7 +732,7 @@ export async function watchEtherTransfers(wss: any) {
 
 export async function allSubscription(): Promise<any> {
   try {
-    console.log(" = = = = = = = = subs");
+    // console.log(" = = = = = = = = subs");
 
     const ganacheUrl =
       process.env.INFURA_WS_URL ||
@@ -740,7 +740,7 @@ export async function allSubscription(): Promise<any> {
     const wsProvider = new Web3.providers.WebsocketProvider(ganacheUrl);
     const web3 = new Web3(wsProvider);
     let subs = await web3.eth.subscribe("logs");
-    console.log(subs, " = = = = = = = = subs");
+    // console.log(subs, " = = = = = = = = subs");
     return subs;
   } catch (error: any) {
     new Error(error.message);

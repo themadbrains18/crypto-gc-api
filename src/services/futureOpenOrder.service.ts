@@ -30,7 +30,7 @@ class futureOpenOrderServices {
      */
     async create(payload: futureOpenOrderDto): Promise<any> {
 
-        console.log(payload,'=========TP/SL request====');
+        // console.log(payload,'=========TP/SL request====');
 
         // return
         

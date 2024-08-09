@@ -48,7 +48,7 @@ class p2pOrderDal {
                     raw: true
                 });
 
-                console.log(post, '==================post');
+                // console.log(post, '==================post');
                 if (post) {
                     await postModel.update({ queue: true }, { where: { id: payload.post_id }, transaction: t });
                     let postUpdate = await postModel.findOne({
@@ -58,7 +58,7 @@ class p2pOrderDal {
                         raw: true
                     });
 
-                    console.log(postUpdate,'======================post Update');
+                    // console.log(postUpdate,'======================post Update');
                     
                     // await service.ads.getPostByid(payload.post_id, t);
                     if ((post && payload.spend_amount < post.min_limit) || (post && payload.spend_amount > post.max_limit)) {
@@ -71,15 +71,15 @@ class p2pOrderDal {
 
                     const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
 
-                    console.log(reserveOrders, '===============reserve Orders');
+                    // console.log(reserveOrders, '===============reserve Orders');
 
                     const reservedQuantity = reserveOrders[0]?.dataValues?.total || 0;
 
-                    console.log(reservedQuantity, '==============reserved Quantity');
+                    // console.log(reservedQuantity, '==============reserved Quantity');
 
                     const availableQuantity = post ? truncateToSixDecimals(post.quantity - reservedQuantity) : 0;
 
-                    console.log(availableQuantity, '=================available Quantity');
+                    // console.log(availableQuantity, '=================available Quantity');
 
                     if (reserveOrders.length > 0) {
                         if (availableQuantity <= 0) {
@@ -93,17 +93,17 @@ class p2pOrderDal {
                     const ordercreate = await orderModel.create(payload, { transaction: t });
                     if (ordercreate && post) {
                         const remainingQty = post ? truncateToSixDecimals((1 / post.price) * post.min_limit) : 0;
-                        console.log(remainingQty, '=================remaining Qty');
+                        // console.log(remainingQty, '=================remaining Qty');
                         const newAvailableQuantity = truncateToSixDecimals(
                             truncateToSixDecimals(Number(post.quantity)) - (reservedQuantity + truncateToSixDecimals(Number(payload.quantity)))
                         );
-                        console.log(newAvailableQuantity, '=================remaining Qty');
+                        // console.log(newAvailableQuantity, '=================remaining Qty');
                         if (newAvailableQuantity < remainingQty) {
                             await postModel.update({ status: false }, { where: { id: payload.post_id }, transaction: t });
                         }
                         await postModel.update({ queue: false }, { where: { id: payload.post_id }, transaction: t });
                     }
-                    console.log("here");
+                    // console.log("here");
 
                     await t.commit();
                     return ordercreate?.dataValues;
@@ -113,13 +113,13 @@ class p2pOrderDal {
                 }
 
             } catch (err: any) {
-                console.log("here i am error catch");
+                // console.log("here i am error catch");
                 console.error('Transaction error:', err);
                 await postModel.update({ queue: false }, { where: { id: payload.post_id }, transaction: t });
                 await t.rollback();
                 if (err.name === 'SequelizeLockTimeoutError' && attempt < MAX_RETRIES) {
                     const delay = BASE_DELAY * 2 ** (attempt - 1);
-                    console.log(`Retrying transaction (${attempt}/${MAX_RETRIES}) after ${delay}ms...`);
+                    // console.log(`Retrying transaction (${attempt}/${MAX_RETRIES}) after ${delay}ms...`);
                     await new Promise(resolve => setTimeout(resolve, delay));
                 } else {
                     console.error('Transaction error:', err);

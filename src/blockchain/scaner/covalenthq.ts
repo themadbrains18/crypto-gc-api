@@ -35,7 +35,7 @@ export default class covalenthq {
     userid: string
   ): Promise<any | null> {
     let obj = this;
-console.log("here 2");
+// console.log("here 2");
 
     try {
 
@@ -97,7 +97,7 @@ console.log("here 2");
 
             let dataLn = transactionDetails?.log_events || [];
             if (dataLn?.length > 0) {
-              console.log('--------here token based');
+              // console.log('--------here token based');
               await obj.tokenBased(
                 transactionDetails,
                 address,
@@ -107,7 +107,7 @@ console.log("here 2");
                 allTokens
               );
             } else {
-              console.log('--------here main transaction');
+              // console.log('--------here main transaction');
               await obj.mainTransaction(
                 transactionDetails,
                 address,
@@ -145,7 +145,7 @@ console.log("here 2");
     allTokens: any
   ) {
     try {
-      console.log("here token based");
+      // console.log("here token based");
       
 
       if (!data.successful) return; // check transaction status
@@ -180,23 +180,23 @@ console.log("here 2");
 
         // remove transaction that send from customer to admin
         if (address.toLowerCase() == data?.from_address.toLowerCase()) {
-          console.log('----here transaction from user to admin');
+          // console.log('----here transaction from user to admin');
           return;
         }
 
-        console.log(address.toLowerCase() === (tokenData[0]?.decoded?.params[1]?.value).toLowerCase(), '------matched user-----');
+        // console.log(address.toLowerCase() === (tokenData[0]?.decoded?.params[1]?.value).toLowerCase(), '------matched user-----');
 
-        console.log(tokenData[0]?.decoded?.params[1]?.value, '========trx user address');
+        // console.log(tokenData[0]?.decoded?.params[1]?.value, '========trx user address');
 
         let tokenDeposit = allTokens.filter((elem: any) => {
           return elem.symbol === tokenData[0]?.sender_contract_ticker_symbol
         });
 
         let depositAmount = tokenData[0]?.decoded?.params[2]?.value / 10 ** tokenData[0]?.sender_contract_decimals;
-        console.log(depositAmount, '-----------Deposit Amount');
+        // console.log(depositAmount, '-----------Deposit Amount');
 
         if (depositAmount < tokenDeposit[0].minimum_deposit) {
-          console.log('deposit amount less than minimum amount');
+          // console.log('deposit amount less than minimum amount');
           return;
         }
 
@@ -250,15 +250,15 @@ console.log("here 2");
               // Add record to user assets table
               //============================================================//
 
-              console.log(tokenid,"token id");
-              console.log(userid,"user id");
+              // console.log(tokenid,"token id");
+              // console.log(userid,"user id");
               
 
               let exist = await assetModel.findOne({
                 where: { user_id: userid, token_id: tokenid }, raw: true
               });
 
-              console.log(exist,"==exist");
+              // console.log(exist,"==exist");
               
 
               if (exist !== null) {
@@ -316,7 +316,7 @@ console.log("here 2");
     userid: string,
     allTokens: any
   ) {
-    console.log("here main transaction");
+    // console.log("here main transaction");
     
     if (!data.successful) return; // check transaction status
 
@@ -326,7 +326,7 @@ console.log("here 2");
     let wallet: any = process?.env?.MASTER_WALLET_BEP20;
     let masterWallet = await service.watchlist.decrypt(wallet);
     if (data?.from_address?.toLowerCase() === masterWallet.toLowerCase()) {
-      console.log("in this");
+      // console.log("in this");
       
       return;
     }
@@ -339,7 +339,7 @@ console.log("here 2");
       });
 
       if (amount < tokenDeposit[0].minimum_deposit) {
-        console.log('deposit amount less than minimum amount');
+        // console.log('deposit amount less than minimum amount');
         return;
       }
       //============================================================//
@@ -385,13 +385,13 @@ console.log("here 2");
           // update user assets table
           //============================================================//
           
-          console.log(tokenid,"token id1");
-          console.log(userid,"user id1");
+          // console.log(tokenid,"token id1");
+          // console.log(userid,"user id1");
           let exist = await assetModel.findOne({
             where: { user_id: userid, token_id: tokenid }, raw: true
           });
 
-          console.log(exist,"===exist 1");
+          // console.log(exist,"===exist 1");
           
 
           if (exist !== null) {
