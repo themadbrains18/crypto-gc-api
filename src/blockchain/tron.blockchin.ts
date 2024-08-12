@@ -278,13 +278,13 @@ class tronBlockChain {
     const amountInSUN = amountTRX * 1000000;
 
     try {
-      console.log(fromAddress);
+      // console.log(fromAddress);
 
       const balanceInSUN = await this.tronWeb.trx.getBalance(fromAddress);
-      console.log(balanceInSUN);
+      // console.log(balanceInSUN);
       const balanceInTRX = balanceInSUN / 1000000;
 
-      console.log(balanceInTRX, " == balanceInTRX == ", amountInSUN, " == ");
+      // console.log(balanceInTRX, " == balanceInTRX == ", amountInSUN, " == ");
 
       if (amountTRX > balanceInTRX) {
         throw new Error("Your balance is insufficient.");
@@ -304,7 +304,7 @@ class tronBlockChain {
       if (transactionResponse.hasOwnProperty("code")) {
         throw new Error(transactionResponse?.code);
       } else {
-        console.log(transactionResponse);
+        // console.log(transactionResponse);
         return transactionResponse;
       }
     } catch (error: any) {
@@ -375,13 +375,13 @@ class tronBlockChain {
           { type: "uint256", value: amountInSUN },
         ]
       );
-      console.log("Signed Transaction:", tx.transaction);
+      // console.log("Signed Transaction:", tx.transaction);
 
       const signedTx = await this.tronWeb.trx.sign(tx.transaction);
-      console.log("Signed Transaction:", signedTx);
+      // console.log("Signed Transaction:", signedTx);
 
       const broadcastTx = await this.tronWeb.trx.sendRawTransaction(signedTx);
-      console.log("Signed Transaction:", broadcastTx);
+      // console.log("Signed Transaction:", broadcastTx);
 
       return broadcastTx;
     } catch (error: any) {

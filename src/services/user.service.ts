@@ -129,7 +129,7 @@ class userServices {
           user.password
         );
 
-        console.log(pass,"============pass");
+        // console.log(pass,"============pass");
         
 
         if (pass) {
@@ -287,7 +287,7 @@ class userServices {
   async updatePassword(payload: updatepassword): Promise<UserOuput | any> {
     try {
 
-      console.log(payload.user_id);
+      // console.log(payload.user_id);
       
       let user = await userModel.findOne({ where: { id: payload.user_id } });
       

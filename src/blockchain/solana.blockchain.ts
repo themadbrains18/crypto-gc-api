@@ -117,7 +117,7 @@ class solanaBlockchain implements parameters {
         transaction,
         [from]
       );
-      console.log(`SIGNATURE--${signature}`);
+      // console.log(`SIGNATURE--${signature}`);
       return `SIGNATURE--${signature}`;
     } catch (error: any) {
       return error.message;
@@ -177,38 +177,38 @@ class solanaBlockchain implements parameters {
         new Uint8Array(privateKey)
       );
 
-      console.log(
-        `Sending ${TRANSFER_AMOUNT} ${MINT_ADDRESS} from ${FROM_KEYPAIR.publicKey.toString()} to ${DESTINATION_WALLET}.`
-      );
+      // console.log(
+      //   `Sending ${TRANSFER_AMOUNT} ${MINT_ADDRESS} from ${FROM_KEYPAIR.publicKey.toString()} to ${DESTINATION_WALLET}.`
+      // );
       //Step 1
-      console.log(`1 - Getting Source Token Account`);
+      // console.log(`1 - Getting Source Token Account`);
       let sourceAccount = await getOrCreateAssociatedTokenAccount(
         this.connection,
         FROM_KEYPAIR,
         new web3.PublicKey(MINT_ADDRESS),
         FROM_KEYPAIR.publicKey
       );
-      console.log(`1 - Getting Source Token Account`, sourceAccount);
+      // console.log(`1 - Getting Source Token Account`, sourceAccount);
 
-      console.log(`    Source Account: ${sourceAccount.address.toString()}`);
+      // console.log(`    Source Account: ${sourceAccount.address.toString()}`);
 
       //Step 2
-      console.log(`2 - Getting Destination Token Account`);
+      // console.log(`2 - Getting Destination Token Account`);
       let destinationAccount = await getOrCreateAssociatedTokenAccount(
         this.connection,
         FROM_KEYPAIR,
         new web3.PublicKey(MINT_ADDRESS),
         new web3.PublicKey(DESTINATION_WALLET)
       );
-      console.log(
-        `    Destination Account: ${destinationAccount.address.toString()}`
-      );
+      // console.log(
+      //   `    Destination Account: ${destinationAccount.address.toString()}`
+      // );
 
       //Step 3
-      console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
+      // console.log(`3 - Fetching Number of Decimals for Mint: ${MINT_ADDRESS}`);
       const numberDecimals = await this.getNumberDecimals(MINT_ADDRESS);
 
-      console.log(`    Number of Decimals: ${numberDecimals}`);
+      // console.log(`    Number of Decimals: ${numberDecimals}`);
       const tokenAccount1Pubkey = new PublicKey(
         "37sAdhEFiYxKnQAm7CPd5GLK1ZxWovqn3p87kKjfD44c"
       );
@@ -216,12 +216,12 @@ class solanaBlockchain implements parameters {
         tokenAccount1Pubkey
       );
 
-      console.log(
-        `decimals: ${tokenAccountBalance.value.decimals}, amount: ${tokenAccountBalance.value.amount}`
-      );
+      // console.log(
+      //   `decimals: ${tokenAccountBalance.value.decimals}, amount: ${tokenAccountBalance.value.amount}`
+      // );
 
       //Step 4
-      console.log(`4 - Creating and Sending Transaction`);
+      // console.log(`4 - Creating and Sending Transaction`);
       const tx = new Transaction();
       tx.add(
         createTransferInstruction(
@@ -241,11 +241,11 @@ class solanaBlockchain implements parameters {
         tx,
         [FROM_KEYPAIR]
       );
-      console.log(
-        "\x1b[32m", //Green Text
-        `   Transaction Success!🎉`,
-        `\n    https://explorer.solana.com/tx/${signature}?cluster=devnet`
-      );
+      // console.log(
+      //   "\x1b[32m", //Green Text
+      //   `   Transaction Success!🎉`,
+      //   `\n    https://explorer.solana.com/tx/${signature}?cluster=devnet`
+      // );
       return signature;
       // sendTokens();
     } catch (error: any) {

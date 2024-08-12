@@ -25,12 +25,12 @@ function confirmEtherTransaction(txHash : string, confirmations = 10) : void {
   setTimeout(async () => {
     // Get current number of confirmations and compare it with sought-for value
     const trxConfirmations : number | undefined  = await getConfirmations(txHash)
-    console.log('Transaction with hash ' + txHash + ' has ' + trxConfirmations + ' confirmation(s)')
+    // console.log('Transaction with hash ' + txHash + ' has ' + trxConfirmations + ' confirmation(s)')
 
     if (trxConfirmations >= confirmations) {
       // Handle confirmation event according to your business logic
 
-      console.log('Transaction with hash ' + txHash + ' has been successfully confirmed')
+      // console.log('Transaction with hash ' + txHash + ' has been successfully confirmed')
 
       return
     }

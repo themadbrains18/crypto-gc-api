@@ -368,15 +368,15 @@ class ethereum extends BaseController {
       .signTransaction(rawTx, privateKey)
       .then((tx) => tx)
       .catch(async (error: any) => {
-        console.log(error.message);
-        console.log(
-          error.message.includes("gasLimit is too low"),
-          " ================"
-        );
+        // console.log(error.message);
+        // console.log(
+        //   error.message.includes("gasLimit is too low"),
+        //   " ================"
+        // );
         if (error.message.includes("gasLimit is too low")) {
           let str = error.message;
           let findgasEstimate = str.replaceAll(".", "").split(" ").slice(-1);
-          console.log(findgasEstimate[0], "==============");
+          // console.log(findgasEstimate[0], "==============");
           rawTx.gasLimit = this.web3.utils.toHex(findgasEstimate[0]);
           return await this.signTransaction(rawTx, privateKey);
         }
@@ -435,10 +435,10 @@ class ethereum extends BaseController {
       source = { from: from, to: to };
     }
     var gasAmount = Number(await this.web3.eth.estimateGas(source));
-    console.log("i am here", gasAmount, limit);
+    // console.log("i am here", gasAmount, limit);
 
     gasAmount = gasAmount * limit;
-    console.log("i am here", gasAmount, limit);
+    // console.log("i am here", gasAmount, limit);
 
     return Math.round(gasAmount);
   }
@@ -565,19 +565,19 @@ class ethereum extends BaseController {
       const contract = new this.web3.eth.Contract(bep20, contractAddress);
 
       const deciaml = Number(await contract.methods.decimals().call());
-      console.log(deciaml, " === deciaml");
+      // console.log(deciaml, " === deciaml");
       // ---------- Comment by surinder kumar(11-Jan-2024)
       // var contractName = await contract.methods.name().call();
       // console.log(contractName, " === contractName");
 
       const symbol = await contract.methods.symbol().call();
-      console.log(symbol, " === symbol");
+      // console.log(symbol, " === symbol");
 
       const balance = Number(
         await contract.methods.balanceOf(senderAccount.address).call()
       );
 
-      console.log(balance / 10 ** 18, " === balance");
+      // console.log(balance / 10 ** 18, " === balance");
 
       // check nagtive value
       if (Amount < 0) {
@@ -593,29 +593,29 @@ class ethereum extends BaseController {
 
       let paidAmount = this.web3.utils.toWei(Amount.toString(), "ether");
 
-      console.log(paidAmount, "  === paidAmount");
+      // console.log(paidAmount, "  === paidAmount");
 
       let dataVal = contract.methods.transfer(to, paidAmount).encodeABI();
 
-      console.log(dataVal, " ==== dataVal");
+      // console.log(dataVal, " ==== dataVal");
 
       let nonce = await this.getNonce(senderAccount.address);
       let gasLimit = await this.gasAmount(to, senderAccount.address, dataVal);
-      console.log(gasLimit, " = = = = = = = gasLimit");
+      // console.log(gasLimit, " = = = = = = = gasLimit");
 
       let gasPrice = Number(await this.web3.eth.getGasPrice());
-      console.log(gasPrice, " = = = = = = = gasPrice");
+      // console.log(gasPrice, " = = = = = = = gasPrice");
 
       var block = await this.web3.eth.getBlock("latest");
-      console.log(block.gasLimit, " = = = = = = = gasPrice");
+      // console.log(block.gasLimit, " = = = = = = = gasPrice");
 
       let Estimate = await contract.methods
         .transfer(to, paidAmount.toString())
         .estimateGas({ from: senderAccount.address });
 
-      console.log(Estimate, " = = = = = = = Estimate");
+      // console.log(Estimate, " = = = = = = = Estimate");
 
-      console.log();
+      // console.log();
       let data = {
         from: senderAccount.address,
         nonce: Number(nonce),
@@ -655,7 +655,7 @@ class ethereum extends BaseController {
 
   async tokenTransferToAdmin(payload: any): Promise<any> {
 
-    console.log('----------totken transfer to admin');
+    // console.log('----------totken transfer to admin');
 
     let networkTrnx;
     if (payload.network !== undefined && payload.tx_hash !== undefined && payload.tx_hash !== null && payload.tx_hash !== "") {
@@ -672,18 +672,18 @@ class ethereum extends BaseController {
 
       US_balance = US_balance.toString().match(/^-?\d+(?:\.\d{0,4})?/)[0];
 
-      console.log(US_balance, '=======US balance');
+      // console.log(US_balance, '=======US balance');
 
 
       if (US_balance < this.minPrice) {
 
-        console.log("user balance is to low")
+        // console.log("user balance is to low")
         let feeRealsed: any = await depositModel.findOne({ where: { id: payload?.id }, raw: true });
         let sendGasAmount = this.minPrice - US_balance; // 0.0008
 
         if (feeRealsed.gasFee === false || feeRealsed.gasFee === 0) { // fee already released
           await depositModel.update({ gasFee: true }, { where: { id: payload?.id } })
-          console.log("sending gas fee....", sendGasAmount.toFixed(4))
+          // console.log("sending gas fee....", sendGasAmount.toFixed(4))
           await this.sendBNBgasFee(payload?.id, payload?.address, sendGasAmount.toFixed(4), payload?.network, payload)
         }
         return false
@@ -721,7 +721,7 @@ class ethereum extends BaseController {
 
   sendBNBgasFee = async (postID: string, address: string, amount: string, networkId: string, payload: any) => {
     try {
-      console.log('----------BNB transfer to user');
+      // console.log('----------BNB transfer to user');
       let wallet: any = process?.env?.MASTER_WALLET_BEP20;
       let masterWallet = await service.watchlist.decrypt(wallet);
 
@@ -741,7 +741,7 @@ class ethereum extends BaseController {
       if (pendingNonce == latestNonce) {
         nonce = latestNonce
       } else {
-        console.log("bnb gas fee transfer to customer resolved.....")
+        // console.log("bnb gas fee transfer to customer resolved.....")
         return
       }
 
@@ -753,13 +753,13 @@ class ethereum extends BaseController {
 
       // var gasLimit = block.gasLimit
 
-      console.log('gasLimit  ', gasLimit)
+      // console.log('gasLimit  ', gasLimit)
 
       var gasPrice = await this.web3.eth.getGasPrice();
-      console.log('gasPrice', gasPrice)
+      // console.log('gasPrice', gasPrice)
 
       let sendFees = Number(amount);
-      console.log(sendFees, '==========send Fees');
+      // console.log(sendFees, '==========send Fees');
 
       amount = this.web3.utils.toWei(amount.toString(), 'ether')
 
@@ -806,7 +806,7 @@ class ethereum extends BaseController {
               return reject(err);
             })
             .catch((err: any) => {
-              console.log('----here error 2', err.message);
+              // console.log('----here error 2', err.message);
               return reject(err);
             });
         });
@@ -816,11 +816,11 @@ class ethereum extends BaseController {
             blockHash: trxData,
           }
 
-          console.log(
-            { success: 1, status: 'success', receipt: receipt },
-            ' BINANCE The hash of your transaction is: ',
-            trxData,
-          )
+          // console.log(
+          //   { success: 1, status: 'success', receipt: receipt },
+          //   ' BINANCE The hash of your transaction is: ',
+          //   trxData,
+          // )
 
           // ----------update deposit table fees field 
           await depositModel.update({ gasFee: false }, { where: { id: postID } });
@@ -836,9 +836,9 @@ class ethereum extends BaseController {
 
           await depositModel.update({ gasFee: false, cronStatus: false }, { where: { id: postID } })
 
-          console.log(
-            '❗Something went wrong while submitting your transaction:'
-          )
+          // console.log(
+          //   '❗Something went wrong while submitting your transaction:'
+          // )
 
           return { success: 0, status: 'fail' }
         }

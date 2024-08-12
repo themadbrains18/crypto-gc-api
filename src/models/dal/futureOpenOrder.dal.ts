@@ -54,12 +54,12 @@ class futureOpenOrderDal extends BaseController {
             // }
 
             if (global_token) {
-                console.log(payload?.user_id,"payload?.user_id");
-                console.log(global_token?.id,"global_token?.id");
+                // console.log(payload?.user_id,"payload?.user_id");
+                // console.log(global_token?.id,"global_token?.id");
                 
                 let asset: any = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
 
-                console.log(asset,"==assete");
+                // console.log(asset,"==assete");
                 
 
                 let margin_price: any = payload?.margin;

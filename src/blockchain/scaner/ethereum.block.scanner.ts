@@ -49,18 +49,18 @@ class blockScanner {
         false // Refresh boundaries, optional. Recheck the latest block before request. By default false.
     );
 
-    console.log(block)
+    // console.log(block)
 
     try {
       var latestBlock = await this.web3.eth.getBlockNumber();
-      console.log("latestBlock: " + latestBlock);
+      // console.log("latestBlock: " + latestBlock);
       return
       for (var i = 32359364; i < latestBlock; i++) {
         var Block = await this.web3.eth.getBlock(i);
-        console.log("blocknumuer: " + i);
+        // console.log("blocknumuer: " + i);
         if (Block?.transactions != null && Block != null) {
           Block?.transactions.forEach(async function (e) {
-            console.log(e);
+            // console.log(e);
 
             // var Tdata = obj.web3.toAscii(getT.input);
         

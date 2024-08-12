@@ -31,12 +31,12 @@ class orderController extends BaseController {
       let p2pOrder: P2POrderDto = req.body;
       const key = `create-order-${p2pOrder.post_id}`;
 
-      console.log(key,'=================key');
+      // console.log(key,'=================key');
       
       lock.acquire(key, async () => {
         try {
           let p2pResponse = await service.p2p.createOrder(p2pOrder);
-          console.log(p2pResponse, '==========P2p Response===========');
+          // console.log(p2pResponse, '==========P2p Response===========');
 
           if (p2pResponse) {
             let user = await userModel.findOne({
