@@ -84,10 +84,10 @@ class depositController extends BaseController {
     }    
     async getdepositHistoryByLimit(req : Request, res : Response){
       try {
-        let {offset,limit} = req?.params
-        let depositResponse = await service.depositServices.getDepositHistoryById(req?.params?.id);
-        let depositResponsePaginate:any = await service.depositServices.getDepositHistoryByIdAndLimit(req?.params?.id,offset,limit);
-        super.ok<any>(res, {data:depositResponsePaginate.data, total:depositResponse.length,  totalAmount:depositResponsePaginate.totalAmount});
+        let {offset,limit,currency, date } = req?.params
+     
+        let depositResponsePaginate:any = await service.depositServices.getDepositHistoryByIdAndLimit(req?.params?.id,offset,limit,currency,date);
+        super.ok<any>(res, {data:depositResponsePaginate.data, total: depositResponsePaginate.total,  totalAmount:depositResponsePaginate.totalAmount});
       } catch (error: any) {
         super.fail(res, error.message);
       }

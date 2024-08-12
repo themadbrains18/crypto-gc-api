@@ -150,10 +150,10 @@ class withdrawController extends BaseController {
   }
   async userWithdrawHistoryByLimit(req: Request, res: Response) {
     try {
-      let {offset,limit} = req?.params
-      let responseData = await service.withdrawServices.historyById(req.params.userid);
-      let responseDataPaginate = await service.withdrawServices.historyByIdLimit(req.params.userid,offset,limit);
-      super.ok<any>(res, {data:responseDataPaginate?.data,total:responseData.length, totalAmount:responseDataPaginate?.totalAmount});
+      let {offset,limit, currency, date} = req?.params
+
+      let responseDataPaginate = await service.withdrawServices.historyByIdLimit(req.params.userid,offset,limit, currency,date);
+      super.ok<any>(res, {data:responseDataPaginate?.data,total:responseDataPaginate.length, totalAmount:responseDataPaginate?.totalAmount});
 
     } catch (error: any) {
       super.fail(res, error.message);

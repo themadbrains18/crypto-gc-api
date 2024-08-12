@@ -23,8 +23,8 @@ class depositServices {
   async getDepositHistoryById(user_id:string):Promise<depositOuput[]>{
     return depositDal.getHistoryOfDepositById(user_id);
   }
-  async getDepositHistoryByIdAndLimit(user_id:string, offset:string,limit:string):Promise<depositOuput[]>{
-    return depositDal.getHistoryOfDepositByIdLimit(user_id,offset,limit);
+  async getDepositHistoryByIdAndLimit(user_id:string, offset:string,limit:string,currency:string,date:string):Promise<depositOuput[]>{
+    return depositDal.getHistoryOfDepositByIdLimit(user_id,offset,limit, currency,date);
   }
 }
 

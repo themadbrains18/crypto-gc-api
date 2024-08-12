@@ -21,7 +21,7 @@ class depositRoutes  {
         this.router.post('/saveTrc20',deposit.saveTRC20Transaction)
         this.router.get('/list/:id',middleware.auth,deposit.getdepositDetails);
         this.router.get('/history/:id',middleware.auth,deposit.getdepositHistory);
-        this.router.get('/history/:id/:offset/:limit',middleware.auth,deposit.getdepositHistoryByLimit);
+        this.router.get('/history/:id/:offset/:limit/:currency/:date',middleware.auth,deposit.getdepositHistoryByLimit);
          //=======================================================//
             //  admin can access this routes
         //=======================================================//

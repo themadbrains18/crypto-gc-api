@@ -395,8 +395,8 @@ class marketService {
             else if (options.remainingAssets > parseFloat(options.sellerObj.token_amount)) {
                 if (buyerOrder) {
                     await marketOrderModel.update({
-                        volume_usdt: parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin),
-                        token_amount: (options.remainingAssets - parseFloat(options.sellerObj.token_amount)), queue: false
+                        volume_usdt: truncateNumber(parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin),8),
+                        token_amount: truncateNumber((options.remainingAssets - parseFloat(options.sellerObj.token_amount)),8), queue: false
                     }, { where: { id: buyerOrder.id } });
                 }
                 if (sellerOrder) {
@@ -406,8 +406,8 @@ class marketService {
             else if (options.sellerObj.token_amount > options.remainingAssets) {
                 if (sellerOrder) {
                     let sellerStatus = false;
-                    let remainingAmount = parseFloat(sellerOrder.token_amount) - options.remainingAssets;
-                    let volume_usdt = truncateNumber(parseFloat(sellerOrder.volume_usdt) - options.paid_usdt, 8);
+                    let remainingAmount = truncateNumber((parseFloat(sellerOrder.token_amount) - options.remainingAssets),8);
+                    let volume_usdt = truncateNumber((parseFloat(sellerOrder.volume_usdt) - options.paid_usdt), 8);
 
                     console.log(remainingAmount, '-----------remainingAmount');
                     console.log(volume_usdt, '-------------------volume_usdt');
@@ -721,8 +721,8 @@ class marketService {
             }
             else if (parseFloat(options.buyerObj.token_amount) > options.remainingAssets) {
                 let buyerStatus = false;
-                let remainingAmount = parseFloat(buyerOrder.token_amount) - options.remainingAssets;
-                let volume_usdt = parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin);
+                let remainingAmount =truncateNumber((parseFloat(buyerOrder.token_amount) - options.remainingAssets),8);
+                let volume_usdt = truncateNumber((parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin)),8);
 
                 // console.log(remainingAmount, '-----------remainingAmount');
                 // console.log(volume_usdt, '-------------------volume_usdt');
@@ -733,8 +733,8 @@ class marketService {
                 if (buyerOrder) {
                     await marketOrderModel.update({
                         status: buyerStatus,
-                        volume_usdt: parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin),
-                        token_amount: (parseFloat(options.buyerObj.token_amount) - options.remainingAssets), queue: false
+                        volume_usdt: truncateNumber((parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin)),8),
+                        token_amount: truncateNumber((parseFloat(options.buyerObj.token_amount) - options.remainingAssets),8), queue: false
                     }, { where: { id: buyerOrder.id } })
                 }
                 if (sellerOrder) {
@@ -744,8 +744,8 @@ class marketService {
             else if (options.remainingAssets > parseFloat(options.buyerObj.token_amount)) {
                 if (sellerOrder) {
                     await marketOrderModel.update({
-                        token_amount: options.remainingAssets - parseFloat(options.buyerObj.token_amount),
-                        volume_usdt: parseFloat(sellerOrder.volume_usdt) - options.paid_usdt, queue: false
+                        token_amount: truncateNumber((options.remainingAssets - parseFloat(options.buyerObj.token_amount)),8),
+                        volume_usdt: truncateNumber((parseFloat(sellerOrder.volume_usdt) - options.paid_usdt),8), queue: false
                     }, { where: { id: sellerOrder.id } })
                 }
                 if (buyerOrder) {

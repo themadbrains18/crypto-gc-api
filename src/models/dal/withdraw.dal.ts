@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { assetsWalletType } from "../../utils/interface";
 import withdrawDto from "../dto/withdraw.dto";
 import assetModel from "../model/assets.model";
@@ -158,12 +159,23 @@ class withdrawDal {
       throw new Error(error.message);
     }
   };
-  withdrawHistoryByIdLimit = async (id: number | string, offset: string, limit: string): Promise<object | null> => {
+  withdrawHistoryByIdLimit = async (id: number | string, offset: string, limit: string, currency:string, date:string): Promise<object | null> => {
     try {
       let offsets = parseInt(offset)
       let limits = parseInt(limit)
+      let whereClause: any = {
+        user_id: id
+    };
+      if (currency && currency !== 'all') {
+        whereClause.symbol=currency
+    }
+    if (date && date !== 'all') {
+        whereClause.createdAt = {
+            [Op.gte]: new Date(date as string) // Filter posts from the given date
+        };
+    }
       let wallet: any = await withdrawModel.findAll({
-        where: { user_id: id },
+        where: whereClause,
         include:
           [{
             model: networkModel,
@@ -181,8 +193,7 @@ class withdrawDal {
           }
           ],
         order: [["createdAt", "desc"]],
-        limit: limits,
-        offset: offsets
+     
       });
       let data = wallet
       
@@ -202,7 +213,13 @@ class withdrawDal {
         }
       }
 
-      return { data: data, totalAmount: withdrawTotal };
+      
+      const totalLength = data.length;
+    
+      // Paginate the filtered records
+      const paginatedData = data.slice(offsets, offsets + limits);
+
+      return { data: paginatedData,total: totalLength, totalAmount: withdrawTotal };
     } catch (error: any) {
       throw new Error(error.message);
     }

@@ -20,7 +20,7 @@ class withdrawRoutes extends BaseController  {
         this.router.post('/create/withdraw',middleware.auth,super.Validator(withdrawSchema.create),withdraw.addnewRequest); 
         this.router.get('/list/:userid',middleware.auth, withdraw.withdrawListbyUserID);
         this.router.get('/history/:userid',middleware.auth, withdraw.userWithdrawHistory);
-        this.router.get('/history/:userid/:offset/:limit',middleware.auth, withdraw.userWithdrawHistoryByLimit);
+        this.router.get('/history/:userid/:offset/:limit/:currency/:date',middleware.auth, withdraw.userWithdrawHistoryByLimit);
           //=======================================================//
             //  admin can access this routes
         //=======================================================//

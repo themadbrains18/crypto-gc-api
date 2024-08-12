@@ -26,8 +26,8 @@ class withdrawServices {
     async historyById(user_id: string): Promise<any> {
         return await withdrawDal.withdrawHistoryById(user_id);
     }
-    async historyByIdLimit(user_id: string, offset: string, limit: string): Promise<any> {
-        return await withdrawDal.withdrawHistoryByIdLimit(user_id, offset, limit);
+    async historyByIdLimit(user_id: string, offset: string, limit: string, currency:string, date:string): Promise<any> {
+        return await withdrawDal.withdrawHistoryByIdLimit(user_id, offset, limit, currency, date);
     }
 
     async getwithdrawList(): Promise<assetOuput[]> {

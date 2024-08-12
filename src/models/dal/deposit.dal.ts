@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import assetModel from "../model/assets.model";
 import depositModel, { depositOuput } from "../model/deposit.model";
 import globalTokensModel from "../model/global_token.model";
@@ -77,12 +78,27 @@ class depositDal {
       throw new Error(error.message);
     }
   }
-  async getHistoryOfDepositByIdLimit(id: string, offset: string, limit: string): Promise<depositOuput[] | any> {
+  async getHistoryOfDepositByIdLimit(id: string, offset: string, limit: string,currency:string,date:string): Promise<depositOuput[] | any> {
     try {
       let offsets = parseInt(offset)
       let limits = parseInt(limit)
+      let whereClause: any = {
+        user_id: id
+    };
+  
+    
+      if (currency && currency !== 'all') {
+        whereClause.coinName = {
+          [Op.like]: `%${currency}%` // Filter records where coinName contains the currency
+        };
+    }
+    if (date && date !== 'all') {
+        whereClause.createdAt = {
+            [Op.gte]: new Date(date as string) // Filter posts from the given date
+        };
+    }
       let deposit: any = await depositModel.findAll({
-        where: { user_id: id },
+        where: whereClause,
         attributes: {
           exclude: ['id', 'deletedAt', 'updatedAt']
         },
@@ -96,8 +112,7 @@ class depositDal {
         ],
         order: [["createdAt", "desc"]],
         raw: true,
-        offset: offsets,
-        limit: limits
+   
       });
 
      let allData= await depositModel.findAll({
@@ -115,7 +130,12 @@ class depositDal {
       }
 
       let data = deposit
-      return {data:data, totalAmount:depositTotal};
+      
+      const totalLength = data.length;
+    
+      // Paginate the filtered records
+      const paginatedData = data.slice(offsets, offsets + limits);
+      return {data: paginatedData, total: totalLength, totalAmount:depositTotal};
     } catch (error: any) {
       throw new Error(error.message);
     }
