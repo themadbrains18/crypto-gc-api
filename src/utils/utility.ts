@@ -46,7 +46,30 @@ export function debounce(
   };
 }
 
-export function truncateNumber(num: number, decimals: number) {
-  const factor = Math.pow(10, decimals);
-  return (num >= 0 ? Math.floor(num * factor) : Math.ceil(num * factor)) / factor;
+// export function truncateNumber(num: number, decimals: number) {
+//   const factor = Math.pow(10, decimals);
+//   return (num >= 0 ? Math.floor(num * factor) : Math.ceil(num * factor)) / factor;
+// }
+export function truncateNumber(num: number, decimals: number): number {
+
+  // const value = num.toString();
+  // console.log(Number(num),'=======num');
+  const regex = new RegExp(`^-?\\d+(?:\\.\\d{0,${decimals}})?`);
+  const match = num.toString().match(regex);
+  // console.log(match,'=======match');
+  
+  return match ? parseFloat(match[0]) : num;
+  // const valueString = num.toString();
+  // const decimalIndex = valueString.indexOf('.');
+
+  // if (decimalIndex === -1) {
+  //   // No decimal point found, so return the value as is
+  //   return parseFloat(valueString);
+  // }
+
+  // // Slice the string to include only up to 6 digits after the decimal point
+  // const truncatedString = valueString.slice(0, decimalIndex + (decimals + 1));
+  // return parseFloat(truncatedString); // Convert the truncated string back to a number
+
+
 }

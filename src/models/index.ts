@@ -360,7 +360,7 @@ models.forEach((model) => model.initialize(sequelize));
 })().catch((err) => console.log(err));
 
 // sequelize.sync({ alter: true });
-// takeProfitStopLossModel.sync({ alter: true });
+// assetModel.sync({ alter: true });
 
 
 //=============================================================
