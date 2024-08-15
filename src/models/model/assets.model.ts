@@ -57,7 +57,7 @@ class assetModel
           allowNull: false,
         },
         balance: {
-          type: DataTypes.DOUBLE(10, 8),
+          type: DataTypes.DOUBLE(14, 8),
           // type: DataTypes.DOUBLE,
           allowNull: true,
           defaultValue : 0
