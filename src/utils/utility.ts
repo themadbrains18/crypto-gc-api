@@ -57,7 +57,7 @@ export function truncateNumber(num: number, decimals: number): number {
   const regex = new RegExp(`^-?\\d+(?:\\.\\d{0,${decimals}})?`);
   const match = num.toString().match(regex);
   // console.log(match,'=======match');
-  
+
   return match ? parseFloat(match[0]) : num;
   // const valueString = num.toString();
   // const decimalIndex = valueString.indexOf('.');
@@ -72,4 +72,9 @@ export function truncateNumber(num: number, decimals: number): number {
   // return parseFloat(truncatedString); // Convert the truncated string back to a number
 
 
+}
+
+export function preciseSubtraction(a: number, b: number, precision: number = 6) {
+  const factor = Math.pow(10, precision);
+  return Math.round((a - b) * factor) / factor;
 }
