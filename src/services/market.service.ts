@@ -797,7 +797,8 @@ class marketService {
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
                                 console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
-                                remainingAssets = remainingAssets - sellerObj.token_amount;
+                                remainingAssets = preciseSubtraction(remainingAssets, sellerObj.token_amount);
+                                
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
@@ -936,7 +937,7 @@ class marketService {
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
                                 console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
-                                remainingAssets = remainingAssets - buyerObj.token_amount;
+                                remainingAssets = preciseSubtraction(remainingAssets, buyerObj.token_amount);
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
