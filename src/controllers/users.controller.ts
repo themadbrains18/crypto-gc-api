@@ -203,8 +203,12 @@ class userController extends BaseController {
         return super.fail(res, 'You have not access to admin account.');
       }
 
+      // console.log(login.lockUntil, "=ajhdkasjh", login.lockUntil > new Date(), "lock until");
+
+
       if (login.lockUntil && login.lockUntil > new Date()) {
-       
+        // console.log("here i am ");
+
         throw new Error(
           "Your account is susceptible to high risk. Please try again after 4 hours.",
         );
@@ -355,7 +359,7 @@ class userController extends BaseController {
             });
           } else {
             // Update login attempts and lock account if necessary
-            let userRecord:any = await userModel.findOne({ where: { id: login.id }, raw: true });
+            let userRecord: any = await userModel.findOne({ where: { id: login.id }, raw: true });
             let loginAttempts = userRecord.loginAttempts || 0;
             loginAttempts += 1;
 
@@ -441,7 +445,7 @@ class userController extends BaseController {
           // const newEmailTemplate = service.emailTemplate.otpVerfication(
           //   `${otp2?.otp}`
           // );
-          
+
           service.emailService.sendMail(
             req.headers["X-Request-Id"],
             {
@@ -487,20 +491,20 @@ class userController extends BaseController {
                   user.number = req.body.data;
                 }
                 let userResponse = await service.user.updateUser(user);
-             
+
                 // console.log(userResponse,"this is outside the if block");
-                
-                if(userResponse){
+
+                if (userResponse) {
 
                   // console.log("this is in the if");
                   return super.ok<any>(res, {
                     data: "User update successfully.",
                   });
 
-                }else{
+                } else {
                   // console.log("this is in the else");
-                  return super.fail(res, 
-                  "Opps! please check your password"
+                  return super.fail(res,
+                    "Opps! please check your password"
                   );
                 }
               }
@@ -669,8 +673,17 @@ class userController extends BaseController {
           return super.fail(res, `Account doesn't exist`);
         }
 
+
         if (user.success == true) {
           let userOtp;
+
+          if (user?.data?.dataValues?.lockUntil && user?.data?.dataValues?.lockUntil > new Date()) {
+            console.log("here i am ");
+    
+            throw new Error(
+              "Your account is susceptible to high risk. Please try again after 4 hours.",
+            );
+          }
           if (
             req.body?.otp === "string" ||
             req.body?.otp === "" ||
@@ -707,6 +720,18 @@ class userController extends BaseController {
 
                   return super.ok<any>(res, { status: 200, message: "OTP matched" });
                 } else {
+                  // console.log(user,"==user");
+                  
+                  // Update login attempts and lock account if necessary
+                  let userRecord: any = await userModel.findOne({ where: { id: user?.data?.dataValues?.id }, raw: true });
+                  let loginAttempts = userRecord.loginAttempts || 0;
+                  loginAttempts += 1;
+
+                  let updateData: any = { loginAttempts: loginAttempts };
+                  if (loginAttempts >= 10) {
+                    updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
+                  }
+                  await userModel.update(updateData, { where: { id: user?.data?.dataValues?.id } });
                   return super.fail(res, result.message);
                 }
               }
