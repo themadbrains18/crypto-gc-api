@@ -9,7 +9,7 @@ import futurePositionHistoryDto from "../dto/future_position_history.dto";
 import futurePositionHistoryModel from "../model/future_position_history.model";
 import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.model";
 import userRewardTotalModel from "../model/rewards_total.model";
-import { truncateNumber } from "../../utils/utility";
+import { preciseSubtraction, truncateNumber } from "../../utils/utility";
 import takeProfitStopLossModel from "../model/takeprofit_stoploss.model";
 
 class futurePositionDal {
@@ -162,7 +162,9 @@ class futurePositionDal {
                 await futurePositionHistoryModel.create(historyBody);
                 //================ Update Assets =================
                 if (assets_price > 0) {
-                    let newbal: any = asset?.balance - (assets_price + Number(payload.realized_pnl));
+                
+                    let newbal: number = preciseSubtraction(asset?.balance , Number(Number(assets_price) + Number(payload.realized_pnl)), 6);
+                    
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
                 }
                 if (reward_point > 0) {
@@ -220,6 +222,9 @@ class futurePositionDal {
             }
             activePosition = activePosition[0];
             if (activePosition) {
+
+                console.log(typeof(activePosition.assets_margin) , typeof assets_price);
+                
                 // ==================Hedge mode====================
                 if (activePosition?.position_mode === 'Hedge') {
                     if (activePosition.direction === payload.direction) {
@@ -230,9 +235,9 @@ class futurePositionDal {
                             entry_price: payload.entry_price,
                             market_price: payload.market_price,
                             margin: activePosition.margin + (payload.margin - payload.realized_pnl),
-                            assets_margin: activePosition.assets_margin + assets_price
+                            assets_margin: activePosition.assets_margin + Number(assets_price)
                         }, { where: { id: activePosition?.id, direction: payload.direction } });
-                        newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
+                        newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
                     }
                     else {
                        return await this.createPositionFunction(payload);   
@@ -246,8 +251,8 @@ class futurePositionDal {
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
                         activePosition.size = size;
                         activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
-                        activePosition.assets_margin = activePosition.assets_margin + assets_price
-                        newbal = asset?.balance - (assets_price + Number(payload.realized_pnl));
+                        activePosition.assets_margin = activePosition.assets_margin + Number(assets_price)
+                        newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
                     }
                     else {
                         let size: any = truncateNumber(activePosition.size - payload?.size, 5)
@@ -255,8 +260,8 @@ class futurePositionDal {
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
                         activePosition.size = size;
                         activePosition.margin = activePosition.margin - (payload.margin - Number(payload.realized_pnl));
-                        activePosition.assets_margin = activePosition.assets_margin + assets_price;
-                        newbal = asset?.balance + (assets_price - Number(payload.realized_pnl));
+                        activePosition.assets_margin = activePosition.assets_margin + Number(assets_price);
+                        newbal = asset?.balance + (Number(assets_price) - Number(payload.realized_pnl));
                     }
 
                     if (activePosition.qty !== 0) {
