@@ -150,13 +150,13 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            console.log('========Seller qty bid same as buyer qty bid===============');
-                            console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", remainingAssets, sellerObj.token_amount);
+                            // console.log('========Seller qty bid same as buyer qty bid===============');
+                            // console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", remainingAssets, sellerObj.token_amount);
                             let buyerFees: any = remainingAssets * 0.001;
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                             let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
 
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             //======================================================
@@ -185,13 +185,13 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            console.log('========Seller qty bid more than buyer qty bid===============');
-                            console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", remainingAssets, sellerObj.token_amount);
+                            // console.log('========Seller qty bid more than buyer qty bid===============');
+                            // console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", remainingAssets, sellerObj.token_amount);
                             let buyerFees: any = remainingAssets * 0.001;
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                             let sellerFees: any = ((remainingAssets) * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
 
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             //======================================================
@@ -220,13 +220,13 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            console.log('========Seller qty bid less than buyer qty bid===============');
-                            console.log(preciseSubtraction(remainingAssets, sellerObj.token_amount), "=======remainingAssets buyer 3=======", remainingAssets, sellerObj.token_amount);
+                            // console.log('========Seller qty bid less than buyer qty bid===============');
+                            // console.log(preciseSubtraction(remainingAssets, sellerObj.token_amount), "=======remainingAssets buyer 3=======", remainingAssets, sellerObj.token_amount);
                             let buyerFees: any = sellerObj.token_amount * 0.001;
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                             let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             remainingAssets = preciseSubtraction(remainingAssets, sellerObj.token_amount);// Number((remainingAssets - sellerObj.token_amount).toPrecision(1));
                             //======================================================
@@ -422,13 +422,13 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            console.log('========Seller qty bid same as buyer qty bid===============');
-                            console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", `${remainingAssets}  seller amount`, `${buyerObj.token_amount} buyer amount`);
+                            // console.log('========Seller qty bid same as buyer qty bid===============');
+                            // console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", `${remainingAssets}  seller amount`, `${buyerObj.token_amount} buyer amount`);
                             let buyerFees: any = buyerObj.token_amount * 0.001;
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                             let sellerFees: any = (remainingAssets * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                             await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             //======================================================
                             //=============Create buyer market order history========
@@ -454,13 +454,13 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            console.log('========Buyer qty bid more than Seller qty bid===============');
-                            console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", `${remainingAssets} seller amount`, `${buyerObj.token_amount} buyer amount`);
+                            // console.log('========Buyer qty bid more than Seller qty bid===============');
+                            // console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", `${remainingAssets} seller amount`, `${buyerObj.token_amount} buyer amount`);
                             let buyerFees: any = remainingAssets * 0.001;
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                             let sellerFees: any = ((remainingAssets) * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                             await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             //======================================================
                             //=============Create buyer market order history========
@@ -486,13 +486,13 @@ class marketService {
                             //======================================================
                             //=============Buyer and seller asset execution=========
                             //======================================================
-                            console.log('========Buyer qty bid less than Seller qty bid===============');
-                            console.log(preciseSubtraction(remainingAssets, buyerObj.token_amount), "=======remainingAssets buyer 3=======", `${remainingAssets} seller amount`, `${buyerObj.token_amount} buyer amount`);
+                            // console.log('========Buyer qty bid less than Seller qty bid===============');
+                            // console.log(preciseSubtraction(remainingAssets, buyerObj.token_amount), "=======remainingAssets buyer 3=======", `${remainingAssets} seller amount`, `${buyerObj.token_amount} buyer amount`);
                             let buyerFees: any = buyerObj.token_amount * 0.001;
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                             let sellerFees: any = (buyerObj.token_amount * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                             await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             remainingAssets = preciseSubtraction(remainingAssets, buyerObj.token_amount);
                             //======================================================
@@ -724,13 +724,13 @@ class marketService {
                                 //======================================================
                                 //=============Buyer and seller asset execution=========
                                 //======================================================
-                                console.log('========Seller qty bid same as buyer qty bid===============');
-                                console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", remainingAssets, sellerObj.token_amount);
+                                // console.log('========Seller qty bid same as buyer qty bid===============');
+                                // console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", remainingAssets, sellerObj.token_amount);
                                 let buyerFees: any = remainingAssets * 0.001;
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                                 let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========
@@ -756,13 +756,13 @@ class marketService {
                                 //======================================================
                                 //=============Buyer and seller asset execution=========
                                 //======================================================
-                                console.log('========Seller qty bid more than buyer qty bid===============');
-                                console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", remainingAssets, sellerObj.token_amount);
+                                // console.log('========Seller qty bid more than buyer qty bid===============');
+                                // console.log(preciseSubtraction(sellerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", remainingAssets, sellerObj.token_amount);
                                 let buyerFees: any = remainingAssets * 0.001;
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                                 let sellerFees: any = ((remainingAssets) * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========
@@ -789,13 +789,13 @@ class marketService {
                                 //======================================================
                                 //=============Buyer and seller asset execution=========
                                 //======================================================
-                                console.log('========Seller qty bid less than buyer qty bid===============');
-                                console.log(preciseSubtraction(remainingAssets, sellerObj.token_amount), "=======remainingAssets buyer 3=======", remainingAssets, sellerObj.token_amount);
+                                // console.log('========Seller qty bid less than buyer qty bid===============');
+                                // console.log(preciseSubtraction(remainingAssets, sellerObj.token_amount), "=======remainingAssets buyer 3=======", remainingAssets, sellerObj.token_amount);
                                 let buyerFees: any = sellerObj.token_amount * 0.001;
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                                 let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 remainingAssets = preciseSubtraction(remainingAssets, sellerObj.token_amount);
                                 
@@ -865,13 +865,13 @@ class marketService {
                                 //=====================================================
                                 //=============Buyer and seller asset execution=========
                                 //======================================================
-                                console.log('========Seller qty bid same as buyer qty bid===============');
-                                console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", `${remainingAssets}  seller amount`, `${buyerObj.token_amount} buyer amount`);
+                                // console.log('========Seller qty bid same as buyer qty bid===============');
+                                // console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 1=======", `${remainingAssets}  seller amount`, `${buyerObj.token_amount} buyer amount`);
                                 let buyerFees: any = buyerObj.token_amount * 0.001;
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                                 let sellerFees: any = (remainingAssets * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========
@@ -897,13 +897,13 @@ class marketService {
                                 //======================================================
                                 //=============Buyer and seller asset execution=========
                                 //======================================================
-                                console.log('========Buyer qty bid more than Seller qty bid===============');
-                                console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", `${remainingAssets} seller amount`, `${sellerObj.token_amount} buyer amount`);
+                                // console.log('========Buyer qty bid more than Seller qty bid===============');
+                                // console.log(preciseSubtraction(buyerObj.token_amount, remainingAssets), "=======remainingAssets buyer 2=======", `${remainingAssets} seller amount`, `${sellerObj.token_amount} buyer amount`);
                                 let buyerFees: any = remainingAssets * 0.001;
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                                 let sellerFees: any = ((remainingAssets) * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========
@@ -929,13 +929,13 @@ class marketService {
                                 //======================================================
                                 //=============Buyer and seller asset execution=========
                                 //======================================================
-                                console.log('========Buyer qty bid less than Seller qty bid===============');
-                                console.log(preciseSubtraction(remainingAssets, buyerObj.token_amount), "=======remainingAssets buyer 3=======", `${remainingAssets} seller amount`, `${buyerObj.token_amount} buyer amount`);
+                                // console.log('========Buyer qty bid less than Seller qty bid===============');
+                                // console.log(preciseSubtraction(remainingAssets, buyerObj.token_amount), "=======remainingAssets buyer 3=======", `${remainingAssets} seller amount`, `${buyerObj.token_amount} buyer amount`);
                                 let buyerFees: any = buyerObj.token_amount * 0.001;
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 8)));
                                 let sellerFees: any = (buyerObj.token_amount * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 8)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processSellerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 remainingAssets = preciseSubtraction(remainingAssets, buyerObj.token_amount);
                                 //======================================================
