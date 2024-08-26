@@ -46,6 +46,8 @@ import referProgramService from "./referProgram.service";
 import addressServices from "./address.service";
 import profitLossServices from "./profitloss.service";
 
+import cronMarketOrderService from "./marketOrderCron.service";
+
 class service {
     otpService = new otpService();
     bcypt = new bcryptService();
@@ -84,7 +86,8 @@ class service {
     scan = new scannerService();
     refer = new referProgramService();
     address = new addressServices();
-    profitLossServices = new profitLossServices()
+    profitLossServices = new profitLossServices();
+    cronMarket = new cronMarketOrderService()
 }
 
 export default new service()

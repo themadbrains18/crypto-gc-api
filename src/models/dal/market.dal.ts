@@ -382,9 +382,6 @@ class marketDal {
                 //=============Market Based spot market order partial execution===============//
                 //============================================================================//
                 if (payload?.market_type === marektTypeEnum.market) {
-
-                    // console.log('=============market base execute');
-
                     let marketRequest = activeOrder.filter((item) => {
                         return item.market_type === marektTypeEnum.market
                     })
@@ -399,7 +396,6 @@ class marketDal {
                 //=============Limit Based spot market order partial execution===============//
                 //===========================================================================//
                 if (payload?.market_type === marektTypeEnum.limit) {
-                    // console.log('=============limit base execute');
                     let limitRequest = activeOrder.filter((item: any) => {
                         return item?.market_type === marektTypeEnum.limit
                     })

@@ -78,3 +78,8 @@ export function preciseSubtraction(a: number, b: number, precision: number = 6) 
   const factor = Math.pow(10, precision);
   return Math.round((a - b) * factor) / factor;
 }
+
+export function preciseAddition(a: number, b: number, precision: number = 6) {
+  const factor = Math.pow(10, precision);
+  return Math.round((a + b) * factor) / factor;
+}

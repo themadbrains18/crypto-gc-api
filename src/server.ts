@@ -110,7 +110,9 @@ wss.on('connection', (ws: WebSocket) => {
 
 app.set("socket", wss);
 
-
+/**
+ * Cron to update market token price
+ */
 cron.schedule("*/10 * * * * *", async () => {
   const date = new Date();
   await service.token.updateGlobalTokenPrice();
@@ -119,9 +121,19 @@ cron.schedule("*/10 * * * * *", async () => {
   });
 });
 
-// cron.schedule("*/30 * * * * *", async () => {
-//   await service.scan.scanUserDeposits();
-// })
+
+/**
+ * Cron for market order spot trading 
+ */
+cron.schedule('*/10 * * * * *', async () => {  // Cron job runs every 5 seconds
+  try {
+    const batchSize = 100;  // Define your batch size here
+    await service.cronMarket.processOrdersInBatches(batchSize);
+  } catch (error) {
+    console.error("Error in cron job:", error);
+  }
+});
+
 
 var httpServer = http.createServer(app);
 
