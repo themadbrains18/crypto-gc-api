@@ -440,7 +440,8 @@ class futurePositionDal {
     async positionHistory(userid: string): Promise<any> {
         try {
             let trades = await futurePositionHistoryModel.findAll({
-                where: { user_id: userid }
+                where: { user_id: userid },
+                order: [['createdAt', 'DESC']]
             });
             return trades;
         } catch (error: any) {
