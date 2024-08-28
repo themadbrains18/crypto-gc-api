@@ -309,7 +309,7 @@ class cronMarketOrderService {
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
                     // updatedBal = truncateNumber(Number(updatedBal - options?.sellerFees), 8);
-                    updatedBal = preciseSubtraction(updatedBal, options?.sellerFees)
+                    updatedBal = preciseSubtraction(updatedBal, options?.sellerFees,10)
                     console.log(updatedBal,'=========final updatedBal');
                     
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.sellerFees, 'USDT', 'Spot Trading');
@@ -320,7 +320,7 @@ class cronMarketOrderService {
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
                     // options.paid_usdt = truncateNumber(Number(options.paid_usdt - options?.sellerFees), 8);
-                    options.paid_usdt = preciseSubtraction(options.paid_usdt, options?.sellerFees)
+                    options.paid_usdt = preciseSubtraction(options.paid_usdt, options?.sellerFees,10)
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.sellerFees, 'USDT', 'Spot Trading');
                     let assets: assetsDto = {
                         walletTtype: assetsWalletType.main_wallet,
@@ -355,7 +355,7 @@ class cronMarketOrderService {
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
                     // updatedBal = truncateNumber(Number(updatedBal - options?.buyerFees), 8);
-                    updatedBal = preciseSubtraction(updatedBal, options?.buyerFees)
+                    updatedBal = preciseSubtraction(updatedBal, options?.buyerFees,10)
                     console.log(updatedBal,'=========final updatedBal');
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.buyerFees, token?.symbol, 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: buyerasset.id } });
@@ -366,7 +366,7 @@ class cronMarketOrderService {
                         realAmount = parseFloat(options.sellerObj.token_amount);
                     }
                     // realAmount = truncateNumber(Number(realAmount - options?.buyerFees), 8);
-                    realAmount = preciseSubtraction(realAmount, options?.buyerFees);
+                    realAmount = preciseSubtraction(realAmount, options?.buyerFees,10);
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.buyerFees, token?.symbol, 'Spot Trading');
                     let assets: assetsDto = {
                         walletTtype: assetsWalletType.main_wallet,
