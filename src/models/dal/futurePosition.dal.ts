@@ -107,7 +107,6 @@ class futurePositionDal {
                     coin_id: global_token?.id,
                     isDeleted: false,
                     status: false,
-                    position_mode: payload.position_mode
                 }
             });
             
@@ -214,7 +213,6 @@ class futurePositionDal {
                     coin_id: global_token?.id,
                     isDeleted: false,
                     status: false,
-                    position_mode: payload.position_mode
                 }
             });
             // Get rewards point by userid
