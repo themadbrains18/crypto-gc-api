@@ -10,7 +10,7 @@ import tokensModel from "../model/tokens.model";
 import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.model";
 import globalTokensModel from "../model/global_token.model";
 import sequelize from '../index';
-import { truncateNumber } from "../../utils/utility";
+import { preciseSubtraction, truncateNumber } from "../../utils/utility";
 import { Op } from "sequelize";
 
 class marketDal {
@@ -51,7 +51,8 @@ class marketDal {
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
 
-                            let new_bal = truncateNumber(assets.balance - payload.token_amount, 8);
+                            // let new_bal = truncateNumber(assets.balance - payload.token_amount, 8);
+                            let new_bal = preciseSubtraction(assets.balance, payload.token_amount, 10);
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
 
                             return result;
@@ -88,7 +89,8 @@ class marketDal {
                             }
                             let historyResult = await marketOrderHistoryModel.create(history);
 
-                            let new_bal = truncateNumber(assets.balance - payload.volume_usdt, 8);
+                            // let new_bal = truncateNumber(assets.balance - payload.volume_usdt, 8);
+                            let new_bal = preciseSubtraction(assets.balance, payload.volume_usdt, 10);
                             let assetUpdate = await assetModel.update({ balance: new_bal }, { where: { id: assets.id } });
 
                             return result;
