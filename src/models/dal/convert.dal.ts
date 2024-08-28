@@ -46,7 +46,7 @@ class convertDal {
                 return { status: false, message: `${token?.symbol} Assets not available ` };
             }
             else if (admin_consumption_asset[0].balance < 0 || admin_consumption_asset[0].balance < payload.gain_amount) {
-                return { status: false, message: `${token?.symbol} Insufficiant admin account balance` };
+                return { status: false, message: `${token?.symbol} insufficient in admin account balance` };
             }
 
             // ===========================================
