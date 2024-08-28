@@ -230,7 +230,7 @@ class cronMarketOrderService {
 
                 // If no match was found for the current buyer, continue to the next buyer
                 if (!isMatchFound) {
-                    previous_seller = [];
+                    // previous_seller = [];
                     continue;
                 }
             }
@@ -543,7 +543,7 @@ class cronMarketOrderService {
 
                 // If no match was found for the current buyer, continue to the next buyer
                 if (!isMatchFound) {
-                    previous_seller = [];
+                    // previous_seller = [];
                     // console.log('No matching sellers found for this buyer, moving to the next buyer');
                     continue;
                 }
