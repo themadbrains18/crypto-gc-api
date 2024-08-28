@@ -70,14 +70,14 @@ class futureOpenOrderDal extends BaseController {
                     //===============Create Position =================
                     //================================================
                     let res = await futureOpenOrderModel.create(payload);
-                    if (res) {
+                    // if (res) {
 
-                        //================================================
-                        //================ Update Assets =================
-                        //================================================
-                        let newbal: any = asset?.balance - margin_price;
-                        await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
-                    }
+                    //     //================================================
+                    //     //================ Update Assets =================
+                    //     //================================================
+                    //     let newbal: any = asset?.balance - margin_price;
+                    //     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
+                    // }
                     return res;
                 }
                 else {
@@ -111,8 +111,8 @@ class futureOpenOrderDal extends BaseController {
                 if (global_token) {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
-                        let newBal = asset?.balance + order?.margin;
-                        let updateAsset = await assetModel.update({ balance: newBal }, { where: { id: asset?.id } });
+                        // let newBal = asset?.balance + order?.margin;
+                        // let updateAsset = await assetModel.update({ balance: newBal }, { where: { id: asset?.id } });
                         await futureOpenOrderModel.update({ isDeleted: true }, { where: { id: payload } });
                         // order.isDeleted = true;
                         return order;

@@ -32,7 +32,7 @@ class futurePositionDal {
                         model: futureOpenOrderModel
                     },
                     {
-                        model : takeProfitStopLossModel
+                        model: takeProfitStopLossModel
                     }
                 ]
             });
@@ -91,20 +91,35 @@ class futurePositionDal {
     //====================================================
     async createPositionFunction(payload: futurePositionDto) {
         try {
-            // console.log(payload, '==========db model data');
+            console.log(payload, '==========db model data');
             //=================== Get Token ==================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
             let asset: any;
             if (global_token) {
                 asset = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
             }
+
+
+            // get margin of open order by tokenid, userid, status false
+            let totalMargin = await futureOpenOrderModel.sum('margin', {
+                where: {
+                    user_id: payload.user_id,
+                    coin_id: global_token?.id,
+                    isDeleted: false,
+                    status: false,
+                    position_mode: payload.position_mode
+                }
+            });
+            
+            console.log(totalMargin, "==totalMargin");
+
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
             // if assets and rewards point available than order margin divide in assets and rewards point
-            if (asset?.balance > 0 && asset?.balance > margin_price) {
+            if (asset?.balance > 0 && (asset?.balance - totalMargin) > margin_price) {
                 if (reward && reward?.amount > 0 && reward?.amount > margin_price / 2) {
                     reward_point = margin_price / 2;
                     assets_price = margin_price / 2
@@ -162,9 +177,9 @@ class futurePositionDal {
                 await futurePositionHistoryModel.create(historyBody);
                 //================ Update Assets =================
                 if (assets_price > 0) {
-                
-                    let newbal: number = preciseSubtraction(asset?.balance , Number(Number(assets_price) + Number(payload.realized_pnl)), 6);
-                    
+
+                    let newbal: number = preciseSubtraction(asset?.balance, Number(Number(assets_price) + Number(payload.realized_pnl)), 6);
+
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
                 }
                 if (reward_point > 0) {
@@ -173,7 +188,7 @@ class futurePositionDal {
                 }
             }
             return res;
-        } catch (error:any) {
+        } catch (error: any) {
             console.log(error, '------------');
             throw new Error(error);
         }
@@ -191,13 +206,24 @@ class futurePositionDal {
             if (global_token) {
                 asset = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
             }
+
+            // get margin of open order by tokenid, userid, status false
+            let totalMargin = await futureOpenOrderModel.sum('margin', {
+                where: {
+                    user_id: payload.user_id,
+                    coin_id: global_token?.id,
+                    isDeleted: false,
+                    status: false,
+                    position_mode: payload.position_mode
+                }
+            });
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
             // if assets and rewards point available than order margin divide in assets and rewards point
-            if (asset?.balance > 0 && asset?.balance >= margin_price) {
+            if (asset?.balance > 0 && (asset?.balance - totalMargin) >= margin_price) {
                 if (reward && reward.amount > 0 && reward.amount >= margin_price / 2) {
                     reward_point = margin_price / 2;
                     assets_price = margin_price / 2
@@ -223,8 +249,8 @@ class futurePositionDal {
             activePosition = activePosition[0];
             if (activePosition) {
 
-                console.log(typeof(activePosition.assets_margin) , typeof assets_price);
-                
+                console.log(typeof (activePosition.assets_margin), typeof assets_price);
+
                 // ==================Hedge mode====================
                 if (activePosition?.position_mode === 'Hedge') {
                     if (activePosition.direction === payload.direction) {
@@ -240,7 +266,7 @@ class futurePositionDal {
                         newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
                     }
                     else {
-                       return await this.createPositionFunction(payload);   
+                        return await this.createPositionFunction(payload);
                     }
                 }
                 // ==================One way mode==================
@@ -324,7 +350,7 @@ class futurePositionDal {
                 return activePosition;
             }
 
-        } catch (error:any) {
+        } catch (error: any) {
             console.log(error, '------------here i am 6');
             throw new Error(error);
         }
@@ -440,7 +466,8 @@ class futurePositionDal {
     async positionHistory(userid: string): Promise<any> {
         try {
             let trades = await futurePositionHistoryModel.findAll({
-                where: { user_id: userid }
+                where: { user_id: userid },
+                order: [['createdAt', 'DESC']]
             });
             return trades;
         } catch (error: any) {
@@ -451,7 +478,7 @@ class futurePositionDal {
     async orderbook(coinid: string): Promise<futurePositionOuput | any> {
         try {
             let trades = await futurePositionModel.findAll({
-                where: { coin_id: coinid, status: false, isDeleted: false }, order: [['createdAt', 'DESC']],raw: true
+                where: { coin_id: coinid, status: false, isDeleted: false }, order: [['createdAt', 'DESC']], raw: true
             });
             return trades;
         } catch (error: any) {
