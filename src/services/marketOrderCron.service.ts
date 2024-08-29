@@ -544,17 +544,17 @@ class cronMarketOrderService {
                                 await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
                             }
                         }
-                        console.log('========here not match any condition');
+                        // console.log('========here not match any condition');
                     }
 
                 }
 
-                // If no match was found for the current buyer, continue to the next buyer
-                if (!isMatchFound) {
-                    // previous_seller = [];
-                    // console.log('No matching sellers found for this buyer, moving to the next buyer');
-                    continue;
-                }
+                // // If no match was found for the current buyer, continue to the next buyer
+                // if (!isMatchFound) {
+                //     // previous_seller = [];
+                //     // console.log('No matching sellers found for this buyer, moving to the next buyer');
+                //     // continue;
+                // }
             }
 
         } catch (error: any) {
