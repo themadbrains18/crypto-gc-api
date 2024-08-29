@@ -255,10 +255,11 @@ export default class covalenthq {
               
 
               let exist = await assetModel.findOne({
-                where: { user_id: userid, token_id: tokenid }, raw: true
+                where: { user_id: userid, token_id: tokenid, account_type: "Main Account",
+                  walletTtype: "main_wallet" }, raw: true
               });
 
-              // console.log(exist,"==exist");
+              console.log(exist,"==exist");
               
 
               if (exist !== null) {

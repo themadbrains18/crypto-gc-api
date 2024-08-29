@@ -134,7 +134,6 @@ cron.schedule('* * * * *', async () => {  // Cron job runs every 5 seconds
   }
 });
 
-
 var httpServer = http.createServer(app);
 
 httpServer
