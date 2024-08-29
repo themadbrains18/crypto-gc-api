@@ -116,6 +116,8 @@ class cronMarketOrderService {
                     previous_seller.push(sellerObj.id);
 
                     if (buyerObj.token_id === sellerObj.token_id && buyerObj?.limit_usdt >= sellerObj.limit_usdt) {
+                        console.log('===================================yyyyyyyyyyyyyyy7777777');
+                        
                         isMatchFound = true;
                         // Both seller and buyer qty bid same 
                         if (sellerObj.token_amount === remainingAssets) {
@@ -357,7 +359,7 @@ class cronMarketOrderService {
                 if (buyerOrder) {
                     const buyer_amount = preciseSubtraction(options.remainingAssets, parseFloat(options.sellerObj.token_amount)); //Number((options.remainingAssets - parseFloat(options.sellerObj.token_amount)).toPrecision(1));
                     await marketOrderModel.update({
-                        volume_usdt: preciseSubtraction(buyerOrder.volume_usdt, (options.paid_usdt + options.paid_to_admin)), //Number((parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin)).toPrecision(1)),
+                        volume_usdt: preciseSubtraction(buyerOrder.volume_usdt, Number(options.paid_usdt + options.paid_to_admin)), //Number((parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin)).toPrecision(1)),
                         token_amount: buyer_amount, queue: false
                     }, { where: { id: buyerOrder.id } });
                 }
