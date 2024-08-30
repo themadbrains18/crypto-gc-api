@@ -92,7 +92,6 @@ class cronMarketOrderService {
                 throw new Error('No any seller bids found');
             }
 
-            // return
             //=====================================================//
             //=================Partial execution===================//
             //=====================================================//
@@ -113,9 +112,8 @@ class cronMarketOrderService {
                 for await (const seller of sellBids) {
                     // seller add in queue
                     let sellerObj = seller;
-                    previous_seller.push(sellerObj.id);
-
                     if (buyerObj.token_id === sellerObj.token_id && buyerObj?.limit_usdt >= sellerObj.limit_usdt) {
+                        previous_seller.push(sellerObj.id);
                         isMatchFound = true;
                         // Both seller and buyer qty bid same 
                         if (sellerObj.token_amount === remainingAssets) {
@@ -123,7 +121,9 @@ class cronMarketOrderService {
                             await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                             await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                             paid_usdt = truncateNumber((sellerObj.limit_usdt * sellerObj.token_amount), 8);
-                            let paid_to_admin = truncateNumber(((buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt), 8);
+                            let ttl = truncateNumber((buyerObj.limit_usdt * sellerObj.token_amount), 8);
+                            let paid_to_admin = preciseSubtraction(ttl, paid_usdt, 10);
+                            // let paid_to_admin = truncateNumber(((buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt), 8);
                             if (paid_to_admin > 0) {
                                 //======================================================
                                 //=============Create admin profit======================
@@ -139,7 +139,7 @@ class cronMarketOrderService {
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                             let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
 
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             //======================================================
@@ -159,7 +159,9 @@ class cronMarketOrderService {
                             await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                             await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                             paid_usdt = truncateNumber((sellerObj.limit_usdt * remainingAssets), 8);
-                            let paid_to_admin = truncateNumber(((buyerObj.limit_usdt * remainingAssets) - paid_usdt), 8);
+                            let ttl = truncateNumber((buyerObj.limit_usdt * remainingAssets), 8);
+                            let paid_to_admin = preciseSubtraction(ttl, paid_usdt, 10);
+                            // let paid_to_admin = truncateNumber(((buyerObj.limit_usdt * remainingAssets) - paid_usdt), 8);
                             if (paid_to_admin > 0) {
                                 //======================================================
                                 //=============Create admin profit======================
@@ -175,7 +177,7 @@ class cronMarketOrderService {
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                             let sellerFees: any = ((remainingAssets) * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
 
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             //======================================================
@@ -195,7 +197,8 @@ class cronMarketOrderService {
                             await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                             await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                             paid_usdt = truncateNumber(sellerObj.limit_usdt * sellerObj.token_amount, 8);
-                            let paid_to_admin = truncateNumber(((buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt), 8);
+                            let ttl = truncateNumber((buyerObj.limit_usdt * sellerObj.token_amount), 8);
+                            let paid_to_admin = preciseSubtraction(ttl, paid_usdt, 10);
                             if (paid_to_admin > 0) {
                                 //======================================================
                                 //=============Create admin profit======================
@@ -211,7 +214,7 @@ class cronMarketOrderService {
                             buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                             let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                             sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                            console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                            // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                             await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                             remainingAssets = preciseSubtraction(remainingAssets, sellerObj.token_amount);// Number((remainingAssets - sellerObj.token_amount).toPrecision(1));
                             //======================================================
@@ -224,15 +227,15 @@ class cronMarketOrderService {
                             await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
                         }
                     }
-                    console.log('========here not match any condition');
-                    
                 }
 
                 // If no match was found for the current buyer, continue to the next buyer
-                if (!isMatchFound) {
-                    previous_seller = [];
-                    continue;
-                }
+                // if (!isMatchFound) {
+                //     console.log('==========i ma herer');
+
+                //     // previous_seller = [];
+                //     continue;
+                // }
             }
 
         } catch (error: any) {
@@ -253,18 +256,18 @@ class cronMarketOrderService {
                 let asset = await service.assets.getUserAssetByTokenIdandWallet({ user_id: options.sellerObj.user_id, token_id: token?.id });
                 if (asset) {
                     let updatedBal2: any = truncateNumber(Number(parseFloat(asset.balance) + options.paid_usdt), 10);
-                    console.log(updatedBal2, '================updatedBal2 seller');
+                    // console.log(updatedBal2, '================updatedBal2 seller');
                     let updatedBal: any = preciseAddition(parseFloat(asset.balance), options.paid_usdt, 10);
-                    console.log(updatedBal, '=========updatedBal seller');
+                    // console.log(updatedBal, '=========updatedBal seller');
 
                     // =========================================================//
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
                     let final_updatedBal = truncateNumber(Number(updatedBal - options?.sellerFees), 10);
-                    console.log(final_updatedBal, '===============final_updatedBal seller============');
+                    // console.log(final_updatedBal, '===============final_updatedBal seller============');
 
                     updatedBal = preciseSubtraction(updatedBal, options?.sellerFees, 10)
-                    console.log(updatedBal, '=========final updatedBal seller');
+                    // console.log(updatedBal, '=========final updatedBal seller');
 
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.sellerFees, 'USDT', 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } });
@@ -308,9 +311,9 @@ class cronMarketOrderService {
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
                     let final_updatedBal = truncateNumber(Number(updatedBal - options?.buyerFees), 8);
-                    console.log(final_updatedBal, '===============final_updatedBal buyer============');
+                    // console.log(final_updatedBal, '===============final_updatedBal buyer============');
                     updatedBal = preciseSubtraction(updatedBal, options?.buyerFees, 10)
-                    console.log(updatedBal, '=========final updatedBal buyer');
+                    // console.log(updatedBal, '=========final updatedBal buyer');
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.buyerFees, token?.symbol, 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: buyerasset.id } });
                 }
@@ -345,6 +348,7 @@ class cronMarketOrderService {
         try {
             let sellerOrder = await this.getMarketOrderById(options.sellerObj.id);
             let buyerOrder = await this.getMarketOrderById(options.buyerObj.id);
+
             if (options.remainingAssets === parseFloat(options.sellerObj.token_amount)) {
                 if (sellerOrder) {
                     await marketOrderModel.update({ status: true }, { where: { id: sellerOrder.id } });
@@ -357,7 +361,7 @@ class cronMarketOrderService {
                 if (buyerOrder) {
                     const buyer_amount = preciseSubtraction(options.remainingAssets, parseFloat(options.sellerObj.token_amount)); //Number((options.remainingAssets - parseFloat(options.sellerObj.token_amount)).toPrecision(1));
                     await marketOrderModel.update({
-                        volume_usdt: preciseSubtraction(buyerOrder.volume_usdt, (options.paid_usdt + options.paid_to_admin)), //Number((parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin)).toPrecision(1)),
+                        volume_usdt: preciseSubtraction(buyerOrder.volume_usdt, Number(options.paid_usdt + options.paid_to_admin)), //Number((parseFloat(buyerOrder.volume_usdt) - (options.paid_usdt + options.paid_to_admin)).toPrecision(1)),
                         token_amount: buyer_amount, queue: false
                     }, { where: { id: buyerOrder.id } });
                 }
@@ -392,9 +396,6 @@ class cronMarketOrderService {
 
     async marketBuyerCode(order: any): Promise<any> {
         try {
-
-            // console.log('========i ma herer ');
-
             let previous_seller: any = [];
             let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: order?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.market, queue: false }, raw: true, order: [['id', "DESC"]] });
             // if buyer not exist than return
@@ -433,15 +434,18 @@ class cronMarketOrderService {
                 for await (const seller of sellBids) {
                     // seller add in queue
                     let sellerObj = seller;
-                    previous_seller.push(sellerObj.id);
                     if (tokenFetch !== null && tokenFetch !== undefined && tokenFetch?.price !== undefined) {
                         if (buyerObj.token_id === sellerObj.token_id && sellerObj.limit_usdt <= tokenFetch.price) {
                             isMatchFound = true;
+                            previous_seller.push(sellerObj.id);
                             if (sellerObj.token_amount === remainingAssets) {
                                 await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                                 await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                                 paid_usdt = sellerObj.limit_usdt * sellerObj.token_amount;
-                                let paid_to_admin = (buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt;
+
+                                let ttl = truncateNumber((buyerObj.limit_usdt * sellerObj.token_amount), 8);
+                                let paid_to_admin = preciseSubtraction(ttl, paid_usdt, 10);
+                                // let paid_to_admin = (buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt;
                                 if (paid_to_admin > 0) {
                                     //======================================================
                                     //=============Create admin profit======================
@@ -457,7 +461,7 @@ class cronMarketOrderService {
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                                 let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========
@@ -473,7 +477,9 @@ class cronMarketOrderService {
                                 await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                                 await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                                 paid_usdt = sellerObj.limit_usdt * remainingAssets;
-                                let paid_to_admin = (buyerObj.limit_usdt * remainingAssets) - paid_usdt;
+                                let ttl = truncateNumber((buyerObj.limit_usdt * remainingAssets), 8);
+                                let paid_to_admin = preciseSubtraction(ttl, paid_usdt, 10);
+                                // let paid_to_admin = (buyerObj.limit_usdt * remainingAssets) - paid_usdt;
                                 if (paid_to_admin > 0) {
                                     //======================================================
                                     //=============Create admin profit======================
@@ -489,7 +495,7 @@ class cronMarketOrderService {
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                                 let sellerFees: any = ((remainingAssets) * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========
@@ -506,7 +512,9 @@ class cronMarketOrderService {
                                 await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                                 await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                                 paid_usdt = sellerObj.limit_usdt * sellerObj.token_amount;
-                                let paid_to_admin = (buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt;
+                                let ttl = truncateNumber((buyerObj.limit_usdt * sellerObj.token_amount), 8);
+                                let paid_to_admin = preciseSubtraction(ttl, paid_usdt, 10);
+                                // let paid_to_admin = (buyerObj.limit_usdt * sellerObj.token_amount) - paid_usdt;
                                 if (paid_to_admin > 0) {
                                     //======================================================
                                     //=============Create admin profit======================
@@ -522,7 +530,7 @@ class cronMarketOrderService {
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                                 let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 remainingAssets = preciseSubtraction(remainingAssets, sellerObj.token_amount);
 
@@ -536,17 +544,17 @@ class cronMarketOrderService {
                                 await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
                             }
                         }
-                        console.log('========here not match any condition');
+                        // console.log('========here not match any condition');
                     }
 
                 }
 
-                // If no match was found for the current buyer, continue to the next buyer
-                if (!isMatchFound) {
-                    previous_seller = [];
-                    // console.log('No matching sellers found for this buyer, moving to the next buyer');
-                    continue;
-                }
+                // // If no match was found for the current buyer, continue to the next buyer
+                // if (!isMatchFound) {
+                //     // previous_seller = [];
+                //     // console.log('No matching sellers found for this buyer, moving to the next buyer');
+                //     // continue;
+                // }
             }
 
         } catch (error: any) {
