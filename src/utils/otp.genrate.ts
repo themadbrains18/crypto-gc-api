@@ -45,8 +45,8 @@ class otpGenerate {
       OTP += string[Math.floor(Math.random() * len)];
     }
 
-    // return OTP;
-    return '123456';
+    return OTP;
+    // return '123456';
   }
 
   /**
