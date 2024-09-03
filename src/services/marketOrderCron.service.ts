@@ -6,6 +6,7 @@ import { assetsAccountType, assetsWalletType, marektTypeEnum, marketOrderEnum } 
 import { preciseAddition, preciseSubtraction, truncateNumber } from "../utils/utility";
 import service from "./service";
 
+
 interface buyerExecution {
     buyerObj: any;
     sellerObj: any;
@@ -66,11 +67,13 @@ class cronMarketOrderService {
 
     async processOrders(orders: any[]) {
         for await (const order of orders) {
-            if (order.market_type === marektTypeEnum.market) {
-                await this.marketBuyerCode(order);
-            } else if (order.market_type === marektTypeEnum.limit) {
-                await this.buyerCode(order);
-            }
+     
+                if (order.market_type === marektTypeEnum.market) {
+                    await this.marketBuyerCode(order);
+                } else if (order.market_type === marektTypeEnum.limit) {
+                    await this.buyerCode(order);
+                }
+          
         }
     }
 
@@ -304,11 +307,11 @@ class cronMarketOrderService {
                     let realAmount = options.remainingAssets;
                     if (options.remainingAssets > options.sellerObj.token_amount) {
                         // updatedBal = parseFloat(buyerasset.balance) + parseFloat(options.sellerObj.token_amount);
-                        console.log(buyerasset.balance,"=buyerasset.balance");
-                        
+                        console.log(buyerasset.balance, "=buyerasset.balance");
+
                         updatedBal = preciseAddition(parseFloat(buyerasset.balance), parseFloat(options.sellerObj.token_amount), 10);
                         realAmount = parseFloat(options.sellerObj.token_amount);
-                        console.log(updatedBal,"=buyerasset.balance updatedBal");
+                        console.log(updatedBal, "=buyerasset.balance updatedBal");
                     }
                     // =========================================================//
                     // ================Fee Deduction from buyer=================//

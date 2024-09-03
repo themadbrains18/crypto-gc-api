@@ -96,7 +96,8 @@ class futureOpenOrderServices {
                             margin_ratio: 0.01,
                             direction: 'long',
                             qty: oo.qty,
-                            assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0]
+                            assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            position_mode:oo.position_mode
                         }
                         let create = await futurePositionDal.createPosition(body)
                         // futurePositionModel.create(body);
@@ -153,7 +154,8 @@ class futureOpenOrderServices {
                             margin_ratio: 0.01,
                             direction: 'short',
                             qty: oo.qty,
-                            assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0]
+                            assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            position_mode:oo.position_mode
                         }
                         let create = await futurePositionDal.createPosition(body);
                         // futurePositionModel.create(body);
