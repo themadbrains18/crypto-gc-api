@@ -198,6 +198,8 @@ class futurePositionDal {
     //=======================================================
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
+            console.log('this is working');
+            
             let newbal: number = 0;
             //=================== Get Token ==================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
@@ -229,6 +231,7 @@ class futurePositionDal {
                 else {
                     assets_price = margin_price;
                 }
+                console.log('this is working in if');
             }
             else {
                 // assets not available only rewards point available
@@ -239,8 +242,10 @@ class futurePositionDal {
                     return { message: 'Insufficiant Balance' }
                 }
             }
+            console.log(activePosition,'this is working in else=======');
             if (activePosition.length > 1) {
                 activePosition = activePosition.filter((item: any) => {
+                    console.log(item.direction,'this is working in else=======');
                     return item.position_mode === 'Hedge' && item.direction === payload.direction
                 })
             }
@@ -249,8 +254,10 @@ class futurePositionDal {
 
                 console.log(typeof (activePosition.assets_margin), typeof assets_price);
 
-                // ==================Hedge mode====================
+                // ==================Hedge mode==================== //
                 if (activePosition?.position_mode === 'Hedge') {
+                    console.log("this is in hedge");
+                    
                     if (activePosition.direction === payload.direction) {
                         await futurePositionModel.update({
                             qty: activePosition.qty + payload.qty,
@@ -269,6 +276,7 @@ class futurePositionDal {
                 }
                 // ==================One way mode==================
                 else if (activePosition?.position_mode === 'oneWay') {
+                    console.log("this is in oneWay");
                     if (payload?.direction === activePosition.direction) {
                         let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
                         activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
