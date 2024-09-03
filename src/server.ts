@@ -125,14 +125,14 @@ cron.schedule("*/10 * * * * *", async () => {
 /**
  * Cron for market order spot trading 
  */
-cron.schedule('* * * * *', async () => {  // Cron job runs every 5 seconds
-  try {
-    const batchSize = 100;  // Define your batch size here
-    await service.cronMarket.processOrdersInBatches(batchSize);
-  } catch (error) {
-    console.error("Error in cron job:", error);
-  }
-});
+// cron.schedule('* * * * *', async () => {  // Cron job runs every 5 seconds
+//   try {
+//     const batchSize = 100;  // Define your batch size here
+//     await service.cronMarket.processOrdersInBatches(batchSize);
+//   } catch (error) {
+//     console.error("Error in cron job:", error);
+//   }
+// });
 
 
 

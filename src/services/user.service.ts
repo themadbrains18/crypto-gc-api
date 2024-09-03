@@ -95,7 +95,7 @@ class userServices {
           token: token,
         });
 
-        if (isVerified) {
+        if (isVerified && payload?.password) {
           let user: UserInput = payload;
 
           (user.TwoFA = payload?.TwoFA),
