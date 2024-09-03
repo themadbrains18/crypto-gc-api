@@ -5,9 +5,7 @@ import marketOrderModel, { marketOrderOuput } from "../models/model/marketorder.
 import { assetsAccountType, assetsWalletType, marektTypeEnum, marketOrderEnum } from "../utils/interface";
 import { preciseAddition, preciseSubtraction, truncateNumber } from "../utils/utility";
 import service from "./service";
-import AsyncLock from 'async-lock';
 
-const lock = new AsyncLock();
 
 interface buyerExecution {
     buyerObj: any;
@@ -69,14 +67,13 @@ class cronMarketOrderService {
 
     async processOrders(orders: any[]) {
         for await (const order of orders) {
-            const key = `create-marketorder-${order.id}`
-            lock.acquire(key, async () => {
+     
                 if (order.market_type === marektTypeEnum.market) {
                     await this.marketBuyerCode(order);
                 } else if (order.market_type === marektTypeEnum.limit) {
                     await this.buyerCode(order);
                 }
-            })
+          
         }
     }
 
