@@ -5,6 +5,9 @@ import marketOrderModel, { marketOrderOuput } from "../models/model/marketorder.
 import { assetsAccountType, assetsWalletType, marektTypeEnum, marketOrderEnum } from "../utils/interface";
 import { preciseAddition, preciseSubtraction, truncateNumber } from "../utils/utility";
 import service from "./service";
+import AsyncLock from 'async-lock';
+
+const lock = new AsyncLock();
 
 interface buyerExecution {
     buyerObj: any;
@@ -66,11 +69,14 @@ class cronMarketOrderService {
 
     async processOrders(orders: any[]) {
         for await (const order of orders) {
-            if (order.market_type === marektTypeEnum.market) {
-                await this.marketBuyerCode(order);
-            } else if (order.market_type === marektTypeEnum.limit) {
-                await this.buyerCode(order);
-            }
+            const key = `create-marketorder-${order.id}`
+            lock.acquire(key, async () => {
+                if (order.market_type === marektTypeEnum.market) {
+                    await this.marketBuyerCode(order);
+                } else if (order.market_type === marektTypeEnum.limit) {
+                    await this.buyerCode(order);
+                }
+            })
         }
     }
 
@@ -304,11 +310,11 @@ class cronMarketOrderService {
                     let realAmount = options.remainingAssets;
                     if (options.remainingAssets > options.sellerObj.token_amount) {
                         // updatedBal = parseFloat(buyerasset.balance) + parseFloat(options.sellerObj.token_amount);
-                        console.log(buyerasset.balance,"=buyerasset.balance");
-                        
+                        console.log(buyerasset.balance, "=buyerasset.balance");
+
                         updatedBal = preciseAddition(parseFloat(buyerasset.balance), parseFloat(options.sellerObj.token_amount), 10);
                         realAmount = parseFloat(options.sellerObj.token_amount);
-                        console.log(updatedBal,"=buyerasset.balance updatedBal");
+                        console.log(updatedBal, "=buyerasset.balance updatedBal");
                     }
                     // =========================================================//
                     // ================Fee Deduction from buyer=================//
