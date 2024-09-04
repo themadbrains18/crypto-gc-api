@@ -58,9 +58,9 @@ wss.on('connection', (ws: WebSocket) => {
       const userId = body.userId
       const limit = body.limit;
       const offset = body.offset;
-      const currency="all";
-      const pmMethod="all"
-      await post.socketPostAds(wss, ws, userId, limit, offset,currency,pmMethod);
+      const currency = "all";
+      const pmMethod = "all"
+      await post.socketPostAds(wss, ws, userId, limit, offset, currency, pmMethod);
     }
 
     if (body.ws_type === 'user_withdraw') {
@@ -125,12 +125,21 @@ cron.schedule("*/10 * * * * *", async () => {
 /**
  * Cron for market order spot trading 
  */
-// cron.schedule('* * * * *', async () => {  // Cron job runs every 5 seconds
+let isCronRunning = false;
+// cron.schedule('*/3 * * * *', async () => {  // Cron job runs every 5 seconds
+//   if (isCronRunning) {
+//     console.log("Previous cron job is still running. Skipping this execution.");
+//     return;
+//   }
+//   isCronRunning = true;
 //   try {
 //     const batchSize = 100;  // Define your batch size here
 //     await service.cronMarket.processOrdersInBatches(batchSize);
 //   } catch (error) {
 //     console.error("Error in cron job:", error);
+//   }
+//   finally {
+//     isCronRunning = false;
 //   }
 // });
 

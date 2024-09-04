@@ -42,45 +42,56 @@ class cronMarketOrderService {
      * @param batchSize 
      */
     async processOrdersInBatches(batchSize: number) {
-        let offset = 0;
         let hasMoreOrders = true;
-
         while (hasMoreOrders) {
             const orders = await marketOrderModel.findAll({
-                where: { status: false, isCanceled: false },
-                limit: batchSize,
-                offset: offset,
+                where: { status: false, isCanceled: false, queue: false, order_type: 'buy' },
                 raw: true,
                 order: [['createdAt', "DESC"]]
             });
-
-            if (orders.length === 0) {
-                hasMoreOrders = false;
-                break;
-            }
-
             await this.processOrders(orders);
-            // Increase the offset to fetch the next batch
-            offset += batchSize;
         }
     }
 
     async processOrders(orders: any[]) {
+        const processedOrders = new Set(); // Use a Set to track processed user_ids
         for await (const order of orders) {
-     
-                if (order.market_type === marektTypeEnum.market) {
+            const key = `${order.id}-${order.user_id}-${order.market_type}-${order.order_type}`;
+            if (!processedOrders.has(key)) {
+                processedOrders.add(key);
+                if (order.market_type === marektTypeEnum.market && order?.order_type === marketOrderEnum.buy) {
                     await this.marketBuyerCode(order);
-                } else if (order.market_type === marektTypeEnum.limit) {
+                } else if (order.market_type === marektTypeEnum.limit && order?.order_type === marketOrderEnum.buy) {
                     await this.buyerCode(order);
                 }
-          
+            }
         }
+        // Process orders in parallel with controlled concurrency
+        // await Promise.all(
+        //     orders.map(async (order) => {
+        //         const key = `${order.id}-${order.user_id}-${order.market_type}-${order.order_type}`;
+        //         if (!processedOrders.has(key)) {
+        //             processedOrders.add(key);
+        //             try {
+        //                 if (order.market_type === marektTypeEnum.market && order.order_type === marketOrderEnum.buy) {
+        //                     await this.marketBuyerCode(order);
+        //                 } else if (order.market_type === marektTypeEnum.limit && order.order_type === marketOrderEnum.buy) {
+        //                     await this.buyerCode(order);
+        //                 }
+        //             } catch (error) {
+        //                 console.error(`Error processing order ${order.id}:`, error);
+        //             }
+        //         }
+        //     })
+        // );
     }
 
     async buyerCode(order: any): Promise<any> {
         try {
             let previous_seller: any = [];
-            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: order?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, raw: true, order: [['createdAt', "DESC"]] });
+            console.log();
+
+            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: order?.user_id, token_id: order?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, raw: true, order: [['createdAt', "DESC"]] });
             // if buyer not exist than return
             if (buyBids == null || buyBids.length == 0) {
                 // console.log('No any buyer bids found limit case');
@@ -403,7 +414,7 @@ class cronMarketOrderService {
     async marketBuyerCode(order: any): Promise<any> {
         try {
             let previous_seller: any = [];
-            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: order?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.market, queue: false }, raw: true, order: [['id', "DESC"]] });
+            let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: order?.user_id, token_id: order?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.market, queue: false }, raw: true, order: [['id', "DESC"]] });
             // if buyer not exist than return
             if (buyBids == null || buyBids.length == 0) {
                 // console.log('No any buyer bids found market case');
