@@ -721,27 +721,42 @@ class userController extends BaseController {
               if (req.body.step === 3) {
                 let result = await service.otpService.matchOtp(userOtp);
 
-                let verifyGoogle = await service.user.googleAuth(result);
+                let payload:any= {}               
+
+                payload.secret=req.body.secret
+                payload.token= req.body.token
+
+                let verifyGoogle = await service.user.googleAuth(payload);
                 
+                console.log(verifyGoogle);
 
-                if (result.success === true) {
+                if(verifyGoogle){
 
-                  return super.ok<any>(res, { status: 200, message: "OTP matched" });
-                } else {
-                  // console.log(user,"==user");
-                  
-                  // Update login attempts and lock account if necessary
-                  let userRecord: any = await userModel.findOne({ where: { id: user?.data?.dataValues?.id }, raw: true });
-                  let loginAttempts = userRecord.loginAttempts || 0;
-                  loginAttempts += 1;
-
-                  let updateData: any = { loginAttempts: loginAttempts };
-                  if (loginAttempts >= 10) {
-                    updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
+                  if (result.success === true) {
+  
+                    return super.ok<any>(res, { status: 200, message: "OTP matched" });
                   }
-                  await userModel.update(updateData, { where: { id: user?.data?.dataValues?.id } });
-                  return super.fail(res, result.message);
+                
+                   else {
+                    // console.log(user,"==user");
+                    
+                    // Update login attempts and lock account if necessary
+                    let userRecord: any = await userModel.findOne({ where: { id: user?.data?.dataValues?.id }, raw: true });
+                    let loginAttempts = userRecord.loginAttempts || 0;
+                    loginAttempts += 1;
+  
+                    let updateData: any = { loginAttempts: loginAttempts };
+                    if (loginAttempts >= 10) {
+                      updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
+                    }
+                    await userModel.update(updateData, { where: { id: user?.data?.dataValues?.id } });
+                    return super.fail(res, result.message);
+                  }
                 }
+                else{
+                  return super.fail(res, "Please check google authentication code");
+                }
+
               }
               if (req.body.step === 4) {
 
