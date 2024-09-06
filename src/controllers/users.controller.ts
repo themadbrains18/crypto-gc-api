@@ -235,6 +235,9 @@ class userController extends BaseController {
         if (flag == "email") {
           let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
+          otp.twoFa = login?.data?.dataValues?.TwoFA
+          otp.secret = login?.data?.dataValues?.secret
+
           const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
           service.emailService.sendMail(req.headers["X-Request-Id"], {
@@ -665,7 +668,7 @@ class userController extends BaseController {
    */
   async updatePassword(req: Request, res: Response) {
     try {
-      console.log(req?.body,"===========req?.body");
+      
       
       if (req.body.type === "forget") {
         let user: any = await service.user.checkIfUserExsit(
