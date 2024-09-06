@@ -198,6 +198,9 @@ class userController extends BaseController {
 
       login = login.data;
 
+      console.log(login,"===========login");
+      
+
       // console.log(login,'----------------------');
       if (req.body.loginType === 'admin' && login.role === 'user') {
         return super.fail(res, 'You have not access to admin account.');
@@ -235,8 +238,8 @@ class userController extends BaseController {
         if (flag == "email") {
           let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
 
-          otp.twoFa = login?.data?.dataValues?.TwoFA
-          otp.secret = login?.data?.dataValues?.secret
+          otp.twoFa = login?.TwoFA;
+          otp.secret = login?.secret;
 
           const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
 
@@ -257,14 +260,14 @@ class userController extends BaseController {
           let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
           let response = await fetch('https://www.fast2sms.com/dev/bulkV2?authorization=6ElMeqCL34x7iskWctpVyGRZ52PfKbJNhuOoFUYvnrjXI8T0AaI64E2FnHjecMJXPqDbTd7QCKiWhuZg&route=otp&variables_values=' + Number(otp.otp) + '&flash=1&numbers=' + userOtp?.username)
 
-          // console.log(await response.json(), "===fdjkhfjkdh");
-
-
           delete otp["otp"];
           return super.ok<any>(res, { message: "OTP sent in your phone. please verify your otp", otp });
         }
       } else {
         //  send email otp to user
+
+        console.log("hereer i am ", req.body);
+        
 
         if (req.body?.otp) {
           userOtp = {
@@ -274,6 +277,25 @@ class userController extends BaseController {
 
           let result = await service.otpService.matchOtp(userOtp);
 
+
+
+          let payload:any= {}               
+
+          payload.secret=JSON.parse(req.body.secret).base32
+          payload.token= req.body.token
+
+          console.log(payload,"==payload");
+          
+
+          let verifyGoogle = await service.user.googleAuth(payload);
+          
+          console.log(verifyGoogle,"=verigy");
+          
+          
+
+          if(verifyGoogle){
+
+          
           if (result.success === true) {
             await userModel.update(
               { loginAttempts: 0, lockUntil: null as any },
@@ -376,6 +398,9 @@ class userController extends BaseController {
 
             return super.fail(res, result.message);
           }
+        }else{
+          return super.fail(res,'Please check google authentication code')
+        }
         }
       }
     } catch (error: any) {
@@ -726,7 +751,7 @@ class userController extends BaseController {
 
                 let payload:any= {}               
 
-                payload.secret=req.body.secret
+                payload.secret=JSON.parse(req.body.secret).base32
                 payload.token= req.body.token
 
                 let verifyGoogle = await service.user.googleAuth(payload);
