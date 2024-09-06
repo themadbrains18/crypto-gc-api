@@ -10,11 +10,13 @@ interface marketOrderHistoryAtteribute {
   market_type?: string;
   order_type?: string;
   limit_usdt?: number;
-  volume_usdt?:number;
+  volume_usdt?: number;
   token_amount?: number;
   status?: boolean;
   isCanceled?: boolean;
-  entry_id?:number;
+  entry_id?: number;
+  fee?: number;
+  wallet_amount?: number;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -22,14 +24,13 @@ interface marketOrderHistoryAtteribute {
 }
 
 export interface marketOrderHistoryInput
-  extends Optional<marketOrderHistoryAtteribute, "id"> {}
+  extends Optional<marketOrderHistoryAtteribute, "id"> { }
 export interface marketOrderHistoryOuput
-  extends Required<marketOrderHistoryAtteribute> {}
+  extends Required<marketOrderHistoryAtteribute> { }
 
 class marketOrderHistoryModel
   extends Model<marketOrderHistoryAtteribute, marketOrderHistoryInput>
-  implements marketOrderHistoryAtteribute
-{
+  implements marketOrderHistoryAtteribute {
   public id!: string;
 
   public order_id!: string;
@@ -40,9 +41,11 @@ class marketOrderHistoryModel
   public limit_usdt!: number;
   public token_amount!: number;
   public status!: boolean;
-  public volume_usdt!:number;
+  public volume_usdt!: number;
   public isCanceled!: boolean;
-  public entry_id!:number;
+  public entry_id!: number;
+  public fee!: number;
+  public wallet_amount!: number;
   // timestamps!
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -70,11 +73,11 @@ class marketOrderHistoryModel
           allowNull: false,
         },
         market_type: {
-          type: DataTypes.ENUM("limit","market"),
+          type: DataTypes.ENUM("limit", "market"),
           defaultValue: "limit",
         },
         order_type: {
-          type: DataTypes.ENUM("buy","sell"),
+          type: DataTypes.ENUM("buy", "sell"),
           allowNull: false,
         },
         limit_usdt: {
@@ -97,9 +100,17 @@ class marketOrderHistoryModel
           type: DataTypes.BOOLEAN,
           defaultValue: false,
         },
-        entry_id:{
+        entry_id: {
           type: DataTypes.BIGINT,
           defaultValue: 0,
+        },
+        fee: {
+          type: DataTypes.DOUBLE,
+          defaultValue: 0
+        },
+        wallet_amount: {
+          type: DataTypes.DOUBLE,
+          defaultValue: 0
         }
       },
       {

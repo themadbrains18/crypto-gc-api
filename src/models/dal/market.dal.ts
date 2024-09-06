@@ -13,6 +13,10 @@ import sequelize from '../index';
 import { preciseSubtraction, truncateNumber } from "../../utils/utility";
 import { Op } from "sequelize";
 
+const scientificToDecimal = (value: number): string => {
+    return value.toFixed(10).replace(/\.?0+$/, ""); // Convert to decimal format, trimming unnecessary zeros
+};
+
 class marketDal {
 
     /**
@@ -156,7 +160,7 @@ class marketDal {
                     [Op.gte]: new Date(date as string) // Filter posts from the given date
                 };
             }
-           let data=  await marketOrderModel.findAll({
+            let data = await marketOrderModel.findAll({
                 where: whereClause,
                 include: [
                     {
@@ -169,13 +173,13 @@ class marketDal {
                         model: marketOrderHistoryModel,
                     }
                 ], order: [['createdAt', 'ASC']],
-          
+
             });
             const totalLength = data.length;
-    
+
             // Paginate the filtered records
             const paginatedData = data.slice(offsets, offsets + limits);
-    
+
             return { data: paginatedData, total: totalLength };
         } catch (error: any) {
             throw new Error(error.message);
@@ -377,7 +381,7 @@ class marketDal {
             let activeOrder = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, token_id: payload?.token_id }, raw: true, order: [['createdAt', "DESC"]] });
             // console.log(activeOrder,"=========activeOrder");
             // return;
-            
+
             if (activeOrder) {
 
                 //============================================================================//
@@ -444,7 +448,7 @@ class marketDal {
      * @param token_amount 
      * @param paid_usdt 
      */
-    async createMarketOrderHistory(order: any, token_amount: number, paid_usdt: number) {
+    async createMarketOrderHistory(order: any, token_amount: number, paid_usdt: number, fee: number) {
         try {
 
             let count: any = await marketOrderHistoryModel.findAll({
@@ -463,12 +467,14 @@ class marketDal {
                 token_id: order.token_id,
                 order_type: order.order_type,
                 market_type: order.market_type,
-                token_amount: token_amount,
+                token_amount: Number(scientificToDecimal(token_amount)),
                 limit_usdt: order.limit_usdt,
-                volume_usdt: paid_usdt,
+                volume_usdt: Number(scientificToDecimal(paid_usdt)),
                 isCanceled: false,
                 status: true,
-                entry_id: count[0].max + 1
+                entry_id: count[0].max + 1,
+                fee: fee,
+                wallet_amount : order.order_type === 'buy'? Number(scientificToDecimal(preciseSubtraction(token_amount, fee, 10))): Number(scientificToDecimal(preciseSubtraction(paid_usdt, fee, 10)))
             }
             await marketOrderHistoryModel.create(sellerhistory);
             // console.log(count[0].max + 1, '----after order execute');
