@@ -198,7 +198,7 @@ class userController extends BaseController {
 
       login = login.data;
 
-      console.log(login,"===========login");
+      // console.log(login,"===========login");
       
 
       // console.log(login,'----------------------');
@@ -266,7 +266,7 @@ class userController extends BaseController {
       } else {
         //  send email otp to user
 
-        console.log("hereer i am ", req.body);
+        // console.log("hereer i am ", req.body);
         
 
         if (req.body?.otp) {
@@ -280,16 +280,16 @@ class userController extends BaseController {
 
 
           let payload:any= {}               
+          // console.log(payload,"==payload");
 
           payload.secret=JSON.parse(req.body.secret).base32
           payload.token= req.body.token
 
-          console.log(payload,"==payload");
           
 
           let verifyGoogle = await service.user.googleAuth(payload);
           
-          console.log(verifyGoogle,"=verigy");
+          // console.log(verifyGoogle,"=verigy");
           
           
 
@@ -708,7 +708,7 @@ class userController extends BaseController {
           let userOtp;
 
           if (user?.data?.dataValues?.lockUntil && user?.data?.dataValues?.lockUntil > new Date()) {
-            console.log("here i am ");
+            // console.log("here i am ");
     
             throw new Error(
               "Your account is susceptible to high risk. Please try again after 4 hours.",
@@ -756,7 +756,7 @@ class userController extends BaseController {
 
                 let verifyGoogle = await service.user.googleAuth(payload);
                 
-                console.log(verifyGoogle);
+                // console.log(verifyGoogle);
 
                 if(verifyGoogle){
 
