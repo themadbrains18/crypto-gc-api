@@ -162,11 +162,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt, buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt, sellerFees);
                             break;
                         }
 
@@ -197,11 +197,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt);
+                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt);
+                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
                             break;
                         }
 
@@ -232,11 +232,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt,buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt,sellerFees);
                         }
                     }
                 }
@@ -435,11 +435,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt);
+                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
                             break;
                         }
                         else if (buyerObj.token_amount > remainingAssets) {
@@ -467,11 +467,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt);
+                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
                             //=====================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt);
+                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
                             break;
                         }
                         if (remainingAssets > buyerObj.token_amount) {
@@ -500,11 +500,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt);
+                            await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt,sellerFees);
                         }
                     }
                 }
@@ -740,11 +740,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt,buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt,sellerFees);
                                 break;
                             }
                             else if (sellerObj.token_amount > remainingAssets) {
@@ -772,11 +772,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt);
+                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt);
+                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
                                 break;
                             }
 
@@ -807,11 +807,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt,buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt,sellerFees);
                             }
                         }
                     }
@@ -881,11 +881,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt);
+                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
                                 break;
                             }
                             else if (buyerObj.token_amount > remainingAssets) {
@@ -913,11 +913,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt);
+                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt);
+                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
                                 break;
                             }
                             if (remainingAssets > buyerObj.token_amount) {
@@ -946,11 +946,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt);
+                                await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt,sellerFees);
                             }
                         }
                     }

@@ -126,7 +126,7 @@ cron.schedule("*/10 * * * * *", async () => {
  * Cron for market order spot trading 
  */
 let isCronRunning = false;
-// cron.schedule('*/3 * * * *', async () => {  // Cron job runs every 5 seconds
+// cron.schedule('*/2 * * * *', async () => {  // Cron job runs every 5 seconds
 //   if (isCronRunning) {
 //     console.log("Previous cron job is still running. Skipping this execution.");
 //     return;
