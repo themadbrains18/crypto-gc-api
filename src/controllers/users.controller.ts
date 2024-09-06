@@ -665,6 +665,8 @@ class userController extends BaseController {
    */
   async updatePassword(req: Request, res: Response) {
     try {
+      console.log(req?.body,"===========req?.body");
+      
       if (req.body.type === "forget") {
         let user: any = await service.user.checkIfUserExsit(
           req?.body?.username
@@ -701,6 +703,9 @@ class userController extends BaseController {
               html: emailTemplate.html,
             });
 
+            otp.twoFa = user?.data?.dataValues?.TwoFA
+            otp.secret = user?.data?.dataValues?.secret
+
             delete otp["otp"];
             super.ok<any>(
               res,
@@ -708,7 +713,6 @@ class userController extends BaseController {
             );
           } else {
             if (req.body?.otp) {
-
               userOtp = {
                 username: req?.body?.username,
                 otp: req.body?.otp,
@@ -716,6 +720,10 @@ class userController extends BaseController {
 
               if (req.body.step === 3) {
                 let result = await service.otpService.matchOtp(userOtp);
+
+                let verifyGoogle = await service.user.googleAuth(result);
+                
+
                 if (result.success === true) {
 
                   return super.ok<any>(res, { status: 200, message: "OTP matched" });
