@@ -723,7 +723,7 @@ class userController extends BaseController {
 
                 let payload:any= {}               
 
-                payload.secret=req.body.secret
+                payload.secret=JSON.parse(req.body.secret).base32
                 payload.token= req.body.token
 
                 let verifyGoogle = await service.user.googleAuth(payload);
