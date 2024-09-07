@@ -53,7 +53,9 @@ class cronMarketOrderService {
                 raw: true,
                 order: [['createdAt', "DESC"]]
             });
+            // return await this.processOrders(orders);
             await this.processOrders(orders);
+
         }
     }
 
@@ -72,6 +74,10 @@ class cronMarketOrderService {
                 }
             }
         }
+        // if(count === orders.length){
+        //     console.log('========here======');
+        //     return {message : 'Execution complete', status : true}
+        // }
     }
 
     async buyerCode(order: any): Promise<any> {
