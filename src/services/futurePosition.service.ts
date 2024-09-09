@@ -3,6 +3,7 @@ import sequelize, { takeProfitStopLossModel } from "../models";
 import futurePositionDal from "../models/dal/futurePosition.dal";
 import futurePositionDto from "../models/dto/futurePoistion.dto";
 import futurePositionModel, { futurePositionOuput } from "../models/model/future_position.model";
+import { preciseSubtraction } from "../utils/utility";
 import service from "./service";
 
 class futurePositionServices {
@@ -76,7 +77,7 @@ class futurePositionServices {
                             }
                         }
                         //=========== USDT PnL ================
-                        let usdt_pnl: any = ps.qty * (tt?.price - ps?.entry_price);
+                        let usdt_pnl: any = ps.qty * preciseSubtraction(tt?.price , ps?.entry_price,10);
                         // check if loss equal to position margin(user USDT assets) or less than margin than close position 
                         if (usdt_pnl < 0) {
                             let remainingMargin = ps.margin + usdt_pnl;
@@ -109,7 +110,7 @@ class futurePositionServices {
                             }
                         }
                         //=========== USDT PnL ================
-                        let usdt_pnl: any = ps.qty * (ps?.entry_price - tt?.price);
+                        let usdt_pnl: any = ps.qty * preciseSubtraction(ps?.entry_price , tt?.price,10);
                         if (usdt_pnl < 0) {
                             let remainingMargin = ps.margin + usdt_pnl;
                             if (remainingMargin < 0 || remainingMargin === 0) {

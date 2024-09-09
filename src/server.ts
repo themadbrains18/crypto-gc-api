@@ -133,8 +133,11 @@ let isCronRunning = false;
 //   }
 //   isCronRunning = true;
 //   try {
+//     console.log('=======here crom ===========');
+    
 //     const batchSize = 100;  // Define your batch size here
 //     await service.cronMarket.processOrdersInBatches(batchSize);
+//     isCronRunning=false   
 //   } catch (error) {
 //     console.error("Error in cron job:", error);
 //   }

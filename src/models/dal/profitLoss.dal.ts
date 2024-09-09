@@ -27,7 +27,11 @@ class profitLossDal {
     async all(userid: string): Promise<any> {
         try {
             let trades = await takeProfitStopLossModel.findAll({
-                where: { user_id: userid, isClose: false }
+                where: { user_id: userid, isClose: false },
+                include:{
+                    model:futurePositionModel,
+                    attributes:['leverage','leverage_type']
+                }
             });
             return trades;
         } catch (error: any) {
