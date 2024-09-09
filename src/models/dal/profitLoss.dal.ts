@@ -30,7 +30,7 @@ class profitLossDal {
                 where: { user_id: userid, isClose: false },
                 include:{
                     model:futurePositionModel,
-                    attributes:['leverage','leverage_type']
+                    attributes:['leverage','leverage_type','direction']
                 }
             });
             return trades;
