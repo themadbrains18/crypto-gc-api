@@ -199,7 +199,7 @@ class userController extends BaseController {
       login = login.data;
 
       // console.log(login,"===========login");
-      
+
 
       // console.log(login,'----------------------');
       if (req.body.loginType === 'admin' && login.role === 'user') {
@@ -264,143 +264,124 @@ class userController extends BaseController {
           return super.ok<any>(res, { message: "OTP sent in your phone. please verify your otp", otp });
         }
       } else {
-        //  send email otp to user
-
-        // console.log("hereer i am ", req.body);
-        
-
         if (req.body?.otp) {
           userOtp = {
             username: login?.email ? login?.email : login?.number,
             otp: req.body?.otp,
           };
-
           let result = await service.otpService.matchOtp(userOtp);
+          let payload: any = {}
 
-
-
-          let payload:any= {}               
-          // console.log(payload,"==payload");
-
-          payload.secret=JSON.parse(req.body.secret).base32
-          payload.token= req.body.token
-
-          
-
+          payload.secret = JSON.parse(req.body.secret).base32;
+          payload.token = req.body.token;
           let verifyGoogle = await service.user.googleAuth(payload);
-          
-          // console.log(verifyGoogle,"=verigy");
-          
-          
 
-          if(verifyGoogle){
+          if (verifyGoogle) {
+            if (result.success === true) {
+              await userModel.update(
+                { loginAttempts: 0, lockUntil: null as any },
+                { where: { id: login.id } }
+              );
+              lastLoginModel
+                .findOne({
+                  where: { user_id: login?.id },
+                  order: [["loginTime", "DESC"]],
+                  raw: true,
+                })
+                .then((userDetail: any) => {
+                  if (userDetail) {
+                    let obj = {
+                      user_id: login?.id,
+                      loginTime: Date.now(),
+                      lastLogin: userDetail?.loginTime,
+                      location: req?.body?.location,
+                      region: req?.body?.region,
+                      ip: req?.body?.ip,
+                      browser: req?.body?.browser,
+                      os: req?.body?.browser,
+                      deviceType: req.body?.deviceType,
+                    };
+                    lastLoginModel
+                      .create(obj)
+                      .then((updateRecord) => {
+                        if (updateRecord) {
+                          return updateRecord;
+                        }
+                      })
+                      .catch((error) => {
+                        console.log("=====error1", error);
+                      });
+                  } else {
+                    let obj = {
+                      user_id: login?.id,
+                      loginTime: Date.now(),
+                      lastLogin: Date.now(),
+                      location: req?.body?.location,
+                      region: req?.body?.region,
+                      ip: req?.body?.ip,
+                      os: req?.body?.os,
+                      browser: req?.body?.browser,
+                      deviceType: req.body?.deviceType,
+                    };
+                    let data = lastLoginModel
+                      .create(obj)
+                      .then((updateRecord) => {
+                        if (updateRecord) {
+                          return updateRecord;
+                        }
+                      })
+                      .catch((error) => {
+                        console.log("=====error2", error);
+                      });
+                  }
+                })
+                .catch((error) => {
+                  console.error("====", error);
+                });
 
-          
-          if (result.success === true) {
-            await userModel.update(
-              { loginAttempts: 0, lockUntil: null as any },
-              { where: { id: login.id } }
-            );
-            lastLoginModel
-              .findOne({
-                where: { user_id: login?.id },
-                order: [["loginTime", "DESC"]],
-                raw: true,
-              })
-              .then((userDetail: any) => {
-                if (userDetail) {
-                  let obj = {
-                    user_id: login?.id,
-                    loginTime: Date.now(),
-                    lastLogin: userDetail?.loginTime,
-                    location: req?.body?.location,
-                    region: req?.body?.region,
-                    ip: req?.body?.ip,
-                    browser: req?.body?.browser,
-                    os: req?.body?.browser,
-                    deviceType: req.body?.deviceType,
-                  };
-                  lastLoginModel
-                    .create(obj)
-                    .then((updateRecord) => {
-                      if (updateRecord) {
-                        return updateRecord;
-                      }
-                    })
-                    .catch((error) => {
-                      console.log("=====error1", error);
-                    });
-                } else {
-                  let obj = {
-                    user_id: login?.id,
-                    loginTime: Date.now(),
-                    lastLogin: Date.now(),
-                    location: req?.body?.location,
-                    region: req?.body?.region,
-                    ip: req?.body?.ip,
-                    os: req?.body?.os,
-                    browser: req?.body?.browser,
-                    deviceType: req.body?.deviceType,
-                  };
-                  let data = lastLoginModel
-                    .create(obj)
-                    .then((updateRecord) => {
-                      if (updateRecord) {
-                        return updateRecord;
-                      }
-                    })
-                    .catch((error) => {
-                      console.log("=====error2", error);
-                    });
-                }
-              })
-              .catch((error) => {
-                console.error("====", error);
+              delete login["password"];
+              delete login["otpToken"];
+              // Create token
+              let token = await service.jwt.sign({
+                user_id: login.id,
+                username: login?.email ? login?.email : login.number,
+                role: login?.role,
               });
 
-            delete login["password"];
-            delete login["otpToken"];
-            // Create token
-            let token = await service.jwt.sign({
-              user_id: login.id,
-              username: login?.email ? login?.email : login.number,
-              role: login?.role,
-            });
+              login.access_token = token;
+              let jwtToken = await userJwtTokenModel.findOne({ where: { user_id: login.id }, raw: true });
+              if (jwtToken) {
+                await userJwtTokenModel.update({ token: token }, { where: { user_id: login.id } });
+              }
+              else {
+                await userJwtTokenModel.create({ user_id: login.id, token: token });
+              }
 
-            login.access_token = token;
-            let jwtToken = await userJwtTokenModel.findOne({ where: { user_id: login.id }, raw: true });
-            if (jwtToken) {
-              await userJwtTokenModel.update({ token: token }, { where: { user_id: login.id } });
-            }
-            else {
-              await userJwtTokenModel.create({ user_id: login.id, token: token });
-            }
+              return super.ok<any>(res, {
+                status: "success",
+                message: "Your account has successfully logged-in.",
+                token: token,
+                user: login,
+              });
+            } else {
+              // Update login attempts and lock account if necessary
+              let userRecord: any = await userModel.findOne({ where: { id: login.id }, raw: true });
+              let loginAttempts = userRecord.loginAttempts || 0;
+              loginAttempts += 1;
 
-            return super.ok<any>(res, {
-              status: "success",
-              message: "Your account has successfully logged-in.",
-              token: token,
-              user: login,
-            });
+              let updateData: any = { loginAttempts: loginAttempts };
+              if (loginAttempts >= 10) {
+                updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
+              }
+
+              await userModel.update(updateData, { where: { id: login.id } });
+
+
+              return super.fail(res, result.message);
+            }
           } else {
-            // Update login attempts and lock account if necessary
-            let userRecord: any = await userModel.findOne({ where: { id: login.id }, raw: true });
-            let loginAttempts = userRecord.loginAttempts || 0;
-            loginAttempts += 1;
-
-            let updateData: any = { loginAttempts: loginAttempts };
-            if (loginAttempts >= 10) {
-              updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
-            }
-
-            await userModel.update(updateData, { where: { id: login.id } });
-
-
-            return super.fail(res, result.message);
+            return super.fail(res, 'Please check google authentication code')
           }
-        }else{
-          return super.fail(res,'Please check google authentication code')
-        }
         }
       }
     } catch (error: any) {
@@ -693,8 +674,8 @@ class userController extends BaseController {
    */
   async updatePassword(req: Request, res: Response) {
     try {
-      
-      
+
+
       if (req.body.type === "forget") {
         let user: any = await service.user.checkIfUserExsit(
           req?.body?.username
@@ -709,7 +690,7 @@ class userController extends BaseController {
 
           if (user?.data?.dataValues?.lockUntil && user?.data?.dataValues?.lockUntil > new Date()) {
             // console.log("here i am ");
-    
+
             throw new Error(
               "Your account is susceptible to high risk. Please try again after 4 hours.",
             );
@@ -749,30 +730,30 @@ class userController extends BaseController {
               if (req.body.step === 3) {
                 let result = await service.otpService.matchOtp(userOtp);
 
-                let payload:any= {}               
+                let payload: any = {}
 
-                payload.secret=JSON.parse(req.body.secret).base32
-                payload.token= req.body.token
+                payload.secret = JSON.parse(req.body.secret).base32
+                payload.token = req.body.token
 
                 let verifyGoogle = await service.user.googleAuth(payload);
-                
+
                 // console.log(verifyGoogle);
 
-                if(verifyGoogle){
+                if (verifyGoogle) {
 
                   if (result.success === true) {
-  
+
                     return super.ok<any>(res, { status: 200, message: "OTP matched" });
                   }
-                
-                   else {
+
+                  else {
                     // console.log(user,"==user");
-                    
+
                     // Update login attempts and lock account if necessary
                     let userRecord: any = await userModel.findOne({ where: { id: user?.data?.dataValues?.id }, raw: true });
                     let loginAttempts = userRecord.loginAttempts || 0;
                     loginAttempts += 1;
-  
+
                     let updateData: any = { loginAttempts: loginAttempts };
                     if (loginAttempts >= 10) {
                       updateData.lockUntil = new Date(new Date().getTime() + 4 * 60 * 60 * 1000);
@@ -781,7 +762,7 @@ class userController extends BaseController {
                     return super.fail(res, result.message);
                   }
                 }
-                else{
+                else {
                   return super.fail(res, "Please check google authentication code");
                 }
 
