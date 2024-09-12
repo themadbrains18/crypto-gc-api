@@ -393,7 +393,10 @@ class futurePositionDal {
                         // console.log(position?.margin, '========user assets value');
                         // console.log(position?.pnl, '===========user profit loss value');
                         // console.log(position?.realized_pnl, '=======position released value');
-                        newBal = asset?.balance + position?.margin + (position?.pnl - position?.realized_pnl);
+                        newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl ,position?.realized_pnl,10);
+
+                        // console.log(newBal,"=lkjdkjasl");
+                        
                         // ================Fee Deduction from user and add to admin=================//
                         let futureProfit = 0;
                         if (position?.pnl < 0) {

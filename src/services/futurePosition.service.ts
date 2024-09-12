@@ -63,6 +63,10 @@ class futurePositionServices {
                     let tt = token[0]?.dataValues;
                     if (ps?.direction === 'long') {
                         if (profitLoss) {
+                            // console.log("here i am profit", profitLoss?.trigger_profit);
+                            // console.log("here i am loss", profitLoss?.trigger_loss);
+                            
+                            
                             if (profitLoss?.trigger_profit > 0 && tt?.price >= profitLoss?.trigger_profit) {
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: profitLoss?.profit_value }, { where: { id: ps?.id } });
                                 await takeProfitStopLossModel.update({isClose : true},{where : {position_id : ps?.id}});

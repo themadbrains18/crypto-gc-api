@@ -770,8 +770,6 @@ class userController extends BaseController {
                   }
 
                 }
-
-
                   if (result.success === true) {
 
                     return super.ok<any>(res, { status: 200, message: "OTP matched" });

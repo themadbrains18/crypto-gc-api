@@ -95,9 +95,6 @@ class userServices {
           token: token,
         });
 
-        console.log(isVerified,"==jsdhkfjhsdkjh");
-        
-
         if (isVerified && payload?.password) {
           let user: UserInput = payload;
 

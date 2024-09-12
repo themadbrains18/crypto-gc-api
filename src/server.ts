@@ -126,25 +126,25 @@ cron.schedule("*/10 * * * * *", async () => {
  * Cron for market order spot trading 
  */
 let isCronRunning = false;
-// cron.schedule('*/2 * * * *', async () => {  // Cron job runs every 5 seconds
-//   if (isCronRunning) {
-//     console.log("Previous cron job is still running. Skipping this execution.");
-//     return;
-//   }
-//   isCronRunning = true;
-//   try {
-//     console.log('=======here crom ===========');
+cron.schedule('*/2 * * * *', async () => {  // Cron job runs every 5 seconds
+  if (isCronRunning) {
+    console.log("Previous cron job is still running. Skipping this execution.");
+    return;
+  }
+  isCronRunning = true;
+  try {
+    console.log('=======here crom ===========');
     
-//     const batchSize = 100;  // Define your batch size here
-//     await service.cronMarket.processOrdersInBatches(batchSize);
-//     isCronRunning=false   
-//   } catch (error) {
-//     console.error("Error in cron job:", error);
-//   }
-//   finally {
-//     isCronRunning = false;
-//   }
-// });
+    const batchSize = 100;  // Define your batch size here
+    await service.cronMarket.processOrdersInBatches(batchSize);
+    isCronRunning=false   
+  } catch (error) {
+    console.error("Error in cron job:", error);
+  }
+  finally {
+    isCronRunning = false;
+  }
+});
 
 
 
