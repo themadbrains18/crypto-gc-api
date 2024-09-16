@@ -677,7 +677,7 @@ class userController extends BaseController {
             });
           }
           else {
-            return super.fail(res, 'Google security code not matched');
+            return super.fail(res, 'Google authentication code does not matched');
           }
 
         }
