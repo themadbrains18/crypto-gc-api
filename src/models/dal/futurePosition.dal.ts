@@ -100,19 +100,18 @@ class futurePositionDal {
                 asset = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
             }
 
-
             // get margin of open order by tokenid, userid, status false
             let totalMargin = await futureOpenOrderModel.sum('margin', {
                 where: {
                     user_id: payload.user_id,
-                    coin_id: global_token?.id,
+                    coin_id: payload.coin_id,
                     isDeleted: false,
                     status: false,
                 }
             });
 
-            console.log(totalMargin, "==totalMargin");
-
+            // console.log(totalMargin, "==totalMargin");
+            // return;
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
             let margin_price: number = payload?.margin;
@@ -135,7 +134,7 @@ class futurePositionDal {
                 }
                 // when both assets and rewards not available then return insufficiant balance
                 else {
-                    return { message: 'Insufficiant Balance' }
+                    return { message: 'Insufficient balance. Open orders are using your funds.' }
                 }
             }
             payload.assets_margin = assets_price;
