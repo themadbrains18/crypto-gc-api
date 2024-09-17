@@ -11,6 +11,7 @@ import MarketProfitModel, { MarketProfitInput } from "../model/marketProfit.mode
 import userRewardTotalModel from "../model/rewards_total.model";
 import { preciseSubtraction, truncateNumber } from "../../utils/utility";
 import takeProfitStopLossModel from "../model/takeprofit_stoploss.model";
+import profitLossDal from "./profitLoss.dal";
 
 class futurePositionDal {
 
@@ -109,7 +110,7 @@ class futurePositionDal {
                     status: false,
                 }
             });
-            
+
             console.log(totalMargin, "==totalMargin");
 
             // Get rewards point by userid
@@ -199,7 +200,7 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
             console.log('this is working');
-            
+
             let newbal: number = 0;
             //=================== Get Token ==================
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
@@ -242,10 +243,10 @@ class futurePositionDal {
                     return { message: 'Insufficiant Balance' }
                 }
             }
-            console.log(activePosition,'this is working in else=======');
+            console.log(activePosition, 'this is working in else=======');
             if (activePosition.length > 1) {
                 activePosition = activePosition.filter((item: any) => {
-                    console.log(item.direction,'this is working in else=======');
+                    console.log(item.direction, 'this is working in else=======');
                     return item.position_mode === 'Hedge' && item.direction === payload.direction
                 })
             }
@@ -257,7 +258,7 @@ class futurePositionDal {
                 // ==================Hedge mode==================== //
                 if (activePosition?.position_mode === 'Hedge') {
                     console.log("this is in hedge");
-                    
+
                     if (activePosition.direction === payload.direction) {
                         await futurePositionModel.update({
                             qty: activePosition.qty + payload.qty,
@@ -393,10 +394,10 @@ class futurePositionDal {
                         // console.log(position?.margin, '========user assets value');
                         // console.log(position?.pnl, '===========user profit loss value');
                         // console.log(position?.realized_pnl, '=======position released value');
-                        newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl ,position?.realized_pnl,10);
+                        newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
 
                         // console.log(newBal,"=lkjdkjasl");
-                        
+
                         // ================Fee Deduction from user and add to admin=================//
                         let futureProfit = 0;
                         if (position?.pnl < 0) {
@@ -423,7 +424,7 @@ class futurePositionDal {
 
                         let updateAsset = await assetModel.update({ balance: newBal }, { where: { id: asset?.id } });
                         await futurePositionModel.update({ isDeleted: true }, { where: { id: id } });
-
+                        await profitLossDal.close(id, userId)
                         await futurePositionHistoryModel.update({ status: true }, { where: { position_id: id } });
                         let historyBody: futurePositionHistoryDto = {
                             position_id: position?.id,
