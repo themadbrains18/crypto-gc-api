@@ -134,7 +134,7 @@ class futurePositionDal {
                 }
                 // when both assets and rewards not available then return insufficiant balance
                 else {
-                    return { message: 'Insufficient balance. Open orders are using your funds.' }
+                    return { message: 'Insufficient balance due to assets being reserved by open orders.' }
                 }
             }
             payload.assets_margin = assets_price;
@@ -212,7 +212,7 @@ class futurePositionDal {
             let totalMargin = await futureOpenOrderModel.sum('margin', {
                 where: {
                     user_id: payload.user_id,
-                    coin_id: global_token?.id,
+                    coin_id: payload.coin_id,
                     isDeleted: false,
                     status: false,
                 }
@@ -239,7 +239,7 @@ class futurePositionDal {
                     reward_point = margin_price;
                 }
                 else {
-                    return { message: 'Insufficiant Balance' }
+                    return { message: 'Insufficient balance due to assets being reserved by open orders.' }
                 }
             }
             console.log(activePosition, 'this is working in else=======');
