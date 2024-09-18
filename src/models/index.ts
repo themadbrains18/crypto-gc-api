@@ -62,7 +62,7 @@ let sequelize = new Sequelize(
       "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
     timezone: "+05:30",
     pool: {
-      max: 20, // Maximum number of connections in pool
+      max: 1024, // Maximum number of connections in pool
       min: 0, // Minimum number of connections in pool
       acquire: 30000, // Maximum time in ms to acquire a connection
       idle: 10000 // Maximum time in ms that a connection can be idle before being released

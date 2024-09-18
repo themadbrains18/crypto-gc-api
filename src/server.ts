@@ -15,6 +15,8 @@ import postController from "./controllers/post.controller";
 import userNotificationController from "./controllers/user_notification.controller";
 import chatController from "./controllers/chat.controller";
 import profileController from "./controllers/profile.controller";
+import sequelize from "./models";
+import userServices from "./services/user.service";
 
 const app: Application = express();
 
@@ -134,7 +136,7 @@ let isCronRunning = false;
 //   isCronRunning = true;
 //   try {
 //     console.log('=======here crom ===========');
-    
+
 //     const batchSize = 100;  // Define your batch size here
 //     await service.cronMarket.processOrdersInBatches(batchSize);
 //     isCronRunning=false   
@@ -169,6 +171,15 @@ process.on("uncaughtException", (error: Error) => {
   cerrorHandler.handleError(error);
   if (!cerrorHandler.isTrustedError(error)) {
     process.exit(1);
+  }
+});
+cron.schedule('0 */5 * * *', async () => {
+  try {
+    console.log('Running the kill-excess-connections task...');
+    await service.user.killExcessConnection()
+    console.log('Task executed successfully');
+  } catch (error) {
+    console.error('Error executing the task:', error);
   }
 });
 

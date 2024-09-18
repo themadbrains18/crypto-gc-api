@@ -1,3 +1,4 @@
+
 import { error } from "console";
 import userDal from "../models/dal/users.dal";
 import { loginUser } from "../models/dto/user.interface";
@@ -5,10 +6,11 @@ import userModel, { UserInput, UserOuput } from "../models/model/users.model";
 import service from "./service";
 import { antiPhishingCode, googleAuth, updateFundcode, updatepassword, updateUserPin, updateUserStatus, updateWhiteList } from "../utils/interface";
 import speakeasy from "speakeasy";
-import sequelize from "../models/model/users.model";
+
 import { lastLoginOuput } from "../models/model/lastLogin.model";
 import { MarketProfitOuput } from "../models/model/marketProfit.model";
 import { raw } from "body-parser";
+import sequelize from "../models";
 
 
 let userDataLayer = new userDal();
@@ -466,6 +468,44 @@ class userServices {
 
     return {total : totalUsers.length, activeUser : activeUsers.length};
   }
+
+
+  async killExcessConnection(){
+ 
+    try {
+        const maxConnections = 76;
+        const threshold = maxConnections * 0.9;
+  
+        const query = `
+            SET @max_connections := ${maxConnections};
+            SET @threshold := @max_connections * 0.9;
+  
+            SET @sql = (
+                SELECT GROUP_CONCAT(CONCAT('KILL ', id) SEPARATOR '; ')
+                FROM INFORMATION_SCHEMA.PROCESSLIST
+               (SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST) > @threshold
+                ORDER BY TIME DESC
+                LIMIT (SELECT COUNT(*) - @threshold FROM INFORMATION_SCHEMA.PROCESSLIST)
+            );
+  
+            IF @sql IS NOT NULL THEN
+                PREPARE stmt FROM @sql;
+                EXECUTE stmt;
+                DEALLOCATE PREPARE stmt;
+            END IF;
+        `;
+  
+        await sequelize.query(query);
+        console.log('Excess connections killed successfully');
+        
+  
+        // res.send('Excess connections killed successfully');
+    } catch (error) {
+        console.error('Error killing connections:', error);
+        // res.status(500).send('Failed to kill excess connections');
+    }
+  }
+
 }
 
 export default userServices;
