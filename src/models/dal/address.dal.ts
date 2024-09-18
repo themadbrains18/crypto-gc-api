@@ -3,6 +3,7 @@ import addressModel, { addressInput, addressOuput } from "../model/address.model
 import networkModel from "../model/network.model";
 import tokensModel from "../model/tokens.model";
 import globalTokensModel from "../model/global_token.model";
+import sequelize from "..";
 
 class addressDal {
   /**
@@ -68,10 +69,11 @@ class addressDal {
     try {
       return await addressModel.create(payload);
     } catch (error: any) {
-      // console.log(error, "==error here");
+      // console.log(error, "==error here");  
 
       throw new Error(error.message)
     }
+    
   }
 
   async changeStatus(payload: addressInput): Promise<any> {
@@ -82,7 +84,7 @@ class addressDal {
       return apiStatus;
     } catch (error: any) {
       throw new Error(error);
-    }
+    } 
   }
 
 
