@@ -60,6 +60,9 @@ let sequelize = new Sequelize(
     logging: false,
     dialect:
       "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
+      dialectOptions: {
+        multipleStatements: true
+    },
     timezone: "+05:30",
     pool: {
       max: 1024, // Maximum number of connections in pool

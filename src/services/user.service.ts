@@ -33,8 +33,8 @@ class userServices {
    * @returns 
    */
   async checkIfUserExsit(id: number | string): Promise<object | null> {
-    
-    let user= await userDataLayer.userAlreadyExist(id);
+
+    let user = await userDataLayer.userAlreadyExist(id);
     if (user === null) {
       return {
         success: false,
@@ -44,7 +44,7 @@ class userServices {
     return { success: true, data: user };
   }
 
-  async checkUserReferCodeExist(refer :string):Promise<object | null>{
+  async checkUserReferCodeExist(refer: string): Promise<object | null> {
     return await userDataLayer.checkUserReferCodeExist(refer);
   }
 
@@ -132,7 +132,7 @@ class userServices {
         );
 
         // console.log(pass,"============pass");
-        
+
 
         if (pass) {
           await delete payload?.password;
@@ -213,7 +213,7 @@ class userServices {
     try {
       let user = await userModel.findOne({ where: { id: payload.user_id } });
       if (user) {
-            return await user.update({ whitelist: payload.whitelist });
+        return await user.update({ whitelist: payload.whitelist });
       } else {
         throw new Error("User not found");
       }
@@ -255,7 +255,7 @@ class userServices {
    */
   async confirmTradingPassword(payload: updatepassword): Promise<boolean> {
     try {
-      let user = await userModel.findOne({ where: { id: payload.user_id }, raw : true });
+      let user = await userModel.findOne({ where: { id: payload.user_id }, raw: true });
       let data = user;
 
       let pass = service.bcypt.MDB_compareHash(
@@ -263,7 +263,7 @@ class userServices {
         data?.tradingPassword
       );
 
-      if(pass){
+      if (pass) {
         return true
       }
       else {
@@ -290,20 +290,20 @@ class userServices {
     try {
 
       // console.log(payload.user_id);
-      
+
       let user = await userModel.findOne({ where: { id: payload.user_id } });
-      
+
       if (user) {
         let password = await service.bcypt.MDB_crateHash(payload?.new_password);
 
-        await user.update({ password: password, pwdupdatedAt : new Date(new Date().getTime() + 60 * 60 * 24 * 1000) });
-        return await userModel.findOne({ where: { id: payload.user_id }, raw : true });
+        await user.update({ password: password, pwdupdatedAt: new Date(new Date().getTime() + 60 * 60 * 24 * 1000) });
+        return await userModel.findOne({ where: { id: payload.user_id }, raw: true });
       } else {
         throw new Error("User not found");
       }
     } catch (error: any) {
-      console.log(error.message,"===errror here");
-      
+      console.log(error.message, "===errror here");
+
       throw new Error(error.message);
     }
   }
@@ -357,8 +357,8 @@ class userServices {
    * @param limit 
    * @returns 
    */
-  async getUsersListByLimit(offset:any,limit:any): Promise<UserOuput[]> {
-    return userDataLayer.getListOfUserByLimit(offset,limit);
+  async getUsersListByLimit(offset: any, limit: any): Promise<UserOuput[]> {
+    return userDataLayer.getListOfUserByLimit(offset, limit);
   }
 
   /**
@@ -383,8 +383,8 @@ class userServices {
    * @param limit 
    * @returns 
    */
-  async getUsersActivityListByLimit(offset:string,limit:string): Promise<lastLoginOuput[]> {
-    return userDataLayer.getListOfUserActivityByLimit(offset,limit);
+  async getUsersActivityListByLimit(offset: string, limit: string): Promise<lastLoginOuput[]> {
+    return userDataLayer.getListOfUserActivityByLimit(offset, limit);
   }
 
   /**
@@ -394,8 +394,8 @@ class userServices {
    * @param limit 
    * @returns 
    */
-  async getUsersActivityListByIdLimit(userid:string,offset:string,limit:string): Promise<lastLoginOuput[]> {
-    return userDataLayer.getListOfUserActivityByIdLimit(userid,offset,limit);
+  async getUsersActivityListByIdLimit(userid: string, offset: string, limit: string): Promise<lastLoginOuput[]> {
+    return userDataLayer.getListOfUserActivityByIdLimit(userid, offset, limit);
   }
 
   /**
@@ -458,54 +458,50 @@ class userServices {
    * Get user counts data
    */
 
-  async getUserDataAsCounts():Promise<any>{
+  async getUserDataAsCounts(): Promise<any> {
 
-    let totalUsers = await userModel.findAll({raw: true});
+    let totalUsers = await userModel.findAll({ raw: true });
 
-    let activeUsers = totalUsers.filter((item:any)=>{
+    let activeUsers = totalUsers.filter((item: any) => {
       return item.statusType === true || item.statusType === 1
     });
 
-    return {total : totalUsers.length, activeUser : activeUsers.length};
+    return { total: totalUsers.length, activeUser: activeUsers.length };
   }
 
 
-  async killExcessConnection(){
- 
+  async killExcessConnection() {
+    const maxConnections = 300;
+    const threshold = maxConnections * 0.9;
+  
     try {
-        const maxConnections = 76;
-        const threshold = maxConnections * 0.9;
+      // Fetch current number of connections
+      const [results]:any = await sequelize.query("SELECT COUNT(*) AS count FROM INFORMATION_SCHEMA.PROCESSLIST");
+      const currentConnections = results[0].count;
+
+      if (currentConnections > threshold) {
+        // Fetch IDs of connections to kill if they exceed the threshold
+        const excessCount = currentConnections - threshold;
+        const [killResults]:any = await sequelize.query(`
+          SELECT GROUP_CONCAT(CONCAT('KILL ', id) SEPARATOR '; ') AS kill_commands
+          FROM INFORMATION_SCHEMA.PROCESSLIST
+          LIMIT ${excessCount}
+        `);
   
-        const query = `
-            SET @max_connections := ${maxConnections};
-            SET @threshold := @max_connections * 0.9;
-  
-            SET @sql = (
-                SELECT GROUP_CONCAT(CONCAT('KILL ', id) SEPARATOR '; ')
-                FROM INFORMATION_SCHEMA.PROCESSLIST
-               (SELECT COUNT(*) FROM INFORMATION_SCHEMA.PROCESSLIST) > @threshold
-                ORDER BY TIME DESC
-                LIMIT (SELECT COUNT(*) - @threshold FROM INFORMATION_SCHEMA.PROCESSLIST)
-            );
-  
-            IF @sql IS NOT NULL THEN
-                PREPARE stmt FROM @sql;
-                EXECUTE stmt;
-                DEALLOCATE PREPARE stmt;
-            END IF;
-        `;
-  
-        await sequelize.query(query);
-        console.log('Excess connections killed successfully');
-        
-  
-        // res.send('Excess connections killed successfully');
+        const killCommands = killResults[0].kill_commands;
+        if (killCommands) {
+          // Execute the KILL commands
+          await sequelize.query(killCommands);
+          console.log('Excess connections killed successfully.');
+        }
+      } else {
+        console.log('No excess connections to kill.');
+      }
     } catch (error) {
-        console.error('Error killing connections:', error);
-        // res.status(500).send('Failed to kill excess connections');
+      console.error('Failed to kill excess connections:', error);
     }
   }
-
+  
 }
 
 export default userServices;
