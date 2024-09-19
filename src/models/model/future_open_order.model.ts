@@ -25,6 +25,7 @@ interface futureOpenOrderAttribute {
     reduce_only?: string; // TP/SL case Yes, limit order No
     post_only?: string; //No
     status?: boolean;
+    queue?: boolean;
 }
 
 
@@ -48,6 +49,7 @@ class futureOpenOrderModel
     public reduce_only!: string;
     public post_only!: string;
     public status!: boolean;
+    public queue!: boolean;
 
 
     public leverage!: number;
@@ -171,6 +173,11 @@ class futureOpenOrderModel
                     allowNull: false,
                 },
                 isTrigger: {
+                    type: DataTypes.BOOLEAN,
+                    allowNull: true,
+                    defaultValue: false
+                },
+                queue: {
                     type: DataTypes.BOOLEAN,
                     allowNull: true,
                     defaultValue: false

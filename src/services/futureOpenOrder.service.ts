@@ -59,11 +59,12 @@ class futureOpenOrderServices {
     async openOrderCron(): Promise<futureOpenOrderOuput | any> {
         try {
             let allTokens = await service.token.all();
-            let openOrders = await futureOpenOrderModel.findAll({ where: { status: false, isDeleted: false, type: 'limit' }, raw: true });
+            let openOrders = await futureOpenOrderModel.findAll({ where: { status: false, isDeleted: false, type: 'limit' , queue:false }, raw: true });
 
             if (openOrders) {
                 for await (const oo of openOrders) {
-
+                    await futureOpenOrderModel.update({ queue: true }, { where: { id: oo.id } });
+                    
                     let token = allTokens.filter((t: any) => {
                         return t?.dataValues?.id === oo?.coin_id
                     })
@@ -184,6 +185,8 @@ class futureOpenOrderServices {
                             }
                         }
                     }
+
+                    await futureOpenOrderModel.update({ queue: false }, { where: { id: oo.id } });
                 }
             }
 

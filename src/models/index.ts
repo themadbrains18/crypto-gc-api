@@ -370,6 +370,7 @@ models.forEach((model) => model.initialize(sequelize));
 
 // sequelize.sync({ alter: true });
 // assetModel.sync({ alter: true });
+// futureOpenOrderModel.sync({ alter: true });
 
 
 //=============================================================
