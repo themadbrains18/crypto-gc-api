@@ -63,10 +63,6 @@ class futurePositionServices {
                     let tt = token[0]?.dataValues;
                     if (ps?.direction === 'long') {
                         if (profitLoss) {
-                            // console.log("here i am profit", profitLoss?.trigger_profit);
-                            // console.log("here i am loss", profitLoss?.trigger_loss);
-                            
-                            
                             if (profitLoss?.trigger_profit > 0 && tt?.price >= profitLoss?.trigger_profit) {
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: profitLoss?.profit_value }, { where: { id: ps?.id } });
                                 await takeProfitStopLossModel.update({isClose : true},{where : {position_id : ps?.id}});
@@ -99,14 +95,20 @@ class futurePositionServices {
                         await futurePositionModel.update({ pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0], queue: false }, { where: { id: ps?.id } });
                     }
                     else if (ps?.direction === 'short') {
+                        // console.log(profitLoss,'===========profitLoss');
+                        // console.log(tt,'============tt');
+                        
                         if (profitLoss) {
                             if (profitLoss?.trigger_profit > 0 && tt?.price <= profitLoss?.trigger_profit ) {
+                                console.log('=======here 1');
+                                
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: profitLoss?.profit_value }, { where: { id: ps?.id } });
                                 await takeProfitStopLossModel.update({isClose : true},{where : {position_id : ps?.id}});
                                 futurePositionDal.closePosition(ps?.id, ps?.user_id);
                                 return;
                             }
                             if (profitLoss?.trigger_loss > 0 && tt?.price >= profitLoss?.trigger_loss) {
+                                console.log('=======here 2');
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: profitLoss?.loss_value }, { where: { id: ps?.id } });
                                 await takeProfitStopLossModel.update({isClose : true},{where : {position_id : ps?.id}});
                                 futurePositionDal.closePosition(ps?.id, ps?.user_id);
@@ -115,15 +117,20 @@ class futurePositionServices {
                         }
                         //=========== USDT PnL ================
                         let usdt_pnl: any = ps.qty * preciseSubtraction(ps?.entry_price , tt?.price,10);
+                        // console.log(usdt_pnl,'============usdt_pnl');
+                        // console.log(ps,'========position');
+                        
                         if (usdt_pnl < 0) {
                             let remainingMargin = ps.margin + usdt_pnl;
                             if (remainingMargin < 0 || remainingMargin === 0) {
+                                console.log('=======here 3');
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0] }, { where: { id: ps?.id } });
                                 futurePositionDal.closePosition(ps?.id, ps?.user_id);
                                 return;
                             }
                         }
                         if (tt.price >= ps.liq_price) {
+                            console.log('=======here 4');
                             await futurePositionModel.update({ status: true, isDeleted: true, pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0] }, { where: { id: ps?.id } });
                             futurePositionDal.closePosition(ps?.id, ps?.user_id);
                             return;

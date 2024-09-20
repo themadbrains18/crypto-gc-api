@@ -3,6 +3,7 @@ import tokenDal from "../models/dal/token.dal";
 import tokenDto from "../models/dto/token.dto";
 import { tokenInput, tokenOuput } from "../models/model/tokens.model";
 import { updateTokenNetwork, updateTokenStakeStatus, updateTokenStatus } from "../utils/interface";
+import service from "./service";
 
 class tokenServices {
 
@@ -87,6 +88,8 @@ class tokenServices {
             });
 
             let data = await coinList.json();
+
+
             for await (const num of data) {
                 let symbol = num.code === 'BTC' ? 'BTCB' : num.code === 'BNB' ? 'BNBT' : num.code;
                 let exist: any = await globalTokensModel.findOne({ where: { symbol: symbol }, raw: true });
@@ -108,11 +111,12 @@ class tokenServices {
                 }
             }
 
-            // let position = await service.position.positionCron();
-            // let openOrder = await service.openorder.openOrderCron();
+            let position = await service.position.positionCron();
+            let openOrder = await service.openorder.openOrderCron();
 
         } catch (error) {
-            console.log(error);
+            console.log();
+
         }
     }
 
