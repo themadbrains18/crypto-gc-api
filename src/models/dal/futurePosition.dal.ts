@@ -252,7 +252,7 @@ class futurePositionDal {
             activePosition = activePosition[0];
             if (activePosition) {
 
-                console.log(typeof (activePosition.assets_margin), typeof assets_price);
+                // console.log(typeof (activePosition.assets_margin), typeof assets_price);
 
                 // ==================Hedge mode==================== //
                 if (activePosition?.position_mode === 'Hedge') {
@@ -265,7 +265,7 @@ class futurePositionDal {
                             realized_pnl: activePosition.realized_pnl + Number(payload.realized_pnl),
                             entry_price: payload.entry_price,
                             market_price: payload.market_price,
-                            leverage:payload.leverage,
+                            leverage: payload.leverage,
                             margin: activePosition.margin + (payload.margin - payload.realized_pnl),
                             assets_margin: activePosition.assets_margin + Number(assets_price)
                         }, { where: { id: activePosition?.id, direction: payload.direction } });
@@ -277,30 +277,35 @@ class futurePositionDal {
                 }
                 // ==================One way mode==================
                 else if (activePosition?.position_mode === 'oneWay') {
-                    console.log("this is in oneWay",payload,activePosition);
+                    console.log("this is in oneWay", payload, activePosition);
                     if (payload?.direction === activePosition.direction) {
                         let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
                         activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
                         activePosition.size = size;
-                        activePosition.leverage=payload.leverage;
+                        activePosition.leverage = payload.leverage;
                         activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
                         activePosition.assets_margin = activePosition.assets_margin + Number(assets_price)
                         newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
                     }
                     else {
-                        let size: any = truncateNumber(activePosition.size - payload?.size, 5)
-                        activePosition.qty = truncateNumber(activePosition.qty - payload.qty, 5);
+                        let size: any = activePosition.qty > payload.qty? preciseSubtraction(activePosition.size ,payload?.size, 5):preciseSubtraction( payload?.size,activePosition.size, 5);
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
                         activePosition.size = size;
-                        activePosition.leverage=payload.leverage;                        activePosition.margin = activePosition.margin - (payload.margin - Number(payload.realized_pnl));
+                        activePosition.leverage = payload.leverage;
+                        activePosition.margin = activePosition.margin - preciseSubtraction(payload.margin , Number(payload.realized_pnl));
                         activePosition.assets_margin = activePosition.assets_margin + Number(assets_price);
-                        newbal = asset?.balance + (Number(assets_price) - Number(payload.realized_pnl));
+                        newbal = asset?.balance + preciseSubtraction(Number(assets_price) , Number(payload.realized_pnl));
+                        activePosition.dirction = activePosition.qty > payload.qty ? activePosition.direction : payload.direction
+                        activePosition.qty = preciseSubtraction(activePosition.qty , payload.qty, 5);
                     }
+
+                    console.log(activePosition.qty, "=activePosition.qty");
+
 
                     if (activePosition.qty !== 0) {
                         await futurePositionModel.update({
-                            qty: activePosition.qty, size: activePosition.size, realized_pnl: activePosition.realized_pnl,  leverage:payload.leverage,
+                            qty: activePosition.qty, size: activePosition.size, realized_pnl: activePosition.realized_pnl, leverage: payload.leverage,
                             entry_price: payload.entry_price, market_price: payload.market_price, margin: activePosition.margin, assets_margin: activePosition.assets_margin
                         }, { where: { id: activePosition?.id } });
                     }
