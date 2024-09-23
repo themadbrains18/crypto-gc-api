@@ -4,6 +4,7 @@ import futurePositionDal from "../models/dal/futurePosition.dal";
 import futurePositionDto from "../models/dto/futurePoistion.dto";
 import futurePositionModel, { futurePositionOuput } from "../models/model/future_position.model";
 import { preciseSubtraction } from "../utils/utility";
+import { scientificToDecimal } from "./market.service";
 import service from "./service";
 
 class futurePositionServices {
@@ -77,7 +78,9 @@ class futurePositionServices {
                             }
                         }
                         //=========== USDT PnL ================
-                        let usdt_pnl: any = ps.qty * preciseSubtraction(tt?.price , ps?.entry_price,10);
+                        let usdt_pnl: any = scientificToDecimal(ps.qty * preciseSubtraction(tt?.price , ps?.entry_price,10));
+                        console.log(usdt_pnl,"==usdt pnl");
+                        
                         // check if loss equal to position margin(user USDT assets) or less than margin than close position 
                         if (usdt_pnl < 0) {
                             let remainingMargin = ps.margin + usdt_pnl;
@@ -116,8 +119,8 @@ class futurePositionServices {
                             }
                         }
                         //=========== USDT PnL ================
-                        let usdt_pnl: any = ps.qty * preciseSubtraction(ps?.entry_price , tt?.price,10);
-                        // console.log(usdt_pnl,'============usdt_pnl');
+                        let usdt_pnl: any = scientificToDecimal(ps.qty * preciseSubtraction(ps?.entry_price , tt?.price,10));
+                        console.log(usdt_pnl,'============usdt_pnl2');
                         // console.log(ps,'========position');
                         
                         if (usdt_pnl < 0) {

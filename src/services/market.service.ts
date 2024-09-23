@@ -18,7 +18,7 @@ interface buyerExecution {
     buyerFees: number
 }
 
-const scientificToDecimal = (value: number): string => {
+export const scientificToDecimal = (value: number): string => {
     return value.toFixed(10).replace(/\.?0+$/, ""); // Convert to decimal format, trimming unnecessary zeros
 };
 
