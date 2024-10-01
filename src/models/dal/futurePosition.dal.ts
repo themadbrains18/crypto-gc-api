@@ -314,6 +314,8 @@ class futurePositionDal {
 
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
 
+                        activePosition.qty= truncateNumber(activePosition.qty,4)
+
                         // console.log(payload.margin, '====== payload margin');
                         // subtractBalance = Number(activePosition.margin) + Number(payload.realized_pnl);
                         // // console.log(subtractBalance, '=========subtractBalance');
