@@ -300,12 +300,16 @@ class futurePositionDal {
                             // console.log(newbal,"==new balance"
                         }
                         if (activePosition.qty < payload.qty) {
-                            newbal = asset?.balance
+                            newbal = asset?.balance + Number(payload.realized_pnl)
 
                             //     console.log("here 2");
                             //     let subtractBalance = Number(activePosition.margin) + Number(payload.realized_pnl);
                             //     newbal=preciseSubtraction(asset?.balance, subtractBalance, 10);
                             //     console.log("new balace 2", newbal);
+                        }
+
+                        if(activePosition.qty==payload.qty){
+                            newbal=asset?.balance
                         }
 
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
