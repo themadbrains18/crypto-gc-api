@@ -55,6 +55,15 @@ class futureOpenOrderServices {
     async closeOpenOrderById(payload: string, userId: string): Promise<futureOpenOrderOuput | any> {
         return await futureOpenOrderDal.closeOpenOrderById(payload, userId);
     }
+    /**
+     * Close all Open Order 
+     * @param payload 
+     * @param userId 
+     * @returns 
+     */
+    async closeOpenOrders(userId: string): Promise<futureOpenOrderOuput | any> {
+        return await futureOpenOrderDal.closeOpenOrder(userId);
+    }
 
     async openOrderCron(): Promise<futureOpenOrderOuput | any> {
         try {

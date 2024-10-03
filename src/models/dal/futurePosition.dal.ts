@@ -72,6 +72,10 @@ class futurePositionDal {
     async createPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
         try {
             // ===============Get Active position================
+
+            console.log(payload,"=payload");
+            
+
             let activePosition = await futurePositionModel.findAll({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
             // ==============Existing active position order==========
             if (activePosition.length > 0) {

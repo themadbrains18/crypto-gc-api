@@ -101,6 +101,27 @@ class futureOpenOrderController extends BaseController {
         }
     }
 
+    async deleteAllRequest(req: Request, res: Response) {
+        try {
+
+            let deleteResponse = await service.openorder.closeOpenOrders( req?.body?.user_id);
+
+            if (deleteResponse?.data === null) {
+                super.ok<any>(res, {
+                    message: deleteResponse?.message,
+                    status: 404,
+                });
+            }
+            super.ok<any>(res, {
+                message: "all open order close successfully.",
+                result: deleteResponse,
+                status: 200,
+            });
+        } catch (error: any) {
+            super.fail(res, error.message)
+        }
+    }
+
     async history(req: Request, res: Response) {
         try {
             let openOrderHistory = await service.openorder.openOrderHistory(req.params?.userid);

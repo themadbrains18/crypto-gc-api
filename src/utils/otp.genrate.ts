@@ -45,12 +45,12 @@ class otpGenerate {
       OTP += string[Math.floor(Math.random() * len)];
     }
 
-    return OTP;
+    // return OTP;
     return '123456';
   }
 
   /**
-   * create otp for user and store in by user email / phone number
+   * create otp for user and store in by user email / phone number 
    * @param date
    * @returns
    */

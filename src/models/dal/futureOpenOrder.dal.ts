@@ -44,6 +44,9 @@ class futureOpenOrderDal extends BaseController {
             //================================================
             //=================== Get Token =================
             //================================================
+
+            console.log("here in section");
+
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
 
             // if (payload?.order_type !== 'value' && payload?.side==="open short") {
@@ -56,35 +59,55 @@ class futureOpenOrderDal extends BaseController {
             if (global_token) {
                 // console.log(payload?.user_id,"payload?.user_id");
                 // console.log(global_token?.id,"global_token?.id");
-                
+
                 let asset: any = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
 
                 // console.log(asset,"==assete");
+
+
+                let totalMargin = await futureOpenOrderModel.sum('margin', {
+                    where: {
+                        user_id: payload.user_id,
+                        coin_id: payload.coin_id,
+                        isDeleted: false,
+                        status: false,
+                    }
+                });
+
                 
+                let margin_price: any = payload?.margin && payload?.margin + totalMargin;
+                console.log(margin_price, "===totalMargin");
 
-                let margin_price: any = payload?.margin;
+                if (asset?.balance > 0) {
 
-                if (asset?.balance > 0 && (asset.balance > margin_price)) {
+                    if ( asset.balance > margin_price) {
 
-                    //================================================
-                    //===============Create Position =================
-                    //================================================
-                    let res = await futureOpenOrderModel.create(payload);
-                    // if (res) {
+                        //================================================
+                        //===============Create Position =================
+                        //================================================
+                        
 
-                    //     //================================================
-                    //     //================ Update Assets =================
-                    //     //================================================
-                    //     let newbal: any = asset?.balance - margin_price;
-                    //     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
-                    // }
-                    return res;
+                        let res = await futureOpenOrderModel.create(payload);
+                        // if (res) {
+
+                        //     //================================================
+                        //     //================ Update Assets =================
+                        //     //================================================
+                        //     let newbal: any = asset?.balance - margin_price;
+                        //     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
+                        // }
+                        return res;
+                    }
+                    else {
+                        // super.fail(express.response,'Insufficiant Balance')
+                        // // throw new Error('Insufficiant Balance');
+
+                        return { "error": 'Insufficient balance due to assets being reserved by open orders.' }
+                    }
                 }
                 else {
-                    // super.fail(express.response,'Insufficiant Balance')
-                    // // throw new Error('Insufficiant Balance');
-
-                    return { "error": "Insufficiant Balance" }
+                    return { "error": "Insufficient Balance" }
+                
                 }
             }
         } catch (error: any) {
@@ -114,6 +137,30 @@ class futureOpenOrderDal extends BaseController {
                         // let newBal = asset?.balance + order?.margin;
                         // let updateAsset = await assetModel.update({ balance: newBal }, { where: { id: asset?.id } });
                         await futureOpenOrderModel.update({ isDeleted: true }, { where: { id: payload } });
+                        // order.isDeleted = true;
+                        return order;
+                    }
+                }
+            }
+            else {
+                return { "data": null, "message": 'This order record not found.' }
+            }
+        } catch (error: any) {
+            // console.log(error, '=========here');
+            return { error: error.message }
+        }
+    }
+    async closeOpenOrder( userId: string): Promise<futureOpenOrderOuput | any> {
+        try {
+            let order = await futureOpenOrderModel.findAll({ where: {  isDeleted: false,user_id: userId, }, raw: true });
+            if (order) {
+                let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
+                if (global_token) {
+                    let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
+                    if (asset) {
+                        // let newBal = asset?.balance + order?.margin;
+                        // let updateAsset = await assetModel.update({ balance: newBal }, { where: { id: asset?.id } });
+                        await futureOpenOrderModel.update({ isDeleted: true }, { where: {user_id: userId, } });
                         // order.isDeleted = true;
                         return order;
                     }

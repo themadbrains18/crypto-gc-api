@@ -36,6 +36,11 @@ class futureOpenOrderRoutes extends BaseController {
          */
 
         this.router.delete('/close/:id', middleware.auth, tradeOpenOrder.deleteRequest);
+        /**
+         * Close all open order
+         */
+
+        this.router.post('/close/all', middleware.auth, tradeOpenOrder.deleteAllRequest);
 
         /**
          * Get user open order history data
