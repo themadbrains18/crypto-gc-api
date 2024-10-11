@@ -25,8 +25,14 @@ const config = () => {
         sync: {
           force: true,
         },
-        dialectModule: require('mysql2')
+        dialectModule: require('mysql2'),
       },
+      pool: {
+        max: 100,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+      }
     },
     email_service: false,
     email_config: {},

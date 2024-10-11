@@ -96,7 +96,7 @@ class futureOpenOrderServices {
                             queue: false,
                             status: false,
                             size: parseFloat(oo.amount),
-                            margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            margin: parseFloat(oo.amount) - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             market_price: oo.market_price,
                             tp_sl: '--',
                             market_type: 'limit',
@@ -109,6 +109,8 @@ class futureOpenOrderServices {
                             assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             position_mode:oo.position_mode
                         }
+                        console.log("in create position");
+                        
                         let create = await futurePositionDal.createPosition(body)
                         // futurePositionModel.create(body);
                         if (create) {
@@ -154,7 +156,7 @@ class futureOpenOrderServices {
                             queue: false,
                             status: false,
                             size: parseFloat(oo.amount),
-                            margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            margin: parseFloat(oo.amount) - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             market_price: oo.market_price,
                             tp_sl: '--',
                             market_type: 'limit',

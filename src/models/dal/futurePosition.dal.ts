@@ -118,8 +118,18 @@ class futurePositionDal {
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
+            console.log("here",totalMargin);
+            console.log("margin_price",margin_price);
+            console.log(asset?.balance,"=asset?.balance");
+            
+            
             // if assets and rewards point available than order margin divide in assets and rewards point
-            if (asset?.balance > 0 && (asset?.balance - totalMargin) > margin_price) {
+            
+            // if (asset?.balance > 0 && (asset?.balance - totalMargin) > margin_price) {
+            if (asset?.balance > 0 && (asset?.balance > totalMargin)) {
+            
+                console.log("in this condition");
+                
                 if (reward && reward?.amount > 0 && reward?.amount > margin_price / 2) {
                     reward_point = margin_price / 2;
                     assets_price = margin_price / 2
@@ -129,17 +139,28 @@ class futurePositionDal {
                 }
             }
             else {
+                console.log("in else condition");
+                
                 // assets not available only rewards point available
                 if (reward && reward.amount > 0 && reward.amount > margin_price) {
                     reward_point = margin_price;
                 }
                 // when both assets and rewards not available then return insufficiant balance
                 else {
+                    console.log("ya yha p");
+                    
                     return { message: 'Insufficient balance due to assets being reserved by open orders.' }
                 }
             }
+            console.log("yha pahunch gya");
+            
             payload.assets_margin = assets_price;
+            
+            console.log(payload,"===payload");
+            
+
             let res = await futurePositionModel.create(payload);
+            console.log(res,"==response");
             if (res) {
                 // ================Fee Deduction from user and add to admin=================//
                 let futureProfit = 0;
@@ -200,7 +221,7 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
 
-            // console.log(payload,'================');
+            console.log(payload,'================');
             // return
 
             let newbal: number = 0;
