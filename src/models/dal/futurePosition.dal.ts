@@ -111,7 +111,11 @@ class futurePositionDal {
                     isDeleted: false,
                     status: false,
                 }
-            });
+            }); 
+
+            console.log(payload,"==payload");
+            console.log(totalMargin,"total margin");
+            
 
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
@@ -199,7 +203,11 @@ class futurePositionDal {
                 //================ Update Assets =================
                 if (assets_price > 0) {
 
+                    console.log("here",assets_price);
+                    
                     let newbal: number = preciseSubtraction(asset?.balance, Number(Number(assets_price) + Number(payload.realized_pnl)), 10);
+                    console.log(newbal,"==kjshdkjs");
+                    
 
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
                 }
@@ -208,6 +216,8 @@ class futurePositionDal {
                     await userRewardTotalModel.update({ amount: newRewardBal, order_amount: reward_point }, { where: { user_id: payload.user_id } });
                 }
             }
+            console.log("in this");
+            
             return res;
         } catch (error: any) {
             console.log(error, '------------');

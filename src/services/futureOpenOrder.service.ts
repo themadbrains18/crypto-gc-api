@@ -84,7 +84,7 @@ class futureOpenOrderServices {
 
                         let value: any = (oo.qty * 0.02).toFixed(5);
                         let releazedPnl: any = ((oo.price_usdt * value) / 100);
-
+                        console.log(oo,"===oo");
                         let body: futurePositionDto = {
                             symbol: oo.symbol,
                             coin_id: oo.coin_id,
@@ -96,7 +96,7 @@ class futureOpenOrderServices {
                             queue: false,
                             status: false,
                             size: parseFloat(oo.amount),
-                            margin: parseFloat(oo.amount) - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            margin: oo.margin,
                             market_price: oo.market_price,
                             tp_sl: '--',
                             market_type: 'limit',
@@ -143,7 +143,8 @@ class futureOpenOrderServices {
 
                         let value: any = (oo.qty * 0.02).toFixed(5);
                         let releazedPnl: any = ((oo.price_usdt * value) / 100);
-
+                            console.log(oo,"===oo");
+                            
                         
                         let body: futurePositionDto = {
                             symbol: oo.symbol,
@@ -156,7 +157,8 @@ class futureOpenOrderServices {
                             queue: false,
                             status: false,
                             size: parseFloat(oo.amount),
-                            margin: parseFloat(oo.amount) - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
+                            margin: oo.margin,
+                            // margin: parseFloat(oo.amount) - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             market_price: oo.market_price,
                             tp_sl: '--',
                             market_type: 'limit',
