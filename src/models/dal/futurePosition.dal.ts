@@ -33,7 +33,11 @@ class futurePositionDal {
                         model: futureOpenOrderModel
                     },
                     {
-                        model: takeProfitStopLossModel
+                        model: takeProfitStopLossModel,
+                        where: {
+                            isClose: false
+                        },
+                        required: false // This ensures positions without a takeProfitStopLossModel still appear
                     }
                 ]
             });
