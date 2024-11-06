@@ -508,6 +508,8 @@ class futurePositionDal {
                             qty: position?.qty
                         }
                         await futurePositionHistoryModel.create(historyBody);
+                        await takeProfitStopLossModel.update({isClose:true },{where: { position_id: id }} );
+
                         return position;
                     }
                 }
