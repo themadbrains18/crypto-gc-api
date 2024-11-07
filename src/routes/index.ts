@@ -49,7 +49,7 @@ class routes {
     // base url 
     // app.use(`${apiBase}/`, (req,res)=>{
     //   res.status(200).send("Hello World API is running..")
-    // })
+   //  })
 
     app.use(`${apiBase}/user`, usersRoutes);
     app.use(`${apiBase}/assets`, assetsRoutes);

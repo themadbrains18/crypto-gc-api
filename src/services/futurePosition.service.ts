@@ -91,13 +91,16 @@ class futurePositionServices {
                                 return;
                             }
                         }
+
                         if (tt.price <= ps.liq_price) {
                             await futurePositionModel.update({ status: true, isDeleted: true, pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0] }, { where: { id: ps?.id } });
                             futurePositionDal.closePosition(ps?.id, ps?.user_id);
                             return;
                         }
+
                         await futurePositionModel.update({ pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0], queue: false }, { where: { id: ps?.id } });
                     }
+                    
                     else if (ps?.direction === 'short') {
                         // console.log(profitLoss,'===========profitLoss');
                         // console.log(tt,'============tt');

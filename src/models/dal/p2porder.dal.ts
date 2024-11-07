@@ -66,7 +66,8 @@ class p2pOrderDal {
                     }
 
                     if (post && post.quantity < payload.quantity) {
-                        throw new Error(`Please add quantity less or equal to ${post.quantity}`);
+                        // throw new Error(`Please add quantity less or equal to ${post.quantity}`);
+                        throw new Error(`Order failed: The selected order is currently unavailable`);
                     }
 
                     const reserveOrders = await service.p2p.checkReserveOrderByPost(payload.post_id, t);
