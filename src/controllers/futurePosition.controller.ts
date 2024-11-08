@@ -16,11 +16,11 @@ class futurePositionController extends BaseController {
         }
     }
     /**
-     *  /Users/baljeetsingh/dumps/Dump20230728
-     * @param res
-     * @param req
+     * Retrieves all position orders for a given user.
+     * @param {Request} req - Express request object with userId in params.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
      */
-
     async allPositionOrder(req: Request, res: Response, next: NextFunction) {
         try {
             let pairs = await service.position.all(req.params.userid);
@@ -31,6 +31,12 @@ class futurePositionController extends BaseController {
         }
     }
 
+    /**
+     * Retrieves paginated position orders.
+     * @param {Request} req - Express request object with offset and limit in params.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
+     */
     async allPositionByLimit(req: Request, res: Response, next: NextFunction) {
         try {
             let { offset, limit } = req.params;
@@ -43,9 +49,10 @@ class futurePositionController extends BaseController {
     }
 
     /**
-     *
-     * @param res
-     * @param req
+     * Creates a new position order.
+     * @param {Request} req - Express request object with trade data in body.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
      */
     async create(req: Request, res: Response, next: NextFunction) {
         try {
@@ -68,6 +75,12 @@ class futurePositionController extends BaseController {
         }
     }
 
+    /**
+     * Edits an existing position order.
+     * @param {Request} req - Express request object with trade data in body.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
+     */
     async edit(req: Request, res: Response, next: NextFunction) {
         try {
             let trade: futurePositionDto = req.body;
@@ -83,6 +96,11 @@ class futurePositionController extends BaseController {
         }
     }
 
+    /**
+     * Deletes a specific position order by ID.
+     * @param {Request} req - Express request object with order ID in params.
+     * @param {Response} res - Express response object.
+     */
     async deleteRequest(req: Request, res: Response) {
         try {
 
@@ -104,6 +122,11 @@ class futurePositionController extends BaseController {
         }
     }
 
+    /**
+     * Closes all position orders for a given user.
+     * @param {Request} req - Express request object with userId in body.
+     * @param {Response} res - Express response object.
+     */
     async closeAllPositionRequest(req: Request, res: Response) {
         try {
 
@@ -115,6 +138,11 @@ class futurePositionController extends BaseController {
         }
     }
 
+    /**
+     * Retrieves the position history for a user.
+     * @param {Request} req - Express request object with userId in params.
+     * @param {Response} res - Express response object.
+     */
     async history(req: Request, res: Response) {
         try {
             let positionHistory = await service.position.positionHistory(req.params?.userid);
@@ -124,7 +152,11 @@ class futurePositionController extends BaseController {
             super.fail(res, error.message);
         }
     }
-
+    /**
+     * Retrieves the last day's data for a specific coin.
+     * @param {Request} req - Express request object with coinId in params.
+     * @param {Response} res - Express response object.
+     */
     async getLastDayData(req: Request, res: Response) {
         try {
             let coinResponse = await service.position.coinLastData(req?.params?.coinid);
@@ -134,7 +166,11 @@ class futurePositionController extends BaseController {
             super.fail(res, error.message);
         }
     }
-
+    /**
+     * Retrieves the order book for a specific coin.
+     * @param {Request} req - Express request object with coinId in params.
+     * @param {Response} res - Express response object.
+     */
     async getorbookder(req: Request, res: Response) {
         try {
             let orderBookResponse = await service.position.orderbook(req?.params?.coinid);

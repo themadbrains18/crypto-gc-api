@@ -19,12 +19,14 @@ class tradePairController extends BaseController {
       return this.fail(res, error.toString());
     }
   }
-  /**
-   *  /Users/baljeetsingh/dumps/Dump20230728
-   * @param res
-   * @param req
-   */
 
+  /**
+   * @description Retrieves all trade pairs.
+   * @param req - The request object.
+   * @param res - The response object.
+   * @param next - The next function to call if an error occurs.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
   async allPairs(req: Request, res: Response, next: NextFunction) {
     try {
       let pairs = await service.pairServices.all();
@@ -35,6 +37,13 @@ class tradePairController extends BaseController {
     }
   }
 
+  /**
+   * @description Retrieves a paginated list of trade pairs.
+   * @param req - The request object containing offset and limit as parameters.
+   * @param res - The response object.
+   * @param next - The next function to call if an error occurs.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
   async allPairsByLimit(req: Request, res: Response, next: NextFunction) {
     try {
       let { offset, limit } = req.params;
@@ -46,17 +55,22 @@ class tradePairController extends BaseController {
     }
   }
 
-  /**
-   *
-   * @param res
-   * @param req
-   */
-  socketGetCoinList(req: Request, res: Response) {}
 
   /**
-   *
-   * @param res
-   * @param req
+   * @description Placeholder method for socket communication to get a list of coins.
+   * @param req - The request object.
+   * @param res - The response object.
+   * @returns {void}
+   */ 
+  socketGetCoinList(req: Request, res: Response) {}
+
+
+  /**
+   * @description Creates a new trade pair.
+   * @param req - The request object containing the trade pair data.
+   * @param res - The response object.
+   * @param next - The next function to call if an error occurs.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -99,10 +113,13 @@ class tradePairController extends BaseController {
   // Admin service api
   // ===================================================================
 
+
   /**
-   *
-   * @param res
-   * @param req
+   * @description Activates or deactivates a trade pair.
+   * @param req - The request object containing the pair id and status.
+   * @param res - The response object.
+   * @param next - The next function to call if an error occurs.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
   async activeInactivePair(req: Request, res: Response, next: NextFunction) {
     try {
@@ -121,7 +138,13 @@ class tradePairController extends BaseController {
       super.fail(res, error.message);
     }
   }
-
+  /**
+   * @description Edits an existing trade pair.
+   * @param req - The request object containing the trade pair data.
+   * @param res - The response object.
+   * @param next - The next function to call if an error occurs.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
   async edit(req: Request, res: Response, next: NextFunction) {
     try {
       let trade: tradePairDto = req.body;

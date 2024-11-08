@@ -15,6 +15,12 @@ class ReferalController extends BaseController {
     }
   }
 
+  /**
+   * Fetches the referral list of a user.
+   * @param req - The request object containing user ID in params.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   */  
   async getUserReferalList(req: Request, res: Response, next: NextFunction) {
     try {
       let user = await referUserModel.findAll({
@@ -49,6 +55,12 @@ class ReferalController extends BaseController {
       return super.fail(res, error.message);
     }
   }
+    /**
+   * Fetches the referral list with pagination.
+   * @param req - The request object containing user ID, offset, and limit in params.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   */
   async getUserReferalListByLimit(req: Request, res: Response, next: NextFunction) {
     try {
       let { offset, limit } = req?.params
@@ -72,7 +84,12 @@ class ReferalController extends BaseController {
       return super.fail(res, error.message);
     }
   }
-
+  /**
+   * Fetches user rewards details.
+   * @param req - The request object containing the user ID in params.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   */
   async getUserRewards(req: Request, res: Response, next: NextFunction) {
     try {
       let response = await service.referalService.getUserRewards(req.params.userid);
@@ -83,7 +100,12 @@ class ReferalController extends BaseController {
       return super.fail(res, error.message);
     }
   }
-
+  /**
+   * Creates new user rewards.
+   * @param req - The request object containing reward data in body.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   */
   async createUserRewards(req: Request, res: Response, next: NextFunction) {
     try {
       let response = await service.referalService.createUserRewards(req.body);
@@ -94,7 +116,12 @@ class ReferalController extends BaseController {
       return super.fail(res, error.message);
     }
   }
-
+  /**
+   * Updates existing user rewards.
+   * @param req - The request object containing updated reward data in body.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   */
   async updateUserRewards(req: Request, res: Response, next: NextFunction) {
     try {
       let response = await service.referalService.updateUserRewards(req.body);
@@ -105,7 +132,12 @@ class ReferalController extends BaseController {
       return super.fail(res, error.message);
     }
   }
-
+  /**
+   * Fetches reward details by user ID and reward ID.
+   * @param req - The request object containing user ID and reward ID in params.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   */
   async getRewardsDetailById(req: Request, res: Response, next: NextFunction) {
     try {
 

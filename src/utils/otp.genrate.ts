@@ -15,10 +15,10 @@ interface matchOtp extends userOtp {
 
 
 class otpGenerate {
-  /**
-   * To add minutes to the current time
-   * @param date
-   * @returns
+ /**
+   * Adds minutes to the current date based on OTP expiration time
+   * @param date - The initial date to which minutes are added
+   * @returns {Date} - New date with minutes added
    */
   AddMinutesToDate(date: Date) {
     let expiretime = process.env.OTP_EXPIRE_TIME || 1;
@@ -26,11 +26,11 @@ class otpGenerate {
   }
 
 
-  /**
-   * otp generator
-   * @returns 
+ /**
+   * OTP generator for alphanumeric or numeric OTP based on flag
+   * @param flag - Determines type of OTP ('email' for alphanumeric)
+   * @returns {string} - Generated OTP
    */
-
   otp_generator(flag:string): number | string {
     // Declare a string variable
     // which stores all string
@@ -50,9 +50,9 @@ class otpGenerate {
   }
 
   /**
-   * create otp for user and store in by user email / phone number 
-   * @param date
-   * @returns
+   * Creates OTP for user and stores it by username (email or phone)
+   * @param data - Contains the username (email or phone)
+   * @returns {Promise<string | number | undefined>}
    */
   async createOtpForUser(data: userOtp): Promise<string | number | undefined> {
     try {
@@ -156,9 +156,10 @@ class otpGenerate {
       throw new Error(error.message);
     }
   }
-
-  /**
-   * verfiy user provide otp is valid or expired
+ /**
+   * Verifies if the provided OTP is valid and not expired
+   * @param data - Contains username, token, and otp
+   * @returns {Promise<boolean>} - Returns true if OTP is valid, otherwise false
    */
   verifyOtpValid = async (data: matchOtp): Promise<boolean | object> => {
     try {
@@ -171,9 +172,6 @@ class otpGenerate {
           [Op.or]: [{ email: data.username }, { number: data.username }]
         }
       })
-
-
-
       return true;
 
     } catch (error) {
@@ -181,6 +179,10 @@ class otpGenerate {
     }
   }
 
+  /**
+   * Generates a referral code (10 alphanumeric characters)
+   * @returns {string} - Referral code
+   */
   referalCodeGenerate = () => {
     var string =
       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -194,6 +196,11 @@ class otpGenerate {
 
     return code;
   }
+
+    /**
+   * Generates a secret code using speakeasy for two-factor authentication
+   * @returns {string} - Secret code JSON
+   */
   secretCodeGenerate = () => {
     var secret = speakeasy.generateSecret({ length: 20 });
     return JSON.stringify(secret);

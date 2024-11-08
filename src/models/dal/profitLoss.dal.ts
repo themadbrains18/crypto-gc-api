@@ -6,10 +6,18 @@ import takeProfitStopLossModel, { profitLossOuput } from "../model/takeprofit_st
 
 class profitLossDal {
 
+
     /**
-     * create new Position
-     * @param payload
-     * @returns
+     * Create or update a profit and loss position.
+     * 
+     * If a position exists with the same `position_id` and is not closed, 
+     * the existing record is updated with the new values (profit, loss, triggers).
+     * Otherwise, a new position record is created.
+     * 
+     * @param payload - The profit and loss details to be created or updated.
+     * 
+     * @returns A Promise that resolves to the updated or created profit and loss position.
+     * @throws Will throw an error if the creation or update fails.
      */
     async createProfitLossPosition(payload: profitLossDto): Promise<profitLossOuput | any> {
         try {
@@ -24,6 +32,14 @@ class profitLossDal {
         }
     }
 
+    /**
+     * Retrieve all open (not closed) trades for a specific user.
+     * 
+     * @param userid - The user ID for which the trades are to be fetched.
+     * 
+     * @returns A Promise that resolves to a list of open trades with related future position details.
+     * @throws Will throw an error if the retrieval fails.
+     */
     async all(userid: string): Promise<any> {
         try {
             let trades = await takeProfitStopLossModel.findAll({
@@ -39,6 +55,15 @@ class profitLossDal {
         }
     }
 
+    /**
+     * Close a trade position by marking it as closed.
+     * 
+     * @param id - The position ID of the trade to be closed.
+     * @param user_id - The user ID of the trade owner.
+     * 
+     * @returns A Promise that resolves to the updated position status.
+     * @throws Will throw an error if the update fails.
+     */
     async close(id: string, user_id: string): Promise<profitLossOuput | any> {
         try {
             return await takeProfitStopLossModel.update({ isClose: true }, { where: { position_id: id, user_id: user_id } });

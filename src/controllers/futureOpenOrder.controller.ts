@@ -15,11 +15,11 @@ class futureOpenOrderController extends BaseController {
         }
     }
     /**
-     *  /Users/baljeetsingh/dumps/Dump20230728
-     * @param res
-     * @param req
+     * Retrieves all open orders for a specific user.
+     * @param {Request} req - Express request object with user ID in params.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
      */
-
     async allOpenOrder(req: Request, res: Response, next: NextFunction) {
         try {
             let pairs = await service.openorder.all(req.params.userid);
@@ -30,6 +30,12 @@ class futureOpenOrderController extends BaseController {
         }
     }
 
+    /**
+     * Retrieves paginated open orders.
+     * @param {Request} req - Express request object with offset and limit in params.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
+     */
     async allOpenByLimit(req: Request, res: Response, next: NextFunction) {
         try {
             let { offset, limit } = req.params;
@@ -42,9 +48,10 @@ class futureOpenOrderController extends BaseController {
     }
 
     /**
-     *
-     * @param res
-     * @param req
+     * Creates a new open order.
+     * @param {Request} req - Express request object with order details in body.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
      */
     async create(req: Request, res: Response, next: NextFunction) {
         try {
@@ -65,6 +72,12 @@ class futureOpenOrderController extends BaseController {
         }
     }
 
+    /**
+     * Edits an existing open order.
+     * @param {Request} req - Express request object with order details in body.
+     * @param {Response} res - Express response object.
+     * @param {NextFunction} next - Express next function.
+     */
     async edit(req: Request, res: Response, next: NextFunction) {
         try {
             let trade: futureOpenOrderDto = req.body;
@@ -80,6 +93,11 @@ class futureOpenOrderController extends BaseController {
         }
     }
 
+    /**
+     * Deletes a specific open order by ID.
+     * @param {Request} req - Express request object with order ID in params and user ID in body.
+     * @param {Response} res - Express response object.
+     */
     async deleteRequest(req: Request, res: Response) {
         try {
 
@@ -101,10 +119,15 @@ class futureOpenOrderController extends BaseController {
         }
     }
 
+    /**
+     * Deletes all open orders for a user.
+     * @param {Request} req - Express request object with user ID in body.
+     * @param {Response} res - Express response object.
+     */
     async deleteAllRequest(req: Request, res: Response) {
         try {
 
-            let deleteResponse = await service.openorder.closeOpenOrders( req?.body?.user_id);
+            let deleteResponse = await service.openorder.closeOpenOrders(req?.body?.user_id);
 
             if (deleteResponse?.data === null) {
                 super.ok<any>(res, {
@@ -122,6 +145,11 @@ class futureOpenOrderController extends BaseController {
         }
     }
 
+    /**
+     * Retrieves open order history for a specific user.
+     * @param {Request} req - Express request object with user ID in params.
+     * @param {Response} res - Express response object.
+     */
     async history(req: Request, res: Response) {
         try {
             let openOrderHistory = await service.openorder.openOrderHistory(req.params?.userid);

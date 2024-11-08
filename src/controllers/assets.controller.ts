@@ -5,7 +5,12 @@ import assetsDto from "../models/dto/assets.dto";
 
 class assetsController extends BaseController {
 
-
+ /**
+   * Executes the base implementation with error handling.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @returns {Promise<void | any>}
+   */
   protected async executeImpl(req: Request, res: Response): Promise<void | any> {
     try {
       // ... Handle request by creating objects
@@ -16,9 +21,9 @@ class assetsController extends BaseController {
   }
 
   /**
-   * get user assets list here
-   * @param req
-   * @param res
+   * Retrieves the list of all assets.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
    */
   async assetsList(req: Request, res: Response) {
     try {
@@ -30,9 +35,9 @@ class assetsController extends BaseController {
     }
   }
   /**
-   * get user assets list here by limit
-   * @param req
-   * @param res
+   * Retrieves a paginated list of assets based on the offset and limit parameters.
+   * @param {Request} req - Express request object with offset and limit in params.
+   * @param {Response} res - Express response object.
    */
   async assetsListByLimit(req: Request, res: Response) {
     try {
@@ -47,9 +52,10 @@ class assetsController extends BaseController {
   }
 
   /**
-   * new entry for assets and update
-   * @param req 
-   * @param res 
+   * Creates or updates an asset entry based on request data.
+   * @param {Request} req - Express request object containing asset data in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -63,11 +69,11 @@ class assetsController extends BaseController {
       next(error);
     }
   }
-
   /**
-   * get user assets list here
-   * @param req
-   * @param res
+   * Transfers assets between wallets and returns a success or failure message.
+   * @param {Request} req - Express request object containing transfer details in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
    */
   async walletTowalletTranserfer(req: Request, res: Response, next: NextFunction) {
     try {
@@ -89,11 +95,11 @@ class assetsController extends BaseController {
     }
 
   }
-
   /**
-   * get user assets list here
-   * @param req
-   * @param res
+   * Provides an overview of the assets for a specific user.
+   * @param {Request} req - Express request object with user ID in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
    */
   async assetsOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -105,9 +111,10 @@ class assetsController extends BaseController {
     }
   }
   /**
-   * get user assets list here by limit
-   * @param req
-   * @param res
+   * Provides a paginated overview of the assets for a specific user based on offset and limit.
+   * @param {Request} req - Express request object with offset and limit in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
    */
   async assetsOverviewByLimit(req: Request, res: Response, next: NextFunction) {
     try {
@@ -121,9 +128,10 @@ class assetsController extends BaseController {
     }
   }
   /**
-   * get user assets list here by type
-   * @param req
-   * @param res
+   * Provides a filtered overview of assets by type.
+   * @param {Request} req - Express request object containing user ID and asset type in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
    */
   async assetsOverviewByType(req: Request, res: Response, next: NextFunction) {
     try {
@@ -137,9 +145,9 @@ class assetsController extends BaseController {
   }
 
   /**
-   * get user assets list here
-   * @param req
-   * @param res
+   * Retrieves the transfer history of assets for a specific user.
+   * @param {Request} req - Express request object with user ID in params.
+   * @param {Response} res - Express response object.
    */
   async transferHistory(req: Request, res: Response) {
     try {

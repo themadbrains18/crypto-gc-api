@@ -1,3 +1,4 @@
+
 import { assetModel, globalTokensModel, tokensModel } from "../models";
 import marketDal from "../models/dal/market.dal";
 import assetsDto from "../models/dto/assets.dto";
@@ -27,10 +28,13 @@ function trimUnnecessaryDigits(value: number): string {
 
 class cronMarketOrderService {
 
-    /**
-     * Get Market order by orderid
-     * @param order_id 
-     * @returns 
+     /**
+     * Fetches a market order by its ID.
+     * 
+     * This method is used to retrieve an order by its unique ID from the `marketOrderModel`.
+     * 
+     * @param {string} order_id - The ID of the market order to fetch.
+     * @returns {Promise<marketOrderOuput | any>} A promise that resolves to the market order object.
      */
     async getMarketOrderById(order_id: string): Promise<marketOrderOuput | any> {
         try {
@@ -41,9 +45,14 @@ class cronMarketOrderService {
         }
     }
 
-    /**
-     * market order execution with cron and using batch
-     * @param batchSize 
+  /**
+     * Processes market orders in batches, fetching orders and handling their execution.
+     * 
+     * This method processes market orders in batches, fetching orders with the status of `false` (not processed),
+     * `isCanceled: false`, and `queue: false`, then calling the `processOrders` method to process the fetched orders.
+     * The `batchSize` can control how many orders are processed at a time.
+     * 
+     * @param {number} batchSize - The size of the batch to process at a time.
      */
     async processOrdersInBatches(batchSize: number) {
         let hasMoreOrders = true;
@@ -59,6 +68,16 @@ class cronMarketOrderService {
         }
     }
 
+      /**
+     * Processes a list of market orders, matching buyer and seller orders.
+     * 
+     * This method takes an array of orders and processes them one by one, ensuring that buyers and sellers are matched
+     * based on the market type and order type. It executes the relevant logic based on whether the market type is 
+     * `market` or `limit`.
+     * 
+     * @param {any[]} orders - The list of market orders to process.
+     * @returns {Promise<any>} A promise that resolves once all orders are processed.
+     */
     async processOrders(orders: any[]) {
         let count = 0;
         const processedOrders = new Set(); // Use a Set to track processed user_ids
@@ -80,6 +99,16 @@ class cronMarketOrderService {
         }
     }
 
+    /**
+     * Handles execution of buyer orders in the "limit" market type.
+     * 
+     * This method processes limit buy orders and attempts to match them with available sell orders. It updates 
+     * the order status and executes payments between the buyer and seller accordingly. Partial executions 
+     * are also handled.
+     * 
+     * @param {any} order - The buyer's order to be processed.
+     * @returns {Promise<any>} A promise that resolves once the order has been processed.
+     */
     async buyerCode(order: any): Promise<any> {
         try {
             let previous_seller: any = [];
@@ -250,6 +279,20 @@ class cronMarketOrderService {
         }
     }
 
+    /**
+ * Processes the execution of the buyer's order, updating the seller's and buyer's assets.
+ * 
+ * This method handles the transaction between the buyer and the seller, including the update of 
+ * their respective balances. It processes the seller's market order, updates the seller's asset balance, 
+ * and handles the buyer's asset balance based on the remaining assets and buyer's fee.
+ * 
+ * It also records the transaction for the admin's profit and ensures that the seller's and buyer's assets 
+ * are correctly adjusted, including handling cases where no previous asset record exists for either party.
+ * 
+ * @param {buyerExecution} options - The options object containing details about the buyer, seller, 
+ * the transaction amounts, and related information such as fees and token details.
+ * @returns {Promise<void>} A promise that resolves when the buyer's and seller's assets are processed.
+ */
     async processBuyerExecution(options: buyerExecution) {
         try {
             let sellerusdtmarket = await this.getMarketOrderById(options.sellerObj.id);
@@ -336,6 +379,22 @@ class cronMarketOrderService {
         }
     }
 
+    /**
+ * Updates the status of the buyer and seller orders based on the remaining assets after the transaction.
+ *
+ * This method updates the status, token amount, volume, and queue of the buyer and seller orders depending on the comparison 
+ * between the seller's token amount and the buyer's remaining assets. It also adjusts the volume and token amount accordingly 
+ * if the remaining assets are more or less than the seller's token amount.
+ *
+ * @param {buyerExecution} options - The options object containing details about the buyer and seller orders.
+ * @param {object} options.sellerObj - The seller order details.
+ * @param {object} options.buyerObj - The buyer order details.
+ * @param {number} options.remainingAssets - The remaining assets to be processed.
+ * @param {number} options.paid_usdt - The amount paid in USDT.
+ * @param {number} options.paid_to_admin - The amount paid to the admin.
+ * @returns {Promise<void>} A promise indicating the completion of the update operation.
+ * @throws {Error} Throws an error if the process fails.
+ */
     async updateBuyerOrderStatus(options: buyerExecution) {
         try {
             let sellerOrder = await this.getMarketOrderById(options.sellerObj.id);
@@ -400,6 +459,18 @@ class cronMarketOrderService {
         }
     }
 
+    /**
+ * Executes the buyer order based on matching sell bids and updates the order status accordingly.
+ *
+ * This method finds the matching seller orders for a buyer's market order and processes the transaction. 
+ * It checks whether there are any matching seller orders, calculates the corresponding USDT amount, 
+ * and updates both buyer and seller orders accordingly. If the remaining assets are greater or smaller than the 
+ * seller's token amount, it adjusts the order details, creates market order histories, and handles admin profits.
+ *
+ * @param {object} order - The buyer's order object.
+ * @returns {Promise<void>} A promise indicating the completion of the buyer order execution.
+ * @throws {Error} Throws an error if no matching buyers or sellers are found, or if any other error occurs during execution.
+ */
     async marketBuyerCode(order: any): Promise<any> {
         try {
             let previous_seller: any = [];

@@ -15,10 +15,12 @@ class profitLossController extends BaseController {
         }
     }
     /**
-     *
-     * @param res
-     * @param req
-     */
+       * Creates a new trade position.
+       * @param req - The request object containing trade details.
+       * @param res - The response object.
+       * @param next - The next middleware function to call if an error occurs.
+       * @returns {Promise<void>} - A promise that resolves when the position is created.
+       */
     async create(req: Request, res: Response, next: NextFunction) {
         try {
 
@@ -40,6 +42,13 @@ class profitLossController extends BaseController {
         }
     }
 
+    /**
+     * Fetches all orders for the user.
+     * @param req - The request object containing the user ID.
+     * @param res - The response object.
+     * @param next - The next middleware function to call if an error occurs.
+     * @returns {Promise<void>} - A promise that resolves with all orders.
+     */
     async allOrder(req: Request, res: Response, next: NextFunction) {
         try {
             let orders = await service.profitLossServices.all(req?.body?.user_id);
@@ -49,13 +58,19 @@ class profitLossController extends BaseController {
             next(error);
         }
     }
-
+    /**
+     * Closes an open trade position.
+     * @param req - The request object containing the position ID and user ID.
+     * @param res - The response object.
+     * @param next - The next middleware function to call if an error occurs.
+     * @returns {Promise<void>} - A promise that resolves with the result of closing the position.
+     */
     async close(req: Request, res: Response, next: NextFunction) {
         try {
             const position_id = req?.params?.id;
             const user_id = req?.body?.user_id;
 
-            let resposne:any = await service.profitLossServices.close(position_id, user_id);
+            let resposne: any = await service.profitLossServices.close(position_id, user_id);
             if (resposne?.data === null) {
                 super.ok<any>(res, {
                     message: resposne?.message,

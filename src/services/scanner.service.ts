@@ -5,6 +5,15 @@ import { networkInput } from "../models/model/network.model";
 import service from "./service";
 
 class scannerService {
+      /**
+     * Scans user deposits and performs related actions.
+     * 
+     * This method scans user deposits for transactions that need to be transferred to an admin. It checks for any pending transfers,
+     * updates their status, and triggers a token transfer if conditions are met. The method retrieves the network configuration 
+     * and uses a blockchain service to facilitate the transfer to the admin wallet.
+     * 
+     * @returns {Promise<any>} A promise indicating the result of the scanning process.
+     */
     async scanUserDeposits(): Promise<any> {
         try {
 

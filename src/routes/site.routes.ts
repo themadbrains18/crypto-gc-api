@@ -6,12 +6,24 @@ import siteMaintenanceSchema from "../validators/site.validator";
 
 class siteMaintenanceRoutes extends BaseController {
     router = Router();
-
+   /**
+     * Initializes the routes for managing site maintenance operations:
+     * - `/` - Get the current site maintenance status.
+     * - `/create` - Admin route to create new site maintenance details.
+     * - `/edit` - Admin route to edit existing site maintenance details.
+     * - `/change/status` - Admin route to activate or deactivate site maintenance.
+     */
     constructor() {
         super()
         this.init();
     }
-
+    /**
+     * Defines the routes for site maintenance management:
+     * - `/` - Get the current site maintenance status (requires authentication).
+     * - `/create` - Create new site maintenance details (requires authentication and validation).
+     * - `/edit` - Edit site maintenance details (requires authentication and validation).
+     * - `/change/status` - Change the site maintenance status (requires authentication).
+     */
     init() {
 
         let site = new siteController();

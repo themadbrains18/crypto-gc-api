@@ -7,11 +7,12 @@ import { assetsWalletType } from "../utils/interface";
 
 
 class stakingController extends BaseController {
+  
     /**
-   * get user assets list here
-   * @param req
-   * @param res
-   */
+     * Create a new staking entry.
+     * @param req - The request object
+     * @param res - The response object
+     */
     async saveStaking(req: Request, res: Response, next: NextFunction) {
         try {
 
@@ -26,10 +27,11 @@ class stakingController extends BaseController {
         }
     }
 
+
     /**
-     * get user assets list here
-     * @param req
-     * @param res
+     * Release staking and send OTP if needed for verification.
+     * @param req - The request object
+     * @param res - The response object
      */
     async stakingRelease(req: Request, res: Response) {
         try {
@@ -83,10 +85,11 @@ class stakingController extends BaseController {
         }
     }
 
+
     /**
-     * get user assets list here
-     * @param req
-     * @param res
+     * Get all staking records for a user.
+     * @param req - The request object
+     * @param res - The response object
      */
     async getAllStaking(req: Request, res: Response) {
         try {
@@ -98,10 +101,11 @@ class stakingController extends BaseController {
         }
     }
 
+
     /**
-     * get user assets list here
-     * @param req
-     * @param res
+     * Get all staking records by applying pagination.
+     * @param req - The request object
+     * @param res - The response object
      */
     async getAllStakingByLimit(req: Request, res: Response) {
         try {
@@ -114,16 +118,22 @@ class stakingController extends BaseController {
         }
     }
 
+
     /**
-     * get user assets list here
-     * @param req
-     * @param res
+     * Get staking by token for a specific user.
+     * @param req - The request object
+     * @param res - The response object
      */
     async getStakedByToken(req: Request, res: Response) {
         let stakingResponse = await service.staking.getStakingByToken(req.params.tokenid, req.params.userid);
         super.ok<any>(res, stakingResponse)
     }
 
+    /**
+     * Unstake a token and return the new asset balance.
+     * @param req - The request object
+     * @param res - The response object
+     */
     async unstakingToken(req: Request, res: Response) {
         try {
             let stak = await stakingModel.findOne({ where: { status: false, queue: false, redeem: false, unstacking : false, id: req?.body?.id }, raw: true });
@@ -148,6 +158,11 @@ class stakingController extends BaseController {
     // Admin Api to token stake add
     // =============================================================
 
+    /**
+     * Admin API to create a new token stake.
+     * @param req - The request object
+     * @param res - The response object
+     */
     async saveTokenStake(req: Request, res: Response, next: NextFunction) {
         try {
 

@@ -37,11 +37,20 @@ class userController extends BaseController {
     }
   }
 
+
   /**
+   * Registers a new user.
+   * 
+   * This method handles the user registration process, including phone number and email validation,
+   * referral code validation, and OTP (One-Time Password) generation. It also checks if a user already exists
+   * with the given username (phone number or email).
    *
-   * @param req
-   * @param res
+   * @param {Request} req - Express request object containing the user registration data.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
+   * @returns {Promise<void>} - Returns success or failure response.
    */
+
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const user: registerUser = req.body;
@@ -176,10 +185,17 @@ class userController extends BaseController {
     }
   }
 
+
   /**
-   *login(req
-   * @param req
-   * @param res
+   * Logs in an existing user.
+   * 
+   * This method handles user login by verifying the user's credentials and optionally sending an OTP
+   * for additional security. It also handles 2FA (Two-Factor Authentication) if enabled.
+   *
+   * @param {Request} req - Express request object containing the login credentials.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
+   * @returns {Promise<void>} - Returns success or failure response.
    */
   async login(req: Request, res: Response, next: NextFunction) {
     try {
@@ -412,11 +428,13 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *checkUser(
-   * @param req
-   * @param res
-   */
+/**
+ * Check if the user exists based on user_id
+ * 
+ * @param {Request} req - The request object containing user_id in the body.
+ * @param {Response} res - The response object to return the result.
+ * @returns {Promise<Response>} - Returns the user details or an error message.
+ */
   async checkUser(req: Request, res: Response) {
     try {
 
@@ -430,19 +448,22 @@ class userController extends BaseController {
       return super.fail(res, error.message);
     }
   }
-
-  /**
-   *userAuthen
-   * @param req
-   * @param res
-   */
+/**
+ * Authenticate user (Functionality yet to be implemented)
+ * 
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ */
   userAuthenticate(req: Request, res: Response) { }
 
-  /**
-   *updateUser
-   * @param req
-   * @param res
-   */
+
+/**
+ * Update the user based on email/phone and verify with OTP.
+ * 
+ * @param {Request} req - The request object containing user details and OTP.
+ * @param {Response} res - The response object to return the result.
+ * @returns {Promise<Response>} - Returns a success or failure message based on the operation.
+ */
   async updateUser(req: Request, res: Response) {
     try {
       // let user = await service.user.checkIfUserExsit(req?.body?.username);
@@ -642,6 +663,11 @@ class userController extends BaseController {
   //   }
   // }
 
+/**
+ * Verify Google Authentication for user login.
+ * @param {Request} req - The request object containing user credentials and Google Authenticator code.
+ * @param {Response} res - The response object used to send the response.
+ */
 
   async verifyGoogleAuth(req: Request, res: Response) {
     try {
@@ -690,11 +716,12 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *updatePass
-   * @param req
-   * @param res
-   */
+/**
+ * Update user password, including handling OTP and two-factor authentication (if enabled).
+ * @param {Request} req - The request object containing user credentials, OTP, and new password.
+ * @param {Response} res - The response object used to send the response.
+ */
+
   async updatePassword(req: Request, res: Response) {
     try {
 
@@ -913,11 +940,11 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   * antiphishing code
-   * @param req
-   * @param res
-   */
+/**
+ * Set or update the anti-phishing code for a user account.
+ * @param {Request} req - The request object containing the username, anti-phishing code, and OTP.
+ * @param {Response} res - The response object used to send the response.
+ */
 
   async antiPhishingCode(req: Request, res: Response) {
     try {
@@ -979,11 +1006,15 @@ class userController extends BaseController {
   }
 
 
-  /**
-   *tradePass
-   * @param req
-   * @param res
-   */
+/**
+ * Handles trading password operations.
+ * If an old password is provided, verifies it and proceeds with OTP generation and validation for password update.
+ * If no old password is provided, sends an OTP for password creation.
+ * 
+ * @param {Request} req - The request object containing user details.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a response with the status of the trading password process.
+ */
   async tradingPassword(req: Request, res: Response) {
     try {
 
@@ -1107,11 +1138,15 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *confirmPas
-   * @param req
-   * @param res
-   */
+
+/**
+ * Confirms if the provided password matches the user's old password.
+ * 
+ * @param {Request} req - The request object containing the old password.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a response with the result of the password match.
+ */
+
   async confirmPassword(req: Request, res: Response) {
     try {
       let data: updatepassword = req.body;
@@ -1129,11 +1164,13 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *confirmFun
-   * @param req
-   * @param res
-   */
+/**
+ * Confirms if the provided fundcode matches the user's existing fundcode.
+ * 
+ * @param {Request} req - The request object containing the fundcode.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a response with the result of the fundcode match.
+ */
   async confirmFuncode(req: Request, res: Response) {
     try {
       let data: updateFundcode = req.body;
@@ -1148,11 +1185,13 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *updatePass
-   * @param req
-   * @param res
-   */
+/**
+ * Updates the user's fundcode with a new one.
+ * 
+ * @param {Request} req - The request object containing the new fundcode.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a response with the status of the fundcode update.
+ */
   async updateFundcode(req: Request, res: Response) {
     try {
       let pwdData: updateFundcode = req.body;
@@ -1167,11 +1206,14 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   *updateWhiteList
-   * @param req
-   * @param res
-   */
+/**
+ * Updates the whitelist status of a user.
+ * Toggles the user's whitelist status between true and false based on the current status.
+ * 
+ * @param {Request} req - The request object containing user information.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a response with the updated whitelist status.
+ */
   async updateWhiteList(req: Request, res: Response) {
     try {
       let pwdData: updateWhiteList = req.body;
@@ -1192,25 +1234,33 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *removeUser
-   * @param req
-   * @param res
-   */
+
+/**
+ * Removes a user from the system.
+ * 
+ * @param {Request} req - The request object containing user details.
+ * @param {Response} res - The response object for sending the result.
+ */
   removeUser(req: Request, res: Response) { }
 
-  /**
-   *depositAdd
-   * @param req
-   * @param res
-   */
+
+/**
+ * Fetches the deposit address for a user.
+ * 
+ * @param {Request} req - The request object containing user details.
+ * @param {Response} res - The response object for sending the result.
+ */
   depositAddress(req: Request, res: Response) { }
 
-  /**
-   *userExist
-   * @param req
-   * @param res
-   */
+
+/**
+ * Checks if a user already exists in the system based on username.
+ * The username can be an email or a phone number.
+ * 
+ * @param {Request} req - The request object containing the username (email or phone).
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a response if the username already exists.
+ */
   async userExist(req: Request, res: Response) {
     try {
       let formInput: checkUser = req.body;
@@ -1242,6 +1292,14 @@ class userController extends BaseController {
    */
   authRemove(req: Request, res: Response) { }
 
+  /**
+ * Scans a user account's transaction history based on the provided address and chain ID.
+ * 
+ * @param {Request} req - The request object containing the wallet address, chain ID, and user ID in the parameters.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<any>} - Sends the transaction history or an empty array if none is found.
+ * @throws {Error} - Throws an error if wallet address or chain ID is not provided.
+ */
   async userAccountScanner(req: Request, res: Response): Promise<any> {
     try {
 
@@ -1265,11 +1323,13 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   * userList
-   * @param req
-   * @param res
-   */
+/**
+ * Retrieves the list of all users.
+ * 
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the list of users.
+ */
   async usersList(req: Request, res: Response) {
     try {
 
@@ -1279,11 +1339,14 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   * userListByLimit
-   * @param req
-   * @param res
-   */
+
+/**
+ * Retrieves a paginated list of users based on the provided offset and limit.
+ * 
+ * @param {Request} req - The request object containing offset and limit in the parameters.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the list of users with pagination.
+ */
   async usersListByLimit(req: Request, res: Response) {
     try {
       let { offset, limit } = req.params;
@@ -1294,12 +1357,14 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   * adminProfit
-   * @param req
-   * @param res
-   */
 
+/**
+ * Retrieves the admin's profit, calculates the fees in token prices, and sends the result.
+ * 
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the admin profit list with fees calculated based on token prices.
+ */
   async getAdminProfit(req: Request, res: Response) {
     try {
       let adminProfit = await service.user.getAdminProfitList();
@@ -1325,11 +1390,13 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   * activityList
-   * @param req
-   * @param res
-   */
+/**
+ * Retrieves the activity list of all users.
+ * 
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the activity list of all users.
+ */
   async activityList(req: Request, res: Response) {
     try {
       let activityResponse = await service.user.getUsersActivityList();
@@ -1338,11 +1405,14 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   * activityListByLimit
-   * @param req
-   * @param res
-   */
+
+/**
+ * Retrieves a paginated activity list of users based on the provided offset and limit.
+ * 
+ * @param {Request} req - The request object containing offset and limit in the parameters.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the paginated activity list of users.
+ */
   async activityListByLimit(req: Request, res: Response) {
     try {
       let { offset, limit } = req?.params
@@ -1353,11 +1423,14 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   * activityListByLimit
-   * @param req
-   * @param res
-   */
+
+/**
+ * Retrieves a paginated activity list for a specific user based on user ID, offset, and limit.
+ * 
+ * @param {Request} req - The request object containing user ID, offset, and limit in the parameters.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the paginated activity list of the specified user.
+ */
   async activityListByIdLimit(req: Request, res: Response) {
     try {
       let { offset, limit, userid } = req?.params
@@ -1368,11 +1441,14 @@ class userController extends BaseController {
       super.fail(res, error.message);
     }
   }
-  /**
-   * clearActivity
-   * @param req
-   * @param res
-   */
+
+/**
+ * Clears the activity list of a specific user by user ID.
+ * 
+ * @param {Request} req - The request object containing the user ID in the parameters.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a success message if activities are cleared.
+ */
   async clearActivity(req: Request, res: Response) {
 
     try {
@@ -1390,11 +1466,14 @@ class userController extends BaseController {
     }
   }
 
-  /**
-   *update user status
-   * @param req
-   * @param res
-   */
+ 
+/**
+ * Updates a user's status based on the request body and sends an OTP verification email.
+ * 
+ * @param {Request} req - The request object containing the user status data in the body.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the updated user status and a success message.
+ */
   async userUpdate(req: Request, res: Response) {
     try {
       let data: updateUserStatus = req.body;
@@ -1429,6 +1508,14 @@ class userController extends BaseController {
     }
   }
 
+
+/**
+ * Updates a user's PIN based on the request body.
+ * 
+ * @param {Request} req - The request object containing the user PIN data in the body.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the updated user PIN and a success message.
+ */
   async userPinUpdate(req: Request, res: Response) {
     try {
       let data: updateUserPin = req.body;
@@ -1445,6 +1532,13 @@ class userController extends BaseController {
     }
   }
 
+/**
+ * Retrieves detailed user information based on the provided user ID.
+ * 
+ * @param {Request} req - The request object containing the user ID in the parameters.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the user information.
+ */
   async userInformationByUserId(req: Request, res: Response) {
     try {
       let userResponse = await service.user.userActivity(req.params.id);
@@ -1455,6 +1549,13 @@ class userController extends BaseController {
     }
   }
 
+  /**
+ * Retrieves user data as counts (e.g., total users, active users, etc.).
+ * 
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends the user data counts.
+ */
   async getUserDataAsCounts(req: Request, res: Response) {
     try {
       let userData = await service.user.getUserDataAsCounts();
@@ -1465,6 +1566,13 @@ class userController extends BaseController {
     }
   }
 
+/**
+ * Confirms the user's OTP by comparing the provided OTP with the stored OTP.
+ * 
+ * @param {Request} req - The request object containing the username and OTP.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends a success message if the OTP matches or an error message if it doesn't.
+ */
   async confirmUserOtp(req: Request, res: Response) {
     try {
 
@@ -1484,6 +1592,13 @@ class userController extends BaseController {
     }
   }
 
+/**
+ * Sends an OTP to the user's email or phone number for verification.
+ * 
+ * @param {Request} req - The request object containing the username and other information for OTP generation.
+ * @param {Response} res - The response object for sending the result.
+ * @returns {Promise<void>} - Sends an OTP via email or SMS depending on the user's input.
+ */
   async sendOtp(req: Request, res: Response) {
     try {
       let user = await service.user.checkIfUserExsit(req?.body?.username);

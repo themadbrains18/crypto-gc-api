@@ -18,12 +18,14 @@ class walletController extends BaseController {
         }
     }
     
-    /**
-     *  /Users/baljeetsingh/dumps/Dump20230728
-     * @param res
-     * @param req
-     */
-
+ /**
+   * Retrieves wallet address for a user based on user ID and network.
+   * 
+   * @param {Request} req - The request object containing `user_id` and `network` parameters.
+   * @param {Response} res - The response object to send the wallet data.
+   * @returns {Promise<void>} - Sends the wallet address data for the user.
+   * @throws {CustomError} - Throws an error if the wallet data retrieval fails.
+   */
     async getWalletAddressByuserIdAndNetwork(req: Request, res: Response) {
         try {
 

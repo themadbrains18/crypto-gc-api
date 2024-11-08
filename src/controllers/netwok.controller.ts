@@ -14,11 +14,11 @@ class networkController extends BaseController {
       return this.fail(res, error.toString());
     }
   }
-
   /**
-   * Get all token
-   * @param req
-   * @param res
+   * Get all networks.
+   * @param req - Express request object.
+   * @param res - Express response object.
+   * @param next - Next function for error handling middleware.
    */
   async networkAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -30,9 +30,10 @@ class networkController extends BaseController {
   }
 
   /**
-   * create a netwok
-   * @param req
-   * @param res
+   * Create a new network.
+   * @param req - Express request object with network input data.
+   * @param res - Express response object.
+   * @param next - Next function for error handling middleware.
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {

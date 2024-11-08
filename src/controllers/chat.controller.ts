@@ -14,10 +14,10 @@ class chatController extends BaseController {
       return this.fail(res, error.toString());
     }
   }
-  /**
-   *
-   * @param req
-   * @param res
+ /**
+   * Creates a new chat message.
+   * @param {Request} req - Express request object containing message data in body.
+   * @param {Response} res - Express response object.
    */
   async create(req: Request, res: Response) {
     try {
@@ -34,9 +34,9 @@ class chatController extends BaseController {
   }
 
   /**
-   *
-   * @param req
-   * @param res
+   * Retrieves the chat list for a given order ID.
+   * @param {Request} req - Express request object with order ID in params.
+   * @param {Response} res - Express response object.
    */
   async getChat(req: Request, res: Response) {
     try {
@@ -51,9 +51,9 @@ class chatController extends BaseController {
   }
 
   /**
-   *
-   * @param req
-   * @param res
+   * Retrieves notifications for the chat (currently a stubbed response).
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
    */
   getNotification(req: Request, res: Response): void {
     try {
@@ -64,9 +64,9 @@ class chatController extends BaseController {
   }
 
   /**
-   *
-   * @param req
-   * @param res
+   * Changes the notification status (currently a stubbed response).
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
    */
   changeNotificationStatus(req: Request, res: Response): void {
     try {
@@ -76,10 +76,11 @@ class chatController extends BaseController {
     }
   }
 
-  /**
-   *
-   * @param req
-   * @param res
+ /**
+   * Sends real-time chat data to all connected WebSocket clients for a given order ID.
+   * @param {any} wss - WebSocket server instance.
+   * @param {any} ws - WebSocket connection instance for the current client.
+   * @param {object} body - Object containing order information.
    */
   async socketChat(wss: any, ws : any, body : any) {
     try {

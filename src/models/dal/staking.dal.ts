@@ -10,10 +10,14 @@ import { tokenstakeInput } from "../model/tokenstake.model";
 
 class stakingDal extends BaseController {
 
+
     /**
+     * Create a new staking record.
      * 
-     * @param payload 
-     * @returns 
+     * @param payload - The staking data, including user ID, token ID, and amount to stake.
+     * 
+     * @returns A Promise that resolves to the created staking record.
+     * @throws Will throw an error if the creation or asset balance update fails.
      */
     async createStaking(payload: stakingDto): Promise<stakingOuput | any> {
 
@@ -32,9 +36,14 @@ class stakingDal extends BaseController {
 
     }
 
+
     /**
-     * Get all staking list
-     * @returns 
+     * Get all staking records for a specific user.
+     * 
+     * @param user_id - The user ID to fetch staking records for.
+     * 
+     * @returns A Promise that resolves to an array of staking records for the given user.
+     * @throws Will throw an error if the retrieval fails.
      */
     async getAllStaking(user_id: string): Promise<stakingOuput | any> {
         try {
@@ -95,9 +104,16 @@ class stakingDal extends BaseController {
             console.log(error);
         }
     }
+
     /**
-     * Get all staking list
-     * @returns 
+     * Get a limited number of staking records for a specific user with pagination.
+     * 
+     * @param user_id - The user ID to fetch staking records for.
+     * @param offset - The starting index for pagination.
+     * @param limit - The number of staking records to retrieve.
+     * 
+     * @returns A Promise that resolves to an object containing the paginated staking records and the total count.
+     * @throws Will throw an error if the retrieval fails.
      */
     async getAllStakingByLimit(user_id: string, offset:string, limit:string): Promise<stakingOuput | any> {
         try {
@@ -166,11 +182,15 @@ class stakingDal extends BaseController {
         }
     }
 
+
     /**
-     * Get staking tokan data by user and token id
-     * @param token_id 
-     * @param user_id 
-     * @returns 
+     * Get the total staking amount for a specific token by a user.
+     * 
+     * @param token_id - The token ID to fetch the staking data for.
+     * @param user_id - The user ID to fetch the staking data for.
+     * 
+     * @returns A Promise that resolves to the total staking amount.
+     * @throws Will throw an error if the retrieval fails.
      */
     async getStakingDataByTokenId(token_id: string, user_id: string): Promise<stakingOuput | any> {
         try {
@@ -225,6 +245,14 @@ class stakingDal extends BaseController {
         }
     }
 
+    /**
+     * Release staking funds once the staking duration is completed and conditions are met.
+     * 
+     * @param payload - The staking record ID to be processed.
+     * 
+     * @returns A Promise that resolves to the updated staking record.
+     * @throws Will throw an error if the release process fails.
+     */
     async releaseStaking(payload: string): Promise<stakingOuput | any> {
         try {
             let responseApi;
@@ -251,10 +279,14 @@ class stakingDal extends BaseController {
         }
     }
 
+
     /**
-     * create Admin Staking
-     * @param payload 
-     * @returns 
+     * Create or update an admin staking record.
+     * 
+     * @param payload - The staking data for the token stake.
+     * 
+     * @returns A Promise that resolves to the created or updated staking record.
+     * @throws Will throw an error if the creation or update fails.
      */
     async createAdminStaking(payload: tokenStakeDto): Promise<tokenstakeInput | any> {
         try {

@@ -9,34 +9,77 @@ import { globalTokensModel, tokensModel } from "../models";
 class withdrawServices {
 
 
-    /**
+   /**
+     * Creates a new withdrawal request.
      * 
-     * @param payload 
-     * @returns 
+     * @param payload - The data transfer object (DTO) containing withdrawal details.
+     * @returns A Promise that resolves to the withdrawal asset output.
      */
-
     async create(payload: withdrawDto): Promise<assetOuput> {
         return await withdrawDal.createWithdrawRequest(payload)
     }
 
+      /**
+     * Retrieves a list of withdrawals for a specific user.
+     * 
+     * @param user_id - The ID of the user whose withdrawals are to be retrieved.
+     * @returns A Promise that resolves to a list of withdrawal entries for the specified user.
+     */
     async listById(user_id: string): Promise<any> {
         return await withdrawDal.withdrawListById(user_id);
     }
 
+     /**
+     * Retrieves the withdrawal history for a specific user.
+     * 
+     * @param user_id - The ID of the user whose withdrawal history is to be retrieved.
+     * @returns A Promise that resolves to the user's withdrawal history.
+     */
     async historyById(user_id: string): Promise<any> {
         return await withdrawDal.withdrawHistoryById(user_id);
     }
+
+     /**
+     * Retrieves a paginated withdrawal history for a specific user, with optional filters.
+     * 
+     * @param user_id - The ID of the user whose withdrawal history is to be retrieved.
+     * @param offset - The number of entries to skip (for pagination).
+     * @param limit - The maximum number of entries to retrieve.
+     * @param currency - The currency filter for the withdrawal history.
+     * @param date - The date filter for the withdrawal history.
+     * @returns A Promise that resolves to the paginated withdrawal history for the user.
+     */
     async historyByIdLimit(user_id: string, offset: string, limit: string, currency:string, date:string): Promise<any> {
         return await withdrawDal.withdrawHistoryByIdLimit(user_id, offset, limit, currency, date);
     }
 
+        /**
+     * Retrieves the list of all withdrawal requests.
+     * 
+     * @returns A Promise that resolves to an array of withdrawal asset outputs.
+     */
     async getwithdrawList(): Promise<assetOuput[]> {
         return withdrawDal.getListOfWithdraw();
     }
+
+      /**
+     * Retrieves a limited list of withdrawal requests with pagination.
+     * 
+     * @param offset - The number of records to skip for pagination.
+     * @param limit - The maximum number of records to return.
+     * @returns A Promise resolving to an array of withdrawal asset outputs within the specified limits.
+     */
     async getwithdrawListByLimit(offset: string, limit: string): Promise<assetOuput[]> {
         return withdrawDal.getListOfWithdrawByLimit(offset, limit);
     }
 
+     /**
+     * Releases withdraw assets after verifying the withdrawal and executing a blockchain transaction.
+     * 
+     * @param payload - The DTO containing withdrawal details, including amount, fee, network, and token information.
+     * @returns A Promise resolving to the network transaction object if the transaction is successful.
+     * @throws An error if the withdrawal does not exist, the token is invalid, or the transaction fails.
+     */
     async releaseWithdrawAssets(payload: withdrawDto): Promise<any> {
         try {
 

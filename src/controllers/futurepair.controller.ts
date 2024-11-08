@@ -17,9 +17,10 @@ class futureTradePairController extends BaseController {
     }
   }
   /**
-   *  /Users/baljeetsingh/dumps/Dump20230728
-   * @param res
-   * @param req
+   * Retrieves all trade pairs based on the provided name.
+   * @param {Request} req - Express request object with name in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
 
   async allPairs(req: Request, res: Response, next: NextFunction) {
@@ -32,6 +33,12 @@ class futureTradePairController extends BaseController {
     }
   }
 
+  /**
+   * Retrieves paginated trade pairs.
+   * @param {Request} req - Express request object with offset and limit in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
+   */
   async allPairsByLimit(req: Request, res: Response, next: NextFunction) {
     try {
       let { offset, limit } = req.params;
@@ -44,9 +51,10 @@ class futureTradePairController extends BaseController {
   }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Creates a new trade pair if it does not already exist.
+   * @param {Request} req - Express request object with trade pair details in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -80,9 +88,10 @@ class futureTradePairController extends BaseController {
   // ===================================================================
 
   /**
-   *
-   * @param res
-   * @param req
+   * Toggles the active/inactive status of a trade pair.
+   * @param {Request} req - Express request object with pair ID and status in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async activeInactivePair(req: Request, res: Response, next: NextFunction) {
     try {
@@ -102,6 +111,12 @@ class futureTradePairController extends BaseController {
     }
   }
 
+    /**
+   * Edits an existing trade pair if it is registered; otherwise, it fails.
+   * @param {Request} req - Express request object with trade pair details in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
+   */
   async edit(req: Request, res: Response, next: NextFunction) {
     try {
       let trade: futureTradePairDto = req.body;

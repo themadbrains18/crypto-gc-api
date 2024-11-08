@@ -5,10 +5,15 @@ import userRewardTotalModel from "../model/rewards_total.model";
 
 class userRewardsDal extends BaseController {
 
+
     /**
+     * Get all user rewards for a given user.
+     * It also checks the expiry of rewards and updates their status.
      * 
-     * @param payload 
-     * @returns 
+     * @param user_id - The user ID to fetch the rewards for.
+     * 
+     * @returns A Promise that resolves to an object containing the user's rewards list and total reward amount.
+     * @throws Will throw an error if the retrieval or update fails.
      */
     async getUserRewards(user_id: string): Promise<userRewardOuput[] | any> {
         try {
@@ -50,6 +55,15 @@ class userRewardsDal extends BaseController {
         }
     }
 
+    /**
+     * Create a new user reward.
+     * Generates a referral code and updates the user's total reward balance.
+     * 
+     * @param payload - The user reward data including the amount and user ID.
+     * 
+     * @returns A Promise that resolves to the created user reward record.
+     * @throws Will throw an error if the creation or update fails.
+     */
     async createUserRewards(payload: userRewardInput): Promise<userRewardOuput | any> {
         try {
 
@@ -71,6 +85,15 @@ class userRewardsDal extends BaseController {
         }
     }
 
+    /**
+     * Update an existing user reward.
+     * Marks the reward as claimed and updates the user's total reward balance.
+     * 
+     * @param payload - The user reward data to update.
+     * 
+     * @returns A Promise that resolves to the updated user reward record.
+     * @throws Will throw an error if the update fails.
+     */
     async updateUserRewards(payload: userRewardInput): Promise<userRewardOuput | any> {
         try {
 
@@ -98,6 +121,15 @@ class userRewardsDal extends BaseController {
         }
     }
 
+    /**
+     * Get the details of a specific user reward by ID.
+     * 
+     * @param userid - The user ID.
+     * @param rewardid - The reward ID to fetch the details for.
+     * 
+     * @returns A Promise that resolves to the user reward details.
+     * @throws Will throw an error if the retrieval fails.
+     */
     async getRewardsDetailById(userid: string, rewardid: string): Promise<userRewardOuput | any> {
         try {
             let record = await userRewardModel.findOne({ where: { user_id: userid, id: rewardid }, raw: true });

@@ -5,9 +5,12 @@ import { Direction } from "../../utils/interface";
 import userModel from "../model/users.model";
 
 class kycDal {
+
     /**
-     * return all KYC data for admin dashboard
-     * @returns
+     * Returns all KYC data based on the type for the admin dashboard.
+     * 
+     * @param type - The type of KYC data to fetch (all, pending, approved, rejected).
+     * @returns A Promise containing an array of KYC records.
      */
     async all(type: any): Promise<any> {
         if (type === Direction.All || type === Direction.Blank) {
@@ -20,6 +23,15 @@ class kycDal {
             return await kycModel.findAll({ where: { isReject: true } });
         }
     }
+
+    /**
+     * Returns KYC data with pagination based on the type.
+     * 
+     * @param type - The type of KYC data to fetch (all, pending, approved, rejected).
+     * @param offset - The number of records to skip for pagination.
+     * @param limit - The number of records to return per page.
+     * @returns A Promise containing the paginated list of KYC records.
+     */
     async allByLimit(type: any, offset: any, limit: any): Promise<any> {
         let offsets = parseInt(offset);
         let limits = parseInt(limit);
@@ -38,20 +50,23 @@ class kycDal {
         }
     }
 
+
     /**
-     * get kyc data by id
-     * @param user_id 
-     * @returns 
+     * Fetches KYC data by user ID.
+     * 
+     * @param user_id - The user ID to fetch the KYC data for.
+     * @returns A Promise containing the KYC record or null if not found.
      */
     async kycById(user_id: any): Promise<kycOuput | any> {
         return await kycModel.findOne({ where: { userid: user_id }, raw: true });
     }
 
     /**
-   * check exissting kyc of user
-   * @param payload
-   * @returns 
-   */
+     * Checks if KYC data already exists for a user.
+     * 
+     * @param payload - The KYC data to check for existence.
+     * @returns A Promise containing the existing KYC record or an empty array if not found.
+     */
     async kycIfExist(payload: kycDto): Promise<kycOuput | any> {
 
         // console.log(payload?.userid,'-----------------payload?.userid');
@@ -69,16 +84,24 @@ class kycDal {
 
     }
 
+
     /**
-     * create new kyc
-     * @param payload
-     * @returns
+     * Creates new KYC data for a user.
+     * 
+     * @param payload - The KYC data to create.
+     * @returns A Promise containing the newly created KYC record.
      */
 
     async createKyc(payload: kycDto): Promise<kycOuput | any> {
         return await kycModel.create(payload);
     }
 
+    /**
+     * Edits an existing KYC record.
+     * 
+     * @param payload - The updated KYC data.
+     * @returns A Promise containing the updated KYC record.
+     */
     async editKyc(payload: kycDto): Promise<kycOuput | any> {
 
         let result = await kycModel.update(payload, { where: { userid: payload?.userid } });
@@ -88,9 +111,10 @@ class kycDal {
     }
 
     /**
-     * update kyc status by admin
-     * @param payload
-     * @returns 
+     * Updates the KYC status (approved/rejected) for a user.
+     * 
+     * @param payload - The KYC data containing the status updates.
+     * @returns A Promise containing the updated KYC record.
      */
     async updateKycStatus(payload: kycDto): Promise<kycOuput | any> {
 

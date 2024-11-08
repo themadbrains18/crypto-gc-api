@@ -5,7 +5,18 @@ import networkModel, { networkInput } from "../models/model/network.model";
 import { addressInput } from "../models/model/address.model";
 import WAValidator from 'multicoin-address-validator';
 
+/**
+ * @class addressController
+ * Controller to manage user addresses, including creation, validation, and deletion of addresses.
+ * Inherits from `BaseController`.
+ */
 class addressController extends BaseController {
+    /**
+   * Implementation of execute method for error handling.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @returns {Promise<void | any>}
+   */
   protected async executeImpl(
     req: Request,
     res: Response
@@ -18,9 +29,10 @@ class addressController extends BaseController {
   }
 
   /**
-   * Get all token
-   * @param req
-   * @param res
+   * Retrieves all address tokens available in the database.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
    */
   async addressAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -32,9 +44,10 @@ class addressController extends BaseController {
   }
 
   /**
-   * create a netwok
-   * @param req
-   * @param res
+   * Creates a new address entry after validating the network and address.
+   * If step 1 is specified, it performs only address validation.
+   * @param {Request} req - Express request object.
+   * @param {Response} res - Express response object.
    */
   async create(req: Request, res: Response) {
     try {
@@ -118,6 +131,11 @@ class addressController extends BaseController {
     }
   }
 
+    /**
+   * Retrieves a user's addresses by user ID, with optional pagination.
+   * @param {Request} req - Express request object containing user_id, offset, and limit.
+   * @param {Response} res - Express response object.
+   */
   async userAddress(req: Request, res: Response) {
     try {
 
@@ -130,11 +148,13 @@ class addressController extends BaseController {
     }
   }
 
+
   /**
- *
- * @param res
- * @param req
- */
+   * Toggles the active/inactive status of an address.
+   * @param {Request} req - Express request object containing address ID and new status.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next middleware function.
+   */
   async activeInactiveAddress(req: Request, res: Response, next: NextFunction) {
     try {
       let { id, status } = req.body;
@@ -153,11 +173,11 @@ class addressController extends BaseController {
     }
   }
 
-    /**
-  * 
-  * @param res 
-  * @param req 
-  */
+  /**
+   * Deletes an address entry based on address ID and user ID.
+   * @param {Request} req - Express request object containing address ID and user ID.
+   * @param {Response} res - Express response object.
+   */
     async deleteAddress(req: Request, res: Response) {
       try {
   

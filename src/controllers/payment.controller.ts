@@ -1,224 +1,234 @@
-import { Response, Request, NextFunction } from "express";
-import BaseController from "./main.controller";
-import service from "../services/service";
-import paymentMethodDto from "../models/dto/p_method.dto";
-import userPaymentMethodDto from "../models/dto/user_p_method.dto";
-import Joi from "joi";
-import { paymentMethodModel, userModel } from "../models";
-import { isEmpty } from "lodash";
-import { matchWithData } from "../models/dto/otp.inerface";
+  import { Response, Request, NextFunction } from "express";
+  import BaseController from "./main.controller";
+  import service from "../services/service";
+  import paymentMethodDto from "../models/dto/p_method.dto";
+  import userPaymentMethodDto from "../models/dto/user_p_method.dto";
+  import Joi from "joi";
+  import { paymentMethodModel, userModel } from "../models";
+  import { isEmpty } from "lodash";
+  import { matchWithData } from "../models/dto/otp.inerface";
 
-class paymentController extends BaseController {
-  protected async executeImpl(
-    req: Request,
-    res: Response
-  ): Promise<void | any> {
-    try {
-      // ... Handle request by creating objects
-    } catch (error: any) {
-      return this.fail(res, error.toString());
-    }
-  }
-
-  /**
-  * Add new payment method from admin dashboard
-  * @param res
-  * @param req
-  */
-  async create(req: Request, res: Response, next: NextFunction) {
-    try {
-
-      // const obj = JSON.parse(JSON.stringify(req.files));
-      // for (let itm in obj) {
-      //   req.body[itm] = obj[itm][0]?.filename;
-      // }
-
-
-      let method: paymentMethodDto = req.body;
-      let p_method = paymentMethodModel.findAll({ where: { payment_method: req.body.payment_method } });
-
-      if ((await p_method).length > 0) {
-        return super.fail(res, "This Method is already exist!!.");
+  class paymentController extends BaseController {
+    protected async executeImpl(
+      req: Request,
+      res: Response
+    ): Promise<void | any> {
+      try {
+        // ... Handle request by creating objects
+      } catch (error: any) {
+        return this.fail(res, error.toString());
       }
-      let paymentResponse = await service.p_method.create(method);
-      if (paymentResponse) {
-        super.ok<any>(res, { message: 'Payment method added successfully!.', result: paymentResponse });
+    }
+
+  /**
+   * Add new payment method from admin dashboard.
+   * @param req - The request object containing the payment method details.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   * @returns {Promise<void>}
+   */
+    async create(req: Request, res: Response, next: NextFunction) {
+      try {
+
+        // const obj = JSON.parse(JSON.stringify(req.files));
+        // for (let itm in obj) {
+        //   req.body[itm] = obj[itm][0]?.filename;
+        // }
+
+
+        let method: paymentMethodDto = req.body;
+        let p_method = paymentMethodModel.findAll({ where: { payment_method: req.body.payment_method } });
+
+        if ((await p_method).length > 0) {
+          return super.fail(res, "This Method is already exist!!.");
+        }
+        let paymentResponse = await service.p_method.create(method);
+        if (paymentResponse) {
+          super.ok<any>(res, { message: 'Payment method added successfully!.', result: paymentResponse });
+        }
+
+      } catch (error) {
+        next(error);
       }
-
-    } catch (error) {
-      next(error);
     }
-  }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Update payment method details.
+   * @param req - The request object containing the payment method details to update.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   * @returns {Promise<void>}
    */
-  async updatePaymentMethod(req: Request, res: Response, next: NextFunction) {
-    try {
-      let data = req.body;
-      let statusResponse = await service.p_method.updatePaymentMethodById(data);
-      if (statusResponse) {
-        let tokens = await service.p_method.getMethodList();
-        return super.ok<any>(res, tokens);
-      } else {
-        super.fail(res, statusResponse);
+    async updatePaymentMethod(req: Request, res: Response, next: NextFunction) {
+      try {
+        let data = req.body;
+        let statusResponse = await service.p_method.updatePaymentMethodById(data);
+        if (statusResponse) {
+          let tokens = await service.p_method.getMethodList();
+          return super.ok<any>(res, tokens);
+        } else {
+          super.fail(res, statusResponse);
+        }
+      } catch (error: any) {
+        super.fail(res, error.message);
       }
-    } catch (error: any) {
-      super.fail(res, error.message);
     }
-  }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Get the list of all payment methods.
+   * @param req - The request object.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   * @returns {Promise<void>}
    */
-  async list(req: Request, res: Response, next: NextFunction) {
-    try {
+    async list(req: Request, res: Response, next: NextFunction) {
+      try {
 
-      let paymentResponse = await service.p_method.getMethodList();
+        let paymentResponse = await service.p_method.getMethodList();
 
-      super.ok<any>(res, paymentResponse);
+        super.ok<any>(res, paymentResponse);
 
-    } catch (error) {
-      next(error);
+      } catch (error) {
+        next(error);
+      }
     }
-  }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Get a single payment method by its ID.
+   * @param req - The request object containing the payment method ID.
+   * @param res - The response object.
+   * @param next - The next middleware function.
+   * @returns {Promise<void>}
    */
-  async single(req: Request, res: Response, next: NextFunction) {
-    try {
-      let paymentResponse = await service.p_method.getPaymentMethodById(req.params.id);
-      super.ok<any>(res, paymentResponse);
-    } catch (error) {
-      next(error);
+    async single(req: Request, res: Response, next: NextFunction) {
+      try {
+        let paymentResponse = await service.p_method.getPaymentMethodById(req.params.id);
+        super.ok<any>(res, paymentResponse);
+      } catch (error) {
+        next(error);
+      }
     }
-  }
-
   /**
-   *
-   * @param res
-   * @param req
+   * Add a new payment method for a user.
+   * @param req - The request object containing user payment method details and OTP.
+   * @param res - The response object.
+   * @returns {Promise<void>}
    */
 
-  async addMethod(req: Request, res: Response) {
-    try {
+    async addMethod(req: Request, res: Response) {
+      try {
 
-      // console.log(req.body,"==req.bdy");
-      
+        // console.log(req.body,"==req.bdy");
+        
 
-      if (
-        req.body?.otp === "string" ||
-        req.body?.otp === "" ||
-        req.body?.otp === null
-      ) {
+        if (
+          req.body?.otp === "string" ||
+          req.body?.otp === "" ||
+          req.body?.otp === null
+        ) {
 
-        let passCodeVerify = await userModel.findOne({
-          where: { id: req.body.user_id },
-          attributes: {
-            exclude: ['id', 'dial_code', 'password', 'otpToken', 'cronStatus', 'deletedAt', 'TwoFA', 'kycstatus', 'statusType', 'registerType', 'role', 'secret', 'own_code', 'refeer_code', 'antiphishing', 'createdAt', 'updatedAt', 'UID']
-          },
-          raw: true
+          let passCodeVerify = await userModel.findOne({
+            where: { id: req.body.user_id },
+            attributes: {
+              exclude: ['id', 'dial_code', 'password', 'otpToken', 'cronStatus', 'deletedAt', 'TwoFA', 'kycstatus', 'statusType', 'registerType', 'role', 'secret', 'own_code', 'refeer_code', 'antiphishing', 'createdAt', 'updatedAt', 'UID']
+            },
+            raw: true
+          })
+
+          let userOtp: any = { username: passCodeVerify?.email ? passCodeVerify?.email : passCodeVerify?.number };
+
+          let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+
+          const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
+
+          service.emailService.sendMail(req.headers["X-Request-Id"], {
+            to: userOtp?.username,
+            subject: "Verify OTP",
+            html: emailTemplate.html,
+          });
+
+          delete otp["otp"];
+          return super.ok<any>(
+            res,
+            { message: "OTP sent in your inbox. please verify your otp", otp }
+          );
+        }
+
+        let uMethod: userPaymentMethodDto = req.body;
+
+        if (isEmpty(uMethod.pmObject)) {
+          return super.fail(res, "Please select payment method..")
+        }
+
+        let p_method: any = await paymentMethodModel.findOne({ where: { id: uMethod.pmid }, raw: true });
+
+        let pmobj: any = { passcode: Joi.string().required() };
+        let fieldsArray: any = p_method.fields;
+        for (const field of fieldsArray) {
+          if (field.type === 'text' || field.type === "name") {
+            pmobj[field.name] = Joi.string().required();
+          }
+          if (field.type === 'number') {
+            pmobj[field.name] = Joi.number().integer().required();
+          }
+          if (field.type === 'file') {
+            pmobj[field.name] = Joi.string().optional();
+          }
+        }
+
+        let user_pmethod_schema = Joi.object().keys({
+          user_id: Joi.string().required(),
+          pmid: Joi.string().required(),
+          status: Joi.string().required(),
+          pm_name: Joi.string().required(),
+          pmObject: Joi.object(pmobj).optional(),
+          otp: Joi.string().required()
         })
 
-        let userOtp: any = { username: passCodeVerify?.email ? passCodeVerify?.email : passCodeVerify?.number };
 
-        let otp: any = await service.otpGenerate.createOtpForUser(userOtp);
+        const result2 = user_pmethod_schema.validate(uMethod);
 
-        const emailTemplate = service.emailTemplate.otpVerfication(`${otp?.otp}`);
-
-        service.emailService.sendMail(req.headers["X-Request-Id"], {
-          to: userOtp?.username,
-          subject: "Verify OTP",
-          html: emailTemplate.html,
-        });
-
-        delete otp["otp"];
-        return super.ok<any>(
-          res,
-          { message: "OTP sent in your inbox. please verify your otp", otp }
-        );
-      }
-
-      let uMethod: userPaymentMethodDto = req.body;
-
-      if (isEmpty(uMethod.pmObject)) {
-        return super.fail(res, "Please select payment method..")
-      }
-
-      let p_method: any = await paymentMethodModel.findOne({ where: { id: uMethod.pmid }, raw: true });
-
-      let pmobj: any = { passcode: Joi.string().required() };
-      let fieldsArray: any = p_method.fields;
-      for (const field of fieldsArray) {
-        if (field.type === 'text' || field.type === "name") {
-          pmobj[field.name] = Joi.string().required();
+        if (result2.error !== undefined) {
+          return super.fail(res, result2.error?.message);
         }
-        if (field.type === 'number') {
-          pmobj[field.name] = Joi.number().integer().required();
-        }
-        if (field.type === 'file') {
-          pmobj[field.name] = Joi.string().optional();
-        }
+
+        let userpMethodResponse = await service.p_method.createUserPaymentMethod(uMethod);
+        super.ok<any>(res, {result: userpMethodResponse });
+
+      } catch (error: any) {
+        super.fail(res, error.message)
       }
-
-      let user_pmethod_schema = Joi.object().keys({
-        user_id: Joi.string().required(),
-        pmid: Joi.string().required(),
-        status: Joi.string().required(),
-        pm_name: Joi.string().required(),
-        pmObject: Joi.object(pmobj).optional(),
-        otp: Joi.string().required()
-      })
-
-
-      const result2 = user_pmethod_schema.validate(uMethod);
-
-      if (result2.error !== undefined) {
-        return super.fail(res, result2.error?.message);
-      }
-
-      let userpMethodResponse = await service.p_method.createUserPaymentMethod(uMethod);
-      super.ok<any>(res, {result: userpMethodResponse });
-
-    } catch (error: any) {
-      super.fail(res, error.message)
     }
-  }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Get a user's payment method.
+   * @param req - The request object containing the user ID.
+   * @param res - The response object.
+   * @returns {Promise<void>}
    */
-  async getMethod(req: Request, res: Response) {
-    try {
-      let methodResponse = await service.p_method.getUserMethod(req.body.user_id);
-      super.ok<any>(res, methodResponse);
-    } catch (error: any) {
-      super.fail(res, error.message)
+    async getMethod(req: Request, res: Response) {
+      try {
+        let methodResponse = await service.p_method.getUserMethod(req.body.user_id);
+        super.ok<any>(res, methodResponse);
+      } catch (error: any) {
+        super.fail(res, error.message)
+      }
     }
-  }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Delete a user payment method request.
+   * @param req - The request object containing the ID of the payment method to delete.
+   * @param res - The response object.
+   * @returns {Promise<void>}
    */
-  async deleteRequest(req: Request, res: Response) {
-    try {
-      let deleteResponse = await service.p_method.removeUserMethodById(req.params.id);
-      super.ok<any>(res, deleteResponse);
-    } catch (error: any) {
-      super.fail(res, error.message)
+    async deleteRequest(req: Request, res: Response) {
+      try {
+        let deleteResponse = await service.p_method.removeUserMethodById(req.params.id);
+        super.ok<any>(res, deleteResponse);
+      } catch (error: any) {
+        super.fail(res, error.message)
+      }
     }
   }
-}
 
-export default paymentController
+  export default paymentController

@@ -7,10 +7,16 @@ import { matchWithData } from "../dto/otp.inerface";
 
 class userPaymentMethodDal {
 
+
     /**
-     * Create user payment methods
-     * @param payload 
-     * @returns 
+     * Create user payment methods.
+     * Verifies the trading password and OTP before creating a payment method.
+     * 
+     * @param payload - The data required to create the user payment method. 
+     * Should include user ID, payment method details, passcode, and OTP.
+     * 
+     * @returns A Promise that resolves to the created user payment method object.
+     * @throws Will throw an error if the trading password is incorrect or OTP validation fails.
      */
     async create(payload: any): Promise<userPmethodOuput | any> {
 
@@ -52,10 +58,14 @@ class userPaymentMethodDal {
         }
     }
 
+
     /**
-     * Get payment methods by user id
-     * @param payload 
-     * @returns 
+     * Get user payment methods by user ID.
+     * 
+     * @param payload - The user ID to retrieve payment methods for.
+     * 
+     * @returns A Promise that resolves to an array of user payment methods, or an empty array if none exist.
+     * @throws Will throw an error if the retrieval process fails.
      */
     async getUserMethod(payload: string): Promise<userPmethodOuput | any> {
         try {
@@ -77,9 +87,12 @@ class userPaymentMethodDal {
     }
 
     /**
-     * Remove user payment method
-     * @param payload 
-     * @returns 
+     * Remove a user payment method by its ID.
+     * 
+     * @param payload - The ID of the user payment method to be removed.
+     * 
+     * @returns A Promise that resolves to the result of the deletion operation.
+     * @throws Will throw an error if the deletion process fails.
      */
     async removeUserMethodById(payload: string): Promise<userPmethodOuput | any> {
         try {

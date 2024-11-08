@@ -2,6 +2,22 @@ import BaseController from "../../controllers/main.controller";
 import profileModel, { profileInput, profileOuput } from "../model/profile.model";
 
 class profileDal extends BaseController {
+
+
+    /**
+     * Create or update a user profile.
+     * 
+     * This method checks if the user profile exists:
+     * - If the profile exists, it updates the profile with the provided data.
+     * - If the profile does not exist, it creates a new one.
+     * 
+     * It also checks if the provided username (`uName`) is already taken by another user.
+     * 
+     * @param payload - The profile details to be created or updated.
+     * 
+     * @returns A Promise that resolves to the created or updated profile, or an error message if the username is already taken.
+     * @throws Will throw an error if the creation or update fails.
+     */
     async profileCreate(payload: profileInput): Promise<profileOuput | any> {
         try {
             let profile = await profileModel.findOne({ where: { user_id: payload.user_id }, raw: true });
@@ -46,6 +62,18 @@ class profileDal extends BaseController {
         }
     }
 
+    /**
+     * Create or update a user's profile picture (DP).
+     * 
+     * This method checks if the profile exists:
+     * - If the profile exists, it updates the profile picture (`image` field).
+     * - If the profile does not exist, it creates a new profile with the provided profile picture.
+     * 
+     * @param payload - The user profile data, including the profile picture (image) to be created or updated.
+     * 
+     * @returns A Promise that resolves to the updated profile with the new profile picture, or creates a new profile if it doesn't exist.
+     * @throws Will throw an error if the creation or update fails.
+     */
     async profileDPCreate(payload: any): Promise<profileOuput | any> {
         try {
 

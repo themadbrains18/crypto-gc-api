@@ -6,9 +6,9 @@ import globalTokensModel from "../model/global_token.model";
 import sequelize from "..";
 
 class addressDal {
-  /**
-   * return all address data
-   * @returns
+ /**
+   * Return all address data, including related network, tokens, and global tokens.
+   * @returns A list of address data with associated models.
    */
   async all(): Promise<any> {
     return await addressModel.findAll({
@@ -32,7 +32,13 @@ class addressDal {
         ]
     });
   }
-
+  /**
+   * Get addresses by user ID with pagination.
+   * @param userId - The user ID to filter addresses.
+   * @param offset - The offset for pagination.
+   * @param limit - The limit for pagination.
+   * @returns Paginated list of addresses along with the total count.
+   */
   async addressyId(payload: string, offset: string, limit: string): Promise<any> {
     let address = await addressModel.findAll({
       where: { user_id: payload }, include:
@@ -60,11 +66,10 @@ class addressDal {
   }
 
   /**
-   * create new address
-   * @param payload
-   * @returns
+   * Create a new address.
+   * @param payload - The address data to be created.
+   * @returns The created address.
    */
-
   async createAddress(payload: addressInput): Promise<addressOuput> {
     try {
       return await addressModel.create(payload);
@@ -76,6 +81,11 @@ class addressDal {
     
   }
 
+  /**
+   * Change the status of an address (toggle between active/inactive).
+   * @param payload - The address data including ID to update.
+   * @returns The updated address with toggled status.
+   */
   async changeStatus(payload: addressInput): Promise<any> {
     try {
       let address: any = await addressModel.findOne({ where: { id: payload?.id } });
@@ -89,10 +99,10 @@ class addressDal {
 
 
   /**
-   * Delete ads post
-   * @param address_id 
-   * @param user_id 
-   * @returns 
+   * Delete an address by user and address ID.
+   * @param addressId - The address ID to delete.
+   * @param userId - The user ID to verify ownership.
+   * @returns The deletion status.
    */
   async deleteAddressByUserAddressId(address_id: string, user_id: string): Promise<addressOuput | any> {
 

@@ -21,6 +21,11 @@ class fileUploadService {
     //     }
     // });
 
+       /**
+     * Path where uploaded files are stored.
+     * @type {string}
+     */
+
     filepath = "../uploads/";
 
     
@@ -30,6 +35,14 @@ class fileUploadService {
      
     // }
 
+      /**
+     * Disk storage configuration for file uploads.
+     * 
+     * - Sets the destination directory for storing the uploaded files.
+     * - Generates a unique filename for each uploaded file by appending a timestamp and a random number.
+     * 
+     * @type {DiskStorageOptions}
+     */
 
     storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -42,8 +55,27 @@ class fileUploadService {
         }
       })
       
+       /**
+     * Multer upload instance with storage configuration.
+     * 
+     * This is used to handle the file upload process using the storage options defined above.
+     * 
+     * @type {multer.Instance}
+     */
     upload = multer({ storage: this.storage })
 
+       /**
+     * File filter function to validate file types.
+     * 
+     * This method checks if the uploaded file is a valid image type (png, jpg, jpeg).
+     * If the file type is valid, the file is accepted; otherwise, it is rejected.
+     * 
+     * @param {Request} request - The Express request object.
+     * @param {Express.Multer.File} file - The uploaded file.
+     * @param {FileFilterCallback} callback - The callback function to indicate if the file should be accepted or rejected.
+     * 
+     * @returns {void} - Calls the callback with either `true` (accept) or `false` (reject) based on the file's mime type.
+     */
     fileFilter(
         request: Request,
         file: Express.Multer.File,

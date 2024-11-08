@@ -18,6 +18,12 @@ class otpController extends BaseController {
     }
   }
 
+   /**
+   * Match OTP and verify its validity.
+   * @param req - Express request object containing OTP details.
+   * @param res - Express response object to send the result.
+   * @param next - Next function for error handling middleware.
+   */
   async match(req: Request, res: Response, next: NextFunction) {
     try {
         let otp : otpSchema = req.body

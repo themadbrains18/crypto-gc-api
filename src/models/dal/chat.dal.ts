@@ -3,10 +3,12 @@ import chatModel, { chatOuput } from "../model/chat.model";
 
 class P2PchatDal {
 
+
     /**
+     * Create a new chat message or append to an existing chat thread.
      * 
-     * @param payload 
-     * @returns 
+     * @param payload - The P2PchatDto containing chat details.
+     * @returns The updated chat object after creation or update.
      */
     async create(payload: P2PchatDto): Promise<chatOuput | any> {
         try {
@@ -42,6 +44,12 @@ class P2PchatDal {
         }
     }
     
+    /**
+     * Fetch chat messages for a specific order ID.
+     * 
+     * @param orderid - The order ID for which chat messages are fetched.
+     * @returns A list of chat messages for the specified order ID.
+     */
     async chatListByOrderId(orderid : string):Promise<chatOuput | any>{
         try {
             return await chatModel.findAll({where : {orderid : orderid}});

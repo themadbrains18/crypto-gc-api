@@ -19,7 +19,6 @@ import sequelize from "./models";
 import userServices from "./services/user.service";
 
 const app: Application = express();
-
 const server: Server = new Server(app);
 
 const port: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
@@ -31,13 +30,12 @@ let profile = new profileController();
 
 const wss = new WebSocketServer({ port: 3001 });
 
+/**
+ * Handles WebSocket connections and messages.
+ * @param {WebSocket} ws - The WebSocket connection.
+ */
 wss.on('connection', (ws: WebSocket) => {
-  // console.log('New client connected');
-
   ws.on('message', async (message: any) => {
-
-    // console.log(`Received message: ${message}`);
-
     let body = JSON.parse(message);
 
     if (body?.ws_type === 'order') {
@@ -47,21 +45,19 @@ wss.on('connection', (ws: WebSocket) => {
     if (body?.ws_type === 'buy') {
       wss.clients.forEach(function e(client) {
         client.send(JSON.stringify({ status: 200, message: 'order created', data: body, type: 'buy' }));
-      })
+      });
     }
 
     if (body?.ws_type === 'position') {
       wss.clients.forEach(function e(client) {
         client.send(JSON.stringify({ status: 200, message: 'position created', type: 'position' }));
-      })
+      });
     }
 
     if (body.ws_type === 'post') {
-      const userId = body.userId
-      const limit = body.limit;
-      const offset = body.offset;
+      const { userId, limit, offset } = body;
       const currency = "all";
-      const pmMethod = "all"
+      const pmMethod = "all";
       await post.socketPostAds(wss, ws, userId, limit, offset, currency, pmMethod);
     }
 
@@ -80,29 +76,28 @@ wss.on('connection', (ws: WebSocket) => {
 
     if (body?.ws_type === 'profile') {
       let profileData = await service.profile.getProfile(body.user_id);
-
       wss.clients.forEach(function e(client) {
         client.send(JSON.stringify({ status: 200, data: profileData, type: 'profile' }));
-      })
+      });
     }
 
     if (body?.ws_type === 'market') {
       wss.clients.forEach(function e(client) {
         client.send(JSON.stringify({ status: 200, data: [], type: 'market' }));
-      })
+      });
     }
 
     if (body?.ws_type === 'convert') {
       wss.clients.forEach(function e(client) {
         client.send(JSON.stringify({ status: 200, data: [], type: 'convert' }));
-      })
+      });
     }
+
     if (body?.ws_type === 'transfer') {
       wss.clients.forEach(function e(client) {
         client.send(JSON.stringify({ status: 200, data: [], type: 'transfer' }));
-      })
+      });
     }
-
   });
 
   ws.on('close', () => {
@@ -113,45 +108,40 @@ wss.on('connection', (ws: WebSocket) => {
 app.set("socket", wss);
 
 /**
- * Cron to update market token price
+ * Cron job to update market token price every 10 seconds.
  */
 cron.schedule("*/10 * * * * *", async () => {
-  const date = new Date();
   await service.token.updateGlobalTokenPrice();
   wss.clients.forEach(function e(client) {
     client.send(JSON.stringify({ status: 200, type: 'price' }));
   });
 });
 
-
-/**
- * Cron for market order spot trading 
- */
 let isCronRunning = false;
-// cron.schedule('*/2 * * * *', async () => {  // Cron job runs every 5 seconds
+// Uncomment below to enable cron for market order spot trading.
+// cron.schedule('*/2 * * * *', async () => { 
 //   if (isCronRunning) {
 //     console.log("Previous cron job is still running. Skipping this execution.");
 //     return;
 //   }
 //   isCronRunning = true;
 //   try {
-//     console.log('=======here crom ===========');
-
-//     const batchSize = 100;  // Define your batch size here
+//     const batchSize = 100;
 //     await service.cronMarket.processOrdersInBatches(batchSize);
-//     isCronRunning=false   
+//     isCronRunning = false;
 //   } catch (error) {
 //     console.error("Error in cron job:", error);
-//   }
-//   finally {
+//   } finally {
 //     isCronRunning = false;
 //   }
 // });
 
-
-
 var httpServer = http.createServer(app);
 
+/**
+ * Starts the HTTP server.
+ * @listens {number} port - The port on which the server listens.
+ */
 httpServer
   .listen(port, "localhost", function () {
     console.info(`Server running on : http://localhost:${port}`);
@@ -163,6 +153,9 @@ httpServer
     }
   });
 
+/**
+ * Handles unhandled promise rejections and uncaught exceptions.
+ */
 process.on("unhandledRejection", (reason: Error, promise: Promise<any>) => {
   throw reason;
 });
@@ -173,10 +166,14 @@ process.on("uncaughtException", (error: Error) => {
     process.exit(1);
   }
 });
+
+/**
+ * Cron job to kill excess connections every 5 hours.
+ */
 cron.schedule('0 */5 * * *', async () => {
   try {
     console.log('Running the kill-excess-connections task...');
-    await service.user.killExcessConnection()
+    await service.user.killExcessConnection();
     console.log('Task executed successfully');
   } catch (error) {
     console.error('Error executing the task:', error);

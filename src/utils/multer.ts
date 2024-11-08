@@ -2,16 +2,15 @@ import { Request, Express, NextFunction, Response } from "express";
 import multer, { StorageEngine, FileFilterCallback } from "multer";
 import fs from "fs";
 import mimeType from "./mime";
-import { type } from "os";
-import { CustomError } from "../exceptions/http-exception";
-import { object } from "joi";
 
+
+// Defining types for callback functions and file format objects
 type DestinationCallback = (error: Error | null, destination: string) => void;
 type FileNameCallback = (error: Error | null, filename: string) => void;
 
 type fileFormat = {
   name: string;
-  maxCount : number
+  maxCount : number // Maximum number of files allowed for a specific field
 }
 
 
@@ -30,13 +29,17 @@ type fileFormat = {
 //     maxCount: 1,
 //   }
 // ]
+
+// The fileUpload class handles the file upload functionality
 class fileUpload {
   
-  /**
-   *
-   * @param destination
-   * @param field
-   * @param filler
+   /**
+   * This function configures the multer upload middleware for file handling.
+   * @param destination - The folder where files will be saved (default: '/')
+   * @param fillter - Array of allowed file extensions (default: ['jpg', 'jpeg', 'gif', 'png'])
+   * @param maxSize - The maximum allowed file size in MB (default: 2MB)
+   * @param images - Array of objects specifying the fields and max count for each file field
+   * @returns The multer upload middleware configured with the specified settings
    */
   upload(
     destination: string = "/",
@@ -47,10 +50,8 @@ class fileUpload {
     try {
       let fileSizes = maxSize * 1024 * 1024;
 
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      // storage path create
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+      // Ensure the destination folder exists, create if it doesn't
       //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
       //  if folder dos'nt exist then create new
@@ -60,9 +61,7 @@ class fileUpload {
       }
 
       //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      // create a disc stroge by multer
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+      // Create multer disk storage configuration
       //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
       let storage = multer.diskStorage({
@@ -71,10 +70,10 @@ class fileUpload {
           file: Express.Multer.File,
           cb: DestinationCallback
         ): void {
-          cb(null, path);
+          cb(null, path); // Save files to the defined path
         },
        
-        
+        // Generate a unique filename for each file (avoid overwriting)
         filename: function (
           req: Request,
           file: Express.Multer.File,
@@ -83,19 +82,16 @@ class fileUpload {
           const uniqueSuffix =
             Date.now() + "-" + Math.round(Math.random() * 1e9);
 
-          let extArray = file.mimetype.split("/");
+          let extArray = file.mimetype.split("/"); // Extract file extension from mimetype
           let extension = extArray[extArray.length - 1];
 
-       
-          // req.body.idfront = file.fieldname
+       // Set the filename as 'fieldname-timestamp-random.extension'
           cb(null, file.fieldname + "-" + uniqueSuffix + "." + extension);
         },
       });
 
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      // filter implemented if added when upload used for specfic routes
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+      // File validation based on allowed mime types (file filter)
       //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
       let uploadFilter = (
@@ -105,31 +101,30 @@ class fileUpload {
       ) => {
         let message = [];
 
-        // Routes desisered mime
+        // Find the desired mime types based on provided filters
         let desire = [];
         for (let [key, val] of Object.entries(mimeType)) {
           if (fillter.includes(key)) {
-            desire.push(val);
-            message.push(`${val} or ${key} `);
+            desire.push(val);  // Add allowed mime types to the 'desire' array
+            message.push(`${val} or ${key} `); // Prepare error message if validation fails
           }
         }
 
+          // Check if file mimetype matches the allowed list
+
         if (desire.includes(file.mimetype)) {
-          cb(null, true);
+          cb(null, true); // File is valid, proceed with the upload
         } else {
+           // If the file type is invalid, set an error message
           console.log("Invalid upload: fieldname should be ", message.join(" | "))
           req.fileValidationError = `Invalid upload: fieldname should be ${message.join(" | ")}`;
           return cb(req.fileValidationError, false);       
         }
       };
 
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+      // Return the multer middleware configured for handling multiple fields
       //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      // filter implemented if added when upload used for specfic routes
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-
-    
       return  multer({
         storage: storage,
         limits: { fileSize: fileSizes },

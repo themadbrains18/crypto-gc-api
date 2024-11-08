@@ -16,6 +16,11 @@ class tokenListingController extends BaseController {
         }
     }
 
+    /**
+     * Creates a new token listing.
+     * @param req - The request object containing the file and other data
+     * @param res - The response object
+     */
     async create(req: Request, res: Response) {
         try {
             const obj = JSON.parse(JSON.stringify(req.files));
@@ -34,6 +39,11 @@ class tokenListingController extends BaseController {
         }
     }
 
+    /**
+     * Gets the list of all token listings.
+     * @param req - The request object
+     * @param res - The response object
+     */ 
     async tokenList(req: Request, res :Response){
         try {
             let tokenResponse = await service.token_list.getTokenList();
@@ -44,6 +54,11 @@ class tokenListingController extends BaseController {
         }
     }
 
+    /**
+     * Gets the top gainers from an external API (LiveCoinWatch).
+     * @param req - The request object
+     * @param res - The response object
+     */
     async topGainerList(req:Request, res:Response){
         try {
             let coinList = await fetch("https://http-api.livecoinwatch.com/coins/movers?currency=USD&range=delta.day&volume=500000", {

@@ -24,26 +24,86 @@ export const scientificToDecimal = (value: number): string => {
 
 class marketService {
 
+    /**
+    * Creates a new market order.
+    * 
+    * This method creates a market order using the provided payload. The payload contains information
+    * necessary to place an order in the market.
+    * 
+    * @param {marketDto} payload - The data transfer object that holds the market order details.
+    * @returns {Promise<marketOrderOuput>} A promise that resolves to the created market order output.
+    * @throws {Error} Throws an error if the creation fails.
+    */
     async create(payload: marketDto): Promise<marketOrderOuput | any> {
         return await marketDal.create(payload);
     }
 
+    /**
+    * Retrieves a list of market orders by user ID.
+    * 
+    * This method fetches all market orders related to a specific user. The orders will include details
+    * based on the user ID provided.
+    * 
+    * @param {string} userid - The ID of the user whose market orders are to be fetched.
+    * @returns {Promise<marketOrderOuput>} A promise that resolves to a list of market orders for the user.
+    * @throws {Error} Throws an error if fetching the orders fails.
+    */
     async getList(userid: string): Promise<marketOrderOuput | any> {
         return await marketDal.getOrderList(userid);
     }
 
+
+    /**
+     * Retrieves a list of market orders for a specific user with pagination and filtering.
+     * 
+     * This method retrieves a limited number of market orders for a user, with pagination support. 
+     * It also allows filtering by currency and date.
+     * 
+     * @param {string} userid - The ID of the user whose market orders are to be fetched.
+     * @param {string} offset - The offset to start fetching the orders.
+     * @param {string} limit - The number of orders to fetch.
+     * @param {string} currency - The currency to filter orders by.
+     * @param {string} date - The date filter for the orders.
+     * @returns {Promise<marketOrderOuput>} A promise that resolves to the list of market orders with pagination.
+     * @throws {Error} Throws an error if fetching the orders fails.
+     */
     async getListByLimit(userid: string, offset: string, limit: string, currency: string, date: string): Promise<marketOrderOuput | any> {
         return await marketDal.getOrderListByLimit(userid, offset, limit, currency, date);
     }
-
+    /**
+     * Retrieves a list of all market orders.
+     * 
+     * This method fetches all the market orders in the system without any filters or pagination.
+     * 
+     * @returns {Promise<marketOrderOuput>} A promise that resolves to the list of all market orders.
+     * @throws {Error} Throws an error if fetching the orders fails.
+     */
     async getAllMarketOrder(): Promise<marketOrderOuput | any> {
         return await marketDal.getMarketOrderList();
     }
-
+    /**
+     * Retrieves a list of all market orders with pagination.
+     * 
+     * This method fetches a limited number of market orders with pagination support.
+     * 
+     * @param {string} offset - The offset to start fetching the orders.
+     * @param {string} limit - The number of orders to fetch.
+     * @returns {Promise<marketOrderOuput>} A promise that resolves to the list of market orders with pagination.
+     * @throws {Error} Throws an error if fetching the orders fails.
+     */
     async getAllMarketOrderByLimit(offset: string, limit: string): Promise<marketOrderOuput | any> {
         return await marketDal.getMarketOrderListByLimit(offset, limit);
     }
 
+    /**
+    * Retrieves a market order by its unique ID.
+    * 
+    * This method fetches a specific market order from the database based on the provided `order_id`.
+    * 
+    * @param {string} order_id - The unique identifier for the market order.
+    * @returns {Promise<marketOrderOuput>} A promise that resolves to the market order found.
+    * @throws {Error} Throws an error if the order retrieval fails.
+    */
     async getMarketOrderById(order_id: string): Promise<marketOrderOuput | any> {
         try {
             let order = await marketOrderModel.findOne({ where: { id: order_id }, raw: true });
@@ -54,22 +114,69 @@ class marketService {
         }
     }
 
+    /**
+    * Cancels a market order.
+    * 
+    * This method triggers the cancellation of a market order, typically by calling the market DAL's cancel method.
+    * 
+    * @param {marketCancel} payload - The data needed to cancel the order, including the order details.
+    * @returns {Promise<marketOrderOuput>} A promise that resolves to the result of the cancellation operation.
+    * @throws {Error} Throws an error if the cancellation fails.
+    */
     async cancelOrder(payload: marketCancel): Promise<marketOrderOuput | any> {
         return await marketDal.cancelOrder(payload);
     }
 
+    /**
+     * Retrieves a list of market orders filtered by token ID.
+     * 
+     * This method fetches market orders for a given token ID.
+     * 
+     * @param {string} token_id - The unique identifier for the token whose market orders are to be fetched.
+     * @returns {Promise<marketOrderOuput>} A promise that resolves to the list of market orders for the given token ID.
+     * @throws {Error} Throws an error if the orders retrieval fails.
+     */
     async getListByTokenId(token_id: string): Promise<marketOrderOuput | any> {
         return await marketDal.getOrderListByTokenId(token_id);
     }
 
+    /**
+     * Retrieves market orders by token ID and user ID.
+     * 
+     * This method fetches market orders that belong to a specific user for a given token.
+     * 
+     * @param {string} token_id - The unique identifier for the token.
+     * @param {string} user_id - The ID of the user whose market orders are to be fetched.
+     * @returns {Promise<marketOrderModel>} A promise that resolves to the list of market orders for the user and token.
+     * @throws {Error} Throws an error if fetching the orders fails.
+     */
     async getOrderListByTokenIdUserId(token_id: string, user_id: string): Promise<marketOrderModel | any> {
         return marketDal.getOrderListByTokenIdUserId(token_id, user_id);
     }
 
+    /**
+     * Retrieves the order history for a specific token ID and user ID.
+     * 
+     * This method fetches the order history of a user for a specific token.
+     * 
+     * @param {string} token_id - The unique identifier for the token.
+     * @param {string} user_id - The ID of the user whose order history is to be fetched.
+     * @returns {Promise<marketOrderModel>} A promise that resolves to the order history for the user and token.
+     * @throws {Error} Throws an error if fetching the order history fails.
+     */
     async getOrderHistoryByTokenIdUserId(token_id: string, user_id: string): Promise<marketOrderModel | any> {
         return marketDal.getOrderHistoryByTokenIdUserId(token_id, user_id);
     }
-
+    /**
+     * Retrieves the global price for a token symbol.
+     * 
+     * This method fetches the price of a specific cryptocurrency symbol (like Bitcoin or Ethereum) in USDT
+     * from the CryptoCompare API.
+     * 
+     * @param {string} symbol - The symbol of the cryptocurrency (e.g., "BTC", "ETH").
+     * @returns {Promise<any>} A promise that resolves to the price object fetched from CryptoCompare.
+     * @throws {Error} Throws an error if the API request fails.
+     */
     async getGlobalTokenPrice(symbol: string): Promise<any> {
         try {
             let priceObj = await fetch('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=' + symbol + '&tsyms=USDT&api_key=' + process.env.MIN_API_KEY).then(response =>
@@ -81,14 +188,32 @@ class marketService {
         }
     }
 
-    // partial order code
+    /**
+    * Executes a partial market order (e.g., partial buy/sell).
+    * 
+    * This method processes a partial order for a market transaction (e.g., a partial buy or sell),
+    * utilizing the socket connection for real-time buy/sell actions.
+    * 
+    * @param {marketPartialExecution} payload - The details of the partial order to be executed.
+    * @returns {Promise<any>} A promise that resolves to the result of the partial order execution.
+    * @throws {Error} Throws an error if the partial order fails.
+    */
     async marketPartialOrder(payload: marketPartialExecution): Promise<any> {
         return await marketDal.socketMarketBuySell(payload);
     }
 
-    //====================================================
-    //=============Limit based order execution============
-    //====================================================
+    /**
+     * Executes buy or sell orders on a limit-based market.
+     * 
+     * This function checks the order type in the provided `payload` and processes
+     * either the buyer or seller side of the transaction. It calls the respective
+     * buyer or seller execution function (`buyerCode` or `sellerCode`).
+     * 
+     * @param {marketPartialExecution} payload - The order details, including the 
+     *        order type, user ID, and token information.
+     * @returns {Promise<any>} Resolves when the order execution process is completed.
+     * @throws {Error} If an error occurs during the order execution process.
+     */
     async buySellOnLimit(payload: marketPartialExecution): Promise<any> {
         try {
             if (payload.order_type === marketOrderEnum.buy) {
@@ -102,6 +227,17 @@ class marketService {
         }
     }
 
+    /**
+     * Handles the execution of a buy order in a limit-based market.
+     * 
+     * This function finds the matching sell orders for a given buy order. It processes
+     * partial order execution and updates the order statuses accordingly. The function
+     * also handles the calculation of fees, transaction history, and admin profits.
+     * 
+     * @param {marketPartialExecution} payload - The order details for the buy side.
+     * @returns {Promise<any>} Resolves when the buy-side execution is complete.
+     * @throws {Error} If no matching sell orders are found or an error occurs.
+     */
     async buyerCode(payload: marketPartialExecution): Promise<any> {
         try {
             let previous_seller: any = [];
@@ -197,11 +333,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
+                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt, buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
+                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt, sellerFees);
                             break;
                         }
 
@@ -232,11 +368,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt,buyerFees);
+                            await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt, buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt,sellerFees);
+                            await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt, sellerFees);
                         }
                     }
                 }
@@ -247,6 +383,25 @@ class marketService {
         }
     }
 
+    /**
+     * Processes the execution of the buy and sell transactions, updating the buyer and seller's asset balances.
+     * 
+     * This function checks the status of both the buyer's and seller's market orders, updates their respective balances,
+     * performs fee deductions, and creates necessary admin profits. It also handles scenarios where the buyer or seller
+     * does not have sufficient funds or assets and creates new asset records accordingly.
+     * 
+     * @param {buyerExecution} options - The details of the buyer and seller, including their order information,
+     *        token amounts, and fees.
+     * @param {object} options.buyerObj - The buyer's order details.
+     * @param {object} options.sellerObj - The seller's order details.
+     * @param {number} options.remainingAssets - The remaining assets the buyer wants to purchase.
+     * @param {number} options.paid_usdt - The amount of USDT paid to the seller.
+     * @param {number} options.sellerFees - The fee deducted from the seller's balance.
+     * @param {number} options.buyerFees - The fee deducted from the buyer's balance.
+     * @param {function} service.assets.getUserAssetByTokenIdandWallet - Function to get user's asset data by token.
+     * @returns {Promise<void>} Resolves once the transaction is processed and the orders are updated.
+     * @throws {Error} If any error occurs during the transaction processing.
+     */
     async processBuyerExecution(options: buyerExecution) {
         try {
             let sellerusdtmarket = await this.getMarketOrderById(options.sellerObj.id);
@@ -264,7 +419,7 @@ class marketService {
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
                     // updatedBal = truncateNumber(Number(updatedBal - options?.sellerFees), 8);
-                    updatedBal = preciseSubtraction(updatedBal , options?.sellerFees, 10);
+                    updatedBal = preciseSubtraction(updatedBal, options?.sellerFees, 10);
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.sellerFees, 'USDT', 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } });
                 }
@@ -304,7 +459,7 @@ class marketService {
                     // ================Fee Deduction from buyer=================//
                     // =========================================================//
                     // updatedBal = truncateNumber(Number(updatedBal - options?.buyerFees), 8);
-                    updatedBal = preciseSubtraction(updatedBal , options?.buyerFees, 10);
+                    updatedBal = preciseSubtraction(updatedBal, options?.buyerFees, 10);
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.buyerFees, token?.symbol, 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: buyerasset.id } });
                 }
@@ -334,6 +489,23 @@ class marketService {
         }
     }
 
+    /**
+     * Updates the buyer and seller market order statuses after the transaction has been processed.
+     * 
+     * This function checks the remaining assets and updates the status of the buyer and seller orders.
+     * It ensures that the transaction is completed by either fully or partially matching the buy and sell
+     * orders, and updates the order statuses accordingly.
+     * 
+     * @param {buyerExecution} options - The details of the buyer and seller, including the remaining assets and
+     *        their order information.
+     * @param {object} options.buyerObj - The buyer's order details.
+     * @param {object} options.sellerObj - The seller's order details.
+     * @param {number} options.remainingAssets - The remaining assets the buyer is trying to purchase.
+     * @param {number} options.paid_usdt - The amount of USDT paid to the seller.
+     * @param {function} preciseSubtraction - Function to perform accurate subtraction for balance calculations.
+     * @returns {Promise<void>} Resolves once the market orders are updated.
+     * @throws {Error} If an error occurs during order status update.
+     */
     async updateBuyerOrderStatus(options: buyerExecution) {
         try {
             let sellerOrder = await this.getMarketOrderById(options.sellerObj.id);
@@ -383,6 +555,14 @@ class marketService {
         }
     }
 
+    /**
+     * Handles the execution of a seller's market order by matching them with available buyers.
+     * Processes matching orders, updates market order status, and manages the exchange of assets.
+     *
+     * @param {marketPartialExecution} payload - The details of the seller's market order.
+     * @returns {Promise<any>} - A promise that resolves when the seller's market order is processed successfully.
+     * @throws {Error} - Throws an error if no matching buyer or seller orders are found.
+     */
     async sellerCode(payload: marketPartialExecution): Promise<any> {
         try {
             let previous_buyer: any = [];
@@ -435,11 +615,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
+                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt, buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
+                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt, sellerFees);
                             break;
                         }
                         else if (buyerObj.token_amount > remainingAssets) {
@@ -467,11 +647,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
+                            await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt, buyerFees);
                             //=====================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
+                            await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt, sellerFees);
                             break;
                         }
                         if (remainingAssets > buyerObj.token_amount) {
@@ -500,11 +680,11 @@ class marketService {
                             //======================================================
                             //=============Create buyer market order history========
                             //======================================================
-                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
+                            await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt, buyerFees);
                             //======================================================
                             //=============Create seller market order history=======
                             //======================================================
-                            await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt,sellerFees);
+                            await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt, sellerFees);
                         }
                     }
                 }
@@ -514,6 +694,12 @@ class marketService {
             throw new Error(error.message);
         }
     }
+    /**
+     * Processes the execution of a seller's order, including asset transfers and fee deductions.
+     *
+     * @param {buyerExecution} options - Contains information about both buyer and seller objects, payment amounts, and fees.
+     * @returns {Promise<void>} - A promise that resolves once the execution process is complete.
+     */
 
     async processSellerExecution(options: buyerExecution) {
         try {
@@ -533,7 +719,7 @@ class marketService {
                     // ================Fee Deduction from seller=================//
                     // =========================================================//
                     // updatedBal = truncateNumber(Number(updatedBal - options?.sellerFees), 8);
-                    updatedBal = preciseSubtraction(updatedBal , options?.sellerFees, 10);
+                    updatedBal = preciseSubtraction(updatedBal, options?.sellerFees, 10);
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.sellerFees, 'USDT', 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } })
                 }
@@ -574,7 +760,7 @@ class marketService {
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
                     // updatedBal = truncateNumber(Number(updatedBal - options?.buyerFees), 8);
-                    updatedBal = preciseSubtraction(updatedBal , options?.buyerFees, 10);
+                    updatedBal = preciseSubtraction(updatedBal, options?.buyerFees, 10);
                     // ============Here fee add to admin wallet==================//
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.buyerFees, token?.symbol, 'Spot Trading');
                     await assetModel.update({ balance: updatedBal }, { where: { id: asset.id } })
@@ -588,7 +774,7 @@ class marketService {
                     // ================Fee Deduction from Buyer=================//
                     // =========================================================//
                     realAmount = truncateNumber(Number(realAmount - options?.buyerFees), 8);
-                
+
                     await marketDal.createAdminProfit(options?.buyerObj, 0, 0, options?.sellerObj.user_id, options?.buyerFees, token?.symbol, 'Spot Trading');
                     let assets: assetsDto = {
                         walletTtype: assetsWalletType.main_wallet,
@@ -609,6 +795,14 @@ class marketService {
         }
     }
 
+    /**
+     * Updates the status of the seller and buyer orders based on the remaining assets after the transaction.
+     * The status is updated as `true` when the order is completed, or adjusted if the remaining amount changes.
+     *
+     * @param {buyerExecution} options - Contains the details about the buyer and seller orders, and the remaining assets.
+     * @returns {Promise<void>} - A promise that resolves once the order status has been updated successfully.
+     * @throws {Error} - Throws an error if the status update fails.
+     */
     async updateSellerOrderStatus(options: buyerExecution) {
         try {
             // console.log('========here 5');
@@ -664,6 +858,15 @@ class marketService {
     //=====================================================
     //=============Market based order execution============
     //=====================================================
+
+    /**
+     * Executes the buy or sell order on the market based on the order type.
+     * Calls the appropriate function for the buyer or seller depending on the order type.
+     *
+     * @param {marketPartialExecution} payload - Contains the details of the market order to execute.
+     * @returns {Promise<void>} - A promise that resolves when the market order execution is complete.
+     * @throws {Error} - Throws an error if the market order execution fails.
+     */
     async buySellOnMarket(payload: marketPartialExecution): Promise<any> {
         try {
             if (payload.order_type === marketOrderEnum.buy) {
@@ -677,6 +880,14 @@ class marketService {
         }
     }
 
+    /**
+     * Executes the buyer's side of the market order, matching buy bids with available sell orders.
+     * Handles partial executions and updates the buyer and seller market orders accordingly.
+     * 
+     * @param {marketPartialExecution} payload - Contains details of the market order being processed, such as user ID, token ID, etc.
+     * @returns {Promise<void>} - A promise that resolves once the buyer's order execution is completed.
+     * @throws {Error} - Throws an error if no buyer or seller bids are found, or if any execution step fails.
+     */
     async marketBuyerCode(payload: marketPartialExecution): Promise<any> {
         try {
             let previous_seller: any = [];
@@ -740,11 +951,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt,buyerFees);
+                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt, buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt,sellerFees);
+                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt, sellerFees);
                                 break;
                             }
                             else if (sellerObj.token_amount > remainingAssets) {
@@ -772,11 +983,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
+                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt, buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
+                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt, sellerFees);
                                 break;
                             }
 
@@ -803,15 +1014,15 @@ class marketService {
                                 // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 remainingAssets = preciseSubtraction(remainingAssets, sellerObj.token_amount);
-                                
+
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt,buyerFees);
+                                await marketDal.createMarketOrderHistory(buyerObj, sellerObj.token_amount, paid_usdt, buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt,sellerFees);
+                                await marketDal.createMarketOrderHistory(sellerObj, sellerObj.token_amount, paid_usdt, sellerFees);
                             }
                         }
                     }
@@ -824,6 +1035,17 @@ class marketService {
         }
     }
 
+    /**
+     * Executes market transactions by matching buy and sell bids for a specific token.
+     * 
+     * This function processes the orders by matching sellers' tokens with buyers' bids
+     * based on their amounts and limits. It handles various cases such as when the buyer's
+     * bid is equal to, greater than, or less than the seller's available tokens.
+     * 
+     * @param {marketPartialExecution} payload - The execution payload containing details of the transaction.
+     * @returns {Promise<any>} - A promise that resolves to any result from the transaction execution.
+     * @throws {Error} - Throws an error if no buyer bids or seller bids are found, or if the token is not found.
+     */
     async marketSellerCode(payload: marketPartialExecution): Promise<any> {
         try {
             let previous_buyer: any = [];
@@ -881,11 +1103,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
+                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt, buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
+                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt, sellerFees);
                                 break;
                             }
                             else if (buyerObj.token_amount > remainingAssets) {
@@ -913,11 +1135,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt,buyerFees);
+                                await marketDal.createMarketOrderHistory(buyerObj, remainingAssets, paid_usdt, buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt,sellerFees);
+                                await marketDal.createMarketOrderHistory(sellerObj, remainingAssets, paid_usdt, sellerFees);
                                 break;
                             }
                             if (remainingAssets > buyerObj.token_amount) {
@@ -946,11 +1168,11 @@ class marketService {
                                 //======================================================
                                 //=============Create buyer market order history========
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt,buyerFees);
+                                await marketDal.createMarketOrderHistory(buyerObj, buyerObj.token_amount, paid_usdt, buyerFees);
                                 //======================================================
                                 //=============Create seller market order history=======
                                 //======================================================
-                                await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt,sellerFees);
+                                await marketDal.createMarketOrderHistory(sellerObj, buyerObj.token_amount, paid_usdt, sellerFees);
                             }
                         }
                     }

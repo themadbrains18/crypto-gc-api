@@ -13,11 +13,10 @@ import userModel from "../model/users.model";
 class convertDal {
 
     /**
-     * create new convert
-     * @param payload
-     * @returns
+     * Create a new asset conversion.
+     * @param payload - Conversion details
+     * @returns - The created conversion details or error
      */
-
     async createConvert(payload: convertDto): Promise<convertOuput | any> {
 
         let convertResponse;
@@ -115,15 +114,23 @@ class convertDal {
         return convertResponse;
     }
 
+
     /**
-     * 
-     * @param payload convert history
-     * @returns 
+     * Create a new conversion history record.
+     * @param payload - Conversion history details
+     * @returns - The created conversion history record
      */
     async createConvertHistory(payload: convertHistoryDto): Promise<convertHistoryOuput | any> {
         return await convertHistoryModel.create(payload);
     }
 
+    /**
+     * Get conversion records by user ID with pagination.
+     * @param user_id - User ID
+     * @param offset - Pagination offset
+     * @param limit - Pagination limit
+     * @returns - The conversion records with pagination details
+     */
     async getRecord(user_id: string, offset: number, limit: number): Promise<convertOuput | any> {
         let data = await convertModel.findAll({
             where: { user_id: user_id }, raw: true, limit: Number(limit),  // Add limit for pagination
@@ -133,6 +140,11 @@ class convertDal {
         return { data: data, total: total };
     }
 
+    /**
+     * Get conversion history records for a user.
+     * @param user_id - User ID
+     * @returns - The conversion history records
+     */
     async getHistoryRecord(user_id: string): Promise<convertOuput | any> {
         return await convertHistoryModel.findAll({
             where: { user_id: user_id },
@@ -144,6 +156,14 @@ class convertDal {
             order: [["createdAt", "DESC"]],
         });
     }
+
+    /**
+     * Get paginated conversion history records for a user.
+     * @param user_id - User ID
+     * @param offset - Pagination offset
+     * @param limit - Pagination limit
+     * @returns - Paginated conversion history records
+     */
     async getHistoryRecordByLimit(user_id: string, offset: number, limit: number): Promise<convertOuput | any> {
         try {
             let data = await convertHistoryModel.findAll({

@@ -7,10 +7,11 @@ import { updateReferProgramStatus } from "../utils/interface";
 
 class referProgramController extends BaseController {
     /**
-   * get user assets list here
-   * @param req
-   * @param res
-   */
+       * Save a new referral program.
+       * @param req - The request object containing referral program data.
+       * @param res - The response object.
+       * @param next - The next middleware function.
+       */
     async saveReferProgram(req: Request, res: Response, next: NextFunction) {
         try {
             let refer: referProgramInput = req.body;
@@ -21,7 +22,12 @@ class referProgramController extends BaseController {
             next(error);
         }
     }
-
+    /**
+     * Edit an existing referral program.
+     * @param req - The request object containing updated referral program data.
+     * @param res - The response object.
+     * @param next - The next middleware function.
+     */
     async editReferProgram(req: Request, res: Response, next: NextFunction) {
         try {
             let refer: referProgramInput = req.body;
@@ -33,7 +39,12 @@ class referProgramController extends BaseController {
             next(error);
         }
     }
-
+    /**
+     * Change the status of a referral program.
+     * @param req - The request object containing the program ID and new status.
+     * @param res - The response object.
+     * @param next - The next middleware function.
+     */
     async changeStatus(req: Request, res: Response, next: NextFunction) {
         try {
             let { id, status } = req.body;
@@ -51,7 +62,12 @@ class referProgramController extends BaseController {
             super.fail(res, error.message);
         }
     }
-
+    /**
+     * Save a new referral program invite.
+     * @param req - The request object containing referral invite data.
+     * @param res - The response object.
+     * @param next - The next middleware function.
+     */
     async saveReferProgramInvite(req: Request, res: Response, next: NextFunction) {
         try {
 
@@ -66,6 +82,12 @@ class referProgramController extends BaseController {
         }
     }
 
+    /**
+     * Get all referral programs with pagination.
+     * @param req - The request object containing offset and limit for pagination.
+     * @param res - The response object.
+     * @param next - The next middleware function.
+     */
     async getAll(req: Request, res: Response, next: NextFunction) {
         try {
 
@@ -80,6 +102,12 @@ class referProgramController extends BaseController {
         }
     }
 
+    /**
+     * Get all active referral event programs.
+     * @param req - The request object containing offset and limit for pagination.
+     * @param res - The response object.
+     * @param next - The next middleware function.
+     */
     async getAllActiveEvent(req: Request, res: Response, next: NextFunction) {
         try {
 
@@ -93,14 +121,20 @@ class referProgramController extends BaseController {
         }
     }
 
+    /**
+     * Get a single referral event by its name.
+     * @param req - The request object containing the event name in the parameters.
+     * @param res - The response object.
+     * @param next - The next middleware function.
+     */
     async getSingleEvent(req: Request, res: Response, next: NextFunction) {
         try {
             let { name } = req.params;
 
-            name = name.replaceAll("-"," ");
+            name = name.replaceAll("-", " ");
             let response = await service.refer.getSingleEvent(name);
 
-            if(response){
+            if (response) {
                 super.ok<any>(res, response);
             }
 

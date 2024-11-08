@@ -19,10 +19,13 @@ class withdrawController extends BaseController {
   }
 
 
+
   /**
-   *
-   * @param req
-   * @param res
+   * Adds a new withdrawal request.
+   * 
+   * @param req - The request object containing withdrawal details.
+   * @param res - The response object used to send back the response.
+   * @returns {Promise<void>} - Returns a promise that resolves once the request is processed.
    */
   async addnewRequest(req: Request, res: Response) {
     try {
@@ -124,10 +127,13 @@ class withdrawController extends BaseController {
       super.fail(res, error.message);
     }
   }
+
   /**
-   *
-   * @param req
-   * @param res
+   * Retrieves the withdrawal list by user ID.
+   * 
+   * @param req - The request object containing user ID in the parameters.
+   * @param res - The response object used to send back the response.
+   * @returns {Promise<void>} - Returns a promise with the response data.
    */
   async withdrawListbyUserID(req: Request, res: Response) {
     try {
@@ -139,6 +145,13 @@ class withdrawController extends BaseController {
     }
   }
 
+  /**
+   * Retrieves the withdrawal history by user ID.
+   * 
+   * @param req - The request object containing user ID in the parameters.
+   * @param res - The response object used to send back the response.
+   * @returns {Promise<void>} - Returns a promise with the withdrawal history.
+   */
   async userWithdrawHistory(req: Request, res: Response) {
     try {
       let responseData = await service.withdrawServices.historyById(req.params.userid);
@@ -148,6 +161,14 @@ class withdrawController extends BaseController {
       super.fail(res, error.message);
     }
   }
+
+  /**
+   * Retrieves user withdrawal history with pagination.
+   * 
+   * @param req - The request object containing user ID and pagination details.
+   * @param res - The response object used to send back the paginated withdrawal history.
+   * @returns {Promise<void>} - Returns a promise with the paginated withdrawal history.
+   */
   async userWithdrawHistoryByLimit(req: Request, res: Response) {
     try {
       let {offset,limit, currency, date} = req?.params
@@ -160,10 +181,13 @@ class withdrawController extends BaseController {
     }
   }
 
+
   /**
-   * admin get all withdrawList
-   * @param req
-   * @param res
+   * Admin retrieves all withdrawal requests.
+   * 
+   * @param req - The request object.
+   * @param res - The response object used to send back the withdrawal list.
+   * @returns {Promise<void>} - Returns a promise with the withdrawal list.
    */
   async withdrawList(req: Request, res: Response) {
     try {
@@ -173,11 +197,13 @@ class withdrawController extends BaseController {
       super.fail(res, error.message);
     }
   }
+
   /**
+   * Admin retrieves withdrawal requests with pagination.
    * 
-   * admin get all withdrawListByLimit
-   * @param req
-   * @param res
+   * @param req - The request object containing pagination details.
+   * @param res - The response object used to send back the paginated withdrawal list.
+   * @returns {Promise<void>} - Returns a promise with the paginated withdrawal list.
    */
   async withdrawListByLImit(req: Request, res: Response) {
     try {

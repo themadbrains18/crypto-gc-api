@@ -20,10 +20,11 @@ class kycController extends BaseController {
     }
   }
 
-  /**
-   * 
-   * @param res 
-   * @param req 
+ /**
+   * Creates a new KYC record for a user.
+   * @param {Request} req - Express request object with KYC data in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -68,11 +69,11 @@ class kycController extends BaseController {
 
   }
 
-
   /**
-   * 
-   * @param res 
-   * @param req 
+   * Fetches KYC information by user ID.
+   * @param {Request} req - Express request object with user ID in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async kycById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -87,9 +88,10 @@ class kycController extends BaseController {
   }
 
   /**
-   * Update user kyc status approve or ignore 
-   * @param req 
-   * @param res 
+   * Updates KYC status (approve or reject).
+   * @param {Request} req - Express request object with status data in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async kycStatus(req: Request, res: Response, next: NextFunction) {
     try {
@@ -133,10 +135,10 @@ class kycController extends BaseController {
   }
 
   /**
-   * 
-   * @param req 
-   * @param res 
-   * @param next 
+   * Retrieves all KYC records based on type.
+   * @param {Request} req - Express request object with type in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async kycAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -148,10 +150,10 @@ class kycController extends BaseController {
     }
   }
   /**
-   * 
-   * @param req 
-   * @param res 
-   * @param next 
+   * Retrieves paginated KYC records.
+   * @param {Request} req - Express request object with offset, limit, and type in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function.
    */
   async kycAllByLimit(req: Request, res: Response, next: NextFunction) {
     try {

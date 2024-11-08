@@ -21,9 +21,10 @@ class tokenController extends BaseController {
     }
   }
   /**
-   *  /Users/baljeetsingh/dumps/Dump20230728
-   * @param res
-   * @param req
+   * Fetches all tokens.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
    */
 
   async tokenAll(req: Request, res: Response, next: NextFunction) {
@@ -36,6 +37,12 @@ class tokenController extends BaseController {
     }
   }
 
+  /**
+   * Fetches all future tokens.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
+   */
   async futureTokenAll(req: Request, res: Response, next: NextFunction) {
     try {
       let tokens = await service.token.futureAll();
@@ -46,6 +53,12 @@ class tokenController extends BaseController {
     }
   }
 
+  /**
+   * Fetches all tokens with pagination limit.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
+   */
   async tokenAllWithLimit(req: Request, res: Response, next: NextFunction) {
     try {
       let { offset, limit } = req.params;
@@ -74,9 +87,10 @@ class tokenController extends BaseController {
   socketGetCoinList(req: Request, res: Response) { }
 
   /**
-   *
-   * @param res
-   * @param req
+   * Create a new token.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -114,10 +128,12 @@ class tokenController extends BaseController {
   // Admin service api
   // ===================================================================
 
+
   /**
-   *
-   * @param res
-   * @param req
+   * Change the active status of a token.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
    */
   async activeInactiveToken(req: Request, res: Response, next: NextFunction) {
     try {
@@ -137,6 +153,12 @@ class tokenController extends BaseController {
     }
   }
 
+  /**
+   * Change the stake status of a token.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
+   */
   async stakeStatus(req: Request, res: Response, next: NextFunction) {
     try {
       let { id, status } = req.body;
@@ -155,11 +177,12 @@ class tokenController extends BaseController {
     }
   }
 
+
   /**
-   * Admin token list all
-   * @param req
-   * @param res
-   * @param next
+   * Get all tokens for admin.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
    */
   async adminTokenAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -169,6 +192,13 @@ class tokenController extends BaseController {
       next(error);
     }
   }
+
+  /**
+   * Edit an existing token.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
+   */
 
   async edit(req: Request, res: Response, next: NextFunction) {
     try {
@@ -207,6 +237,12 @@ class tokenController extends BaseController {
     }
   }
 
+  /**
+   * Update token's network.
+   * @param req - Request object
+   * @param res - Response object
+   * @param next - Next function for error handling
+   */
   async updateNetwork(req: Request, res: Response, next: NextFunction) {
     try {
 

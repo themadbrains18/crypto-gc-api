@@ -11,12 +11,13 @@ import tokenDal from "./token.dal";
 
 class withdrawDal {
 
-  /**
-   * create new withdraw request
-   * @param payload
-   * @returns
-   */
 
+ /**
+   * Creates a new withdrawal request and deducts the amount from the user's main wallet.
+   * Also handles fee deduction from the user and adds the fee to the admin's profit.
+   * @param payload The withdrawal details including user ID, token ID, amount, and fee.
+   * @returns A promise that resolves to the withdrawal response or an error message.
+   */
   async createWithdrawRequest(payload: withdrawDto): Promise<assetOuput | any> {
     try {
       let apiResponse;
@@ -62,6 +63,11 @@ class withdrawDal {
 
   }
 
+  /**
+   * Retrieves the list of withdrawal requests for a given user by their ID.
+   * @param id The user's ID.
+   * @returns A promise that resolves to a list of withdrawal requests.
+   */
   withdrawListById = async (id: number | string): Promise<object | null> => {
     try {
       let wallet: any = await withdrawModel.findAll({
@@ -79,6 +85,10 @@ class withdrawDal {
     }
   };
 
+  /**
+   * Retrieves a list of all withdrawal requests.
+   * @returns A promise that resolves to a list of withdrawal requests.
+   */
   async getListOfWithdraw(): Promise<assetOuput[] | any> {
     try {
       return await withdrawModel.findAll({
@@ -103,6 +113,13 @@ class withdrawDal {
       throw new Error(error.message);
     }
   }
+
+  /**
+   * Retrieves a paginated list of withdrawal requests.
+   * @param offset The starting point for the list (pagination).
+   * @param limit The number of records to retrieve per page.
+   * @returns A promise that resolves to a paginated list of withdrawal requests.
+   */
   async getListOfWithdrawByLimit(offset: string, limit: string): Promise<assetOuput[] | any> {
     try {
       let offsets = parseInt(offset);
@@ -131,6 +148,11 @@ class withdrawDal {
     }
   }
 
+  /**
+   * Retrieves the withdrawal history for a given user by their ID.
+   * @param id The user's ID.
+   * @returns A promise that resolves to a list of withdrawal history.
+   */
   withdrawHistoryById = async (id: number | string): Promise<object | null> => {
     try {
       let wallet: any = await withdrawModel.findAll({
@@ -159,6 +181,16 @@ class withdrawDal {
       throw new Error(error.message);
     }
   };
+
+  /**
+   * Retrieves the withdrawal history with pagination and optional filters.
+   * @param id The user's ID.
+   * @param offset The starting point for the list (pagination).
+   * @param limit The number of records to retrieve per page.
+   * @param currency The currency type to filter the results by.
+   * @param date The date to filter the results by.
+   * @returns A promise that resolves to a paginated list of withdrawal history with filters applied.
+   */
   withdrawHistoryByIdLimit = async (id: number | string, offset: string, limit: string, currency:string, date:string): Promise<object | null> => {
     try {
       let offsets = parseInt(offset)

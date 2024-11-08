@@ -16,10 +16,12 @@ class convertController extends BaseController {
     }
   }
 
+
   /**
-   * 
-   * @param res 
-   * @param req 
+   * Saves a new conversion record and related history.
+   * @param {Request} req - Express request object containing conversion data in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function for error handling.
    */
   async saveConvert(req: Request, res: Response, next: NextFunction) {
     try {
@@ -50,6 +52,12 @@ class convertController extends BaseController {
     }
   }
 
+  /**
+   * Retrieves a paginated list of conversion records for a user.
+   * @param {Request} req - Express request object with pagination in params.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function for error handling.
+   */
   async getConvertList(req :Request, res :Response, next : NextFunction){
     try {
       let {  offset, limit } = req.params
@@ -61,6 +69,12 @@ class convertController extends BaseController {
     }
   }
 
+  /**
+   * Retrieves the full conversion history for a user.
+   * @param {Request} req - Express request object with user ID in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function for error handling.
+   */
   async getConvertHistoryList(req: Request, res : Response, next :NextFunction){
     try {
       let responseData = await service.convert.getConvertHistory(req.body.user_id);
@@ -71,6 +85,12 @@ class convertController extends BaseController {
     }
   }
 
+  /**
+   * Retrieves a paginated conversion history list for a user.
+   * @param {Request} req - Express request object with pagination in params and user ID in body.
+   * @param {Response} res - Express response object.
+   * @param {NextFunction} next - Express next function for error handling.
+   */
   async getConvertHistoryListByLimit(req: Request, res : Response, next :NextFunction){
     try {
       let {  offset, limit } = req.params

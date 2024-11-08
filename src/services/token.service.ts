@@ -8,35 +8,50 @@ import service from "./service";
 class tokenServices {
 
     /**
+     * Retrieves all published tokens.
      * 
-     * @returns return all published token 
+     * @returns {Promise<any>} A promise that resolves to a list of all published tokens.
      */
     async all(): Promise<any> {
         return await tokenDal.all();
     }
 
+
+    /**
+     * Retrieves tokens that are scheduled for future publication.
+     * 
+     * @returns {Promise<any>} A promise that resolves to a list of future tokens.
+     */
     async futureAll(): Promise<any> {
         return await tokenDal.futureAll();
     }
 
-
+/**
+     * Retrieves tokens with pagination (offset and limit).
+     * 
+     * @param {any} offset The starting point for the tokens to retrieve.
+     * @param {any} limit The maximum number of tokens to retrieve.
+     * @returns {Promise<any>} A promise that resolves to a list of tokens based on the provided offset and limit.
+     */
     async allWithLimit(offset: any, limit: any): Promise<any> {
         return await tokenDal.allWithLimit(offset, limit);
     }
 
-    /**
+   /**
+     * Checks if a token contract is already registered.
      * 
-     * @param payload if token contarct alread register
-     * @returns 
+     * @param {tokenDto} payload The token contract details to check.
+     * @returns {Promise<tokenOuput | any>} A promise that resolves to token details if it exists, otherwise null.
      */
     async alreadyExist(payload: tokenDto): Promise<tokenOuput | any> {
         return await tokenDal.contarctIfExist(payload)
     }
 
-    /**
+   /**
+     * Creates a new token.
      * 
-     * @param payload 
-     * @returns 
+     * @param {tokenDto} payload The token details to create.
+     * @returns {Promise<tokenOuput>} A promise that resolves to the newly created token.
      */
     async create(payload: tokenDto): Promise<tokenOuput> {
         return await tokenDal.createToken(payload)
@@ -45,30 +60,69 @@ class tokenServices {
     // ===================================
     // Admin services
     // ===================================
+
+    /**
+     * Retrieves all tokens for admin purposes.
+     * 
+     * @returns {Promise<any>} A promise that resolves to a list of all tokens for the admin.
+     */
     async adminTokenAll(): Promise<any> {
         return await tokenDal.adminTokenAll();
     }
 
+ 
     /**
-     * Active/Inactive token list by admin
+     * Changes the active/inactive status of a token.
+     * 
+     * @param {updateTokenStatus} payload The token status update details.
+     * @returns {Promise<any>} A promise that resolves to the updated token status.
      */
-
     async changeStatus(payload: updateTokenStatus): Promise<any> {
         return await tokenDal.changeStatus(payload);
     }
 
+     /**
+     * Edits an existing token's details.
+     * 
+     * @param {tokenDto} payload The new token details to update.
+     * @returns {Promise<tokenOuput>} A promise that resolves to the updated token details.
+     */
     async edit(payload: tokenDto): Promise<tokenOuput> {
         return await tokenDal.editToken(payload)
     }
 
+     /**
+     * Changes the stake status of a token.
+     * 
+     * @param {updateTokenStakeStatus} payload The token's staking status update.
+     * @returns {Promise<any>} A promise that resolves to the updated staking status.
+     */
     async changeStakeStatus(payload: updateTokenStakeStatus): Promise<any> {
         return await tokenDal.changeStakeStatus(payload);
     }
 
+     /**
+     * Retrieves a single token by its contract address.
+     * 
+     * @param {string} contractAddrees The contract address of the token.
+     * @returns {Promise<tokenOuput | null>} A promise that resolves to the token details or null if not found.
+     */
     async getSingleToken(contractAddrees: string): Promise<tokenOuput | null> {
         return await tokenDal.getSingleToken(contractAddrees);
     }
 
+       /**
+     * Fetches the latest token prices from an external API and updates the database.
+     * 
+     * This method fetches token data from the `livecoinwatch` API, iterates over the results,
+     * and updates the global tokens in the database with the new prices, market cap, 
+     * circulating supply, and other related data.
+     * 
+     * After updating the global token prices, the method triggers additional operations to 
+     * update positions and open orders.
+     * 
+     * @returns {Promise<void>} A promise that resolves once the global token prices have been updated.
+     */
     async updateGlobalTokenPrice() {
         try {
             let coinList = await fetch("https://api.livecoinwatch.com/coins/list", {
@@ -120,6 +174,12 @@ class tokenServices {
         }
     }
 
+       /**
+     * Updates the token network information.
+     * 
+     * @param {updateTokenNetwork} payload The network update details for the token.
+     * @returns {Promise<any>} A promise that resolves to the updated token network information.
+     */
     async updateGlobalTokenNetwork(payload: updateTokenNetwork): Promise<any> {
         return await tokenDal.updateNetwork(payload);
     }

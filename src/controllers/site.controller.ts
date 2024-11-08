@@ -16,12 +16,12 @@ class siteController extends BaseController {
             return this.fail(res, error.toString());
         }
     }
-    /**
-     *  /Users/baljeetsingh/dumps/Dump20230728
-     * @param res
-     * @param req
-     */
 
+    /**
+     * Get all site maintenance records.
+     * @param req - The request object
+     * @param res - The response object
+     */
     async getSiteMaintenance(req: Request, res: Response, next: NextFunction) {
         try {
             let pairs = await service.site.all();
@@ -32,10 +32,11 @@ class siteController extends BaseController {
         }
     }
 
+
     /**
-     *
-     * @param res
-     * @param req
+     * Create a new site maintenance record.
+     * @param req - The request object
+     * @param res - The response object
      */
     async create(req: Request, res: Response, next: NextFunction) {
         try {
@@ -55,10 +56,11 @@ class siteController extends BaseController {
     // Admin service api
     // ===================================================================
 
+
     /**
-     *
-     * @param res
-     * @param req
+     * Activate or deactivate the site.
+     * @param req - The request object
+     * @param res - The response object
      */
     async activeInactiveSite(req: Request, res: Response, next: NextFunction) {
         try {
@@ -75,6 +77,11 @@ class siteController extends BaseController {
         }
     }
 
+  /**
+     * Edit a site maintenance record.
+     * @param req - The request object
+     * @param res - The response object
+     */
     async edit(req: Request, res: Response, next: NextFunction) {
         try {
             let site: siteMaintenanceDto = req.body;

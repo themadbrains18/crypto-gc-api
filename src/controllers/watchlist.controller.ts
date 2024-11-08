@@ -19,11 +19,15 @@ class watchlistController extends BaseController {
         }
     }
 
-    /**
-     *
-     * @param req
-     * @param res
-     */
+
+  /**
+   * Adds a new token to the user's watchlist.
+   * 
+   * @param {Request} req - The request object containing the watchlist details.
+   * @param {Response} res - The response object to send the result of the watchlist creation.
+   * @returns {Promise<void>} - Sends a success or failure response.
+   * @throws {CustomError} - Throws an error if the creation fails or token already exists in the watchlist.
+   */
     async create(req: Request, res: Response) {
         try {
             let payload: watchlistDto = req.body;
@@ -45,6 +49,14 @@ class watchlistController extends BaseController {
         }
     }
 
+  /**
+   * Retrieves all tokens in the user's watchlist.
+   * 
+   * @param {Request} req - The request object containing the user ID.
+   * @param {Response} res - The response object to send the user's watchlist data.
+   * @returns {Promise<void>} - Sends the user's watchlist data or an error message.
+   * @throws {Error} - Throws an error if the retrieval fails.
+   */
     async all(req: Request, res: Response) {
         try {
             let result = await service.watchlist.listById(req.params.user_id);
@@ -57,6 +69,14 @@ class watchlistController extends BaseController {
     }
 
 
+  /**
+   * Encrypts a key using the server's encryption key.
+   * 
+   * @param {Request} req - The request object containing the key to be encrypted.
+   * @param {Response} res - The response object to send the encrypted key.
+   * @returns {Promise<void>} - Sends the encrypted key.
+   * @throws {Error} - Throws an error if the encryption fails.
+   */
     async encriypt(req: Request, res: Response) {
         try {
 
@@ -75,6 +95,14 @@ class watchlistController extends BaseController {
         }
     }
 
+  /**
+   * Decrypts a key from the user's watchlist.
+   * 
+   * @param {Request} req - The request object containing the key to be decrypted.
+   * @param {Response} res - The response object to send the decrypted key.
+   * @returns {Promise<void>} - Sends the decrypted key.
+   * @throws {Error} - Throws an error if the decryption fails.
+   */
     async dcrypt(req: Request, res: Response) {
         try {
 
