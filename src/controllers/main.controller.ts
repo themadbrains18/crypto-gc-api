@@ -37,6 +37,18 @@ export default abstract class BaseController {
 
 
 
+  /**
+ * Middleware function to validate request bodies using a given Joi schema.
+ * 
+ * @param {Joi.ObjectSchema} validationObject - The Joi schema used for validating the request body.
+ * @returns {Function} An Express middleware function that validates the request body.
+ * 
+ * @description
+ * This middleware checks if the request URL matches specific endpoints and transforms the 
+ * `network` or `networks` fields into arrays by parsing JSON strings. Then, it validates 
+ * the request body against the provided Joi schema. If validation fails, a 422 response is 
+ * returned with the validation error message. For other errors, a 500 response is returned.
+ */
   Validator(validationObject: Joi.ObjectSchema) {
     
     return async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -44,16 +56,6 @@ export default abstract class BaseController {
       
       
       try {
-        // console.log(req.body, typeof req.body.fields);
-        
-        // if (req.originalUrl === '/tmbexchange/payment/save') {
-        //   let fieldArray = [];
-        //   for (let filed of req.body.fields) {
-        //     fieldArray.push(JSON.parse(filed))
-        //   }
-        //   req.body.fields = fieldArray;
-        // }
-
         if (req.originalUrl === '/tmbexchange/token/token_list/create') {
           let networkArray = [];
           for (let filed of req.body.network) {
@@ -87,11 +89,32 @@ export default abstract class BaseController {
     }
   }
 
+/**
+ * Sends a JSON response with a given status code and message.
+ * 
+ * @param {express.Response} res - The Express response object.
+ * @param {number} code - The HTTP status code to send.
+ * @param {string} message - The message to include in the response body.
+ * @returns {express.Response} The Express response object.
+ */
   public static jsonResponse(
     res: express.Response, code: number, message: string
   ) {
     return res.status(code).json({ message })
   }
+
+
+  /**
+   * Sends an HTTP 200 OK response, optionally with a JSON body.
+   * 
+   * @template T
+   * @param {express.Response} res - The Express response object.
+   * @param {T} [dto] - The data transfer object to include in the response body.
+   * @returns {express.Response} The Express response object.
+   * 
+   * @description
+   * If a `dto` is provided, the response is sent as JSON. Otherwise, an empty 200 status is returned.
+   */
 
   public ok<T>(res: express.Response, dto?: T) {
     if (!!dto) {
@@ -102,6 +125,17 @@ export default abstract class BaseController {
     }
   }
 
+  /**
+   * Sends an HTTP 201 Created response, optionally with a JSON body.
+   * 
+   * @template T
+   * @param {express.Response} res - The Express response object.
+   * @param {T} [dto] - The data transfer object to include in the response body.
+   * @returns {express.Response} The Express response object.
+   * 
+   * @description
+   * If a `dto` is provided, the response is sent as JSON. Otherwise, an empty 201 status is returned.
+   */
   public created<T>(res: express.Response, dto?: T) {
     if (!!dto) {
       res.type('application/json');
@@ -111,37 +145,115 @@ export default abstract class BaseController {
     }
   }
 
+
+
+  /**
+   * Sends an HTTP 400 Bad Request response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
   public clientError(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 400, message ? message : 'Unauthorized');
   }
 
+
+
+  
+  /**
+   * Sends an HTTP 401 Unauthorized response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
   public unauthorized(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 401, message ? message : 'Unauthorized');
   }
+
+
+  /**
+   * Sends an HTTP 402 Payment Required response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
 
   public paymentRequired(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 402, message ? message : 'Payment required');
   }
 
+
+
+  /**
+   * Sends an HTTP 403 Forbidden response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
   public forbidden(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 403, message ? message : 'Forbidden');
   }
 
+
+
+  /**
+   * Sends an HTTP 404 Not Found response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
   public notFound(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 404, message ? message : 'Not found');
   }
 
+
+
+  /**
+   * Sends an HTTP 409 Conflict response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
   public conflict(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 409, message ? message : 'Conflict');
   }
 
+  /**
+   * Sends an HTTP 429 Too Many Requests response with an optional message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {string | any} [message] - The optional message to include in the response.
+   * @returns {express.Response} The Express response object.
+   */
   public tooMany(res: express.Response, message?: string | any) {
     return BaseController.jsonResponse(res, 429, message ? message : 'Too many requests');
   }
 
+
+  /**
+   * Sends an HTTP 400 Bad Request response with a default 'TODO' message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @returns {express.Response} The Express response object.
+   */
   public todo(res: express.Response) {
     return BaseController.jsonResponse(res, 400, 'TODO');
   }
+
+    
+  /**
+   * Sends an HTTP 500 Internal Server Error response with the error message.
+   * 
+   * @param {express.Response} res - The Express response object.
+   * @param {Error | string | Object} error - The error to log and include in the response.
+   * @returns {express.Response} The Express response object.
+   */
 
   public fail(res: express.Response, error: Error | string | Object) {
     console.log(error);
@@ -149,7 +261,5 @@ export default abstract class BaseController {
       message: error.toString()
     })
   }
-
-
 
 }

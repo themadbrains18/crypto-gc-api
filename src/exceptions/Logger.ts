@@ -1,6 +1,19 @@
 import winston from 'winston';
 
+/**
+ * An object defining custom logging levels and their corresponding colors for a logging system.
+ * 
+ * @type {{ levels: { trace: number, debug: number, info: number, warn: number, error: number, fatal: number },
+*         colors: { trace: string, debug: string, info: string, warn: string, error: string, fatal: string } }}
+* 
+* @description
+* The `customLevels` object provides a set of custom logging levels with numeric severity indicators and 
+* corresponding color codes for easier identification when displaying log messages.
+*/
 const customLevels = {
+    /**
+     * The numeric severity of logging levels. Lower numbers indicate higher severity.
+     */
     levels: {
       trace: 5,
       debug: 4,
@@ -19,6 +32,9 @@ const customLevels = {
     },
    };
     
+  /**
+   * The color codes associated with each logging level for display purposes.
+   */
    const formatter = winston.format.combine(
     winston.format.colorize(),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),

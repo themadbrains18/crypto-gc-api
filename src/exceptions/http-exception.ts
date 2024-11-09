@@ -12,13 +12,25 @@ export const responseCodes = {
 };
 import * as express from 'express'
 
-
+/**
+ * A custom error class that extends the built-in `Error` class, designed for use in Express applications.
+ * 
+ * @class
+ * @extends Error
+ */
 class CustomError extends Error {
   status: number;
   additionalInfo!: any;
   res! : express.Response
   message: string | any; 
 
+
+    /**
+   * Constructs a new `CustomError` instance.
+   * 
+   * @param {number} [status=500] - The HTTP status code for the error, defaulting to 500.
+   * @param {any} [additionalInfo={}] - Any additional information to include with the error.
+   */
   constructor(status: number = 500,  additionalInfo : any = {}) {
     super();
     this.status = status;
