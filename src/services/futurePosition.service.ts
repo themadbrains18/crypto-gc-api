@@ -56,6 +56,8 @@ class futurePositionServices {
 
             if (positions) {
                 for await (let ps of positions) {
+                    console.log(positions,"===ps?.id");
+                    
                     let profitLoss = await takeProfitStopLossModel.findOne({ where: { position_id: ps?.id }, raw: true });
                     await futurePositionModel.update({ queue: true }, { where: { id: ps?.id } });
                     let token = allTokens.filter((t: any) => {
@@ -63,8 +65,10 @@ class futurePositionServices {
                     })
                     let tt = token[0]?.dataValues;
 
-                    if (ps?.direction === 'long' && Boolean(profitLoss?.isClose) == false) {
-                        if (profitLoss) {
+                    if (ps?.direction === 'long' ) {
+                        // console.log(profitLoss,  Boolean(profitLoss?.isClose) == false,"==Boolean(profitLoss?.isClose) == false");
+                        
+                        if (profitLoss && Boolean(profitLoss?.isClose) == false) {
                             if (profitLoss?.trigger_profit > 0 && tt?.price >= profitLoss?.trigger_profit) {
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: profitLoss?.profit_value }, { where: { id: ps?.id } });
                                 await takeProfitStopLossModel.update({isClose : true},{where : {position_id : ps?.id}});
@@ -72,6 +76,7 @@ class futurePositionServices {
                                 return;
                             }
                             if (profitLoss?.trigger_loss > 0 && tt?.price <= profitLoss?.trigger_loss ) {
+                                
                                 await futurePositionModel.update({ status: true, isDeleted: true, pnl: profitLoss?.loss_value }, { where: { id: ps?.id } });
                                 await takeProfitStopLossModel.update({isClose : true},{where : {position_id : ps?.id}});
                                 futurePositionDal.closePosition(ps?.id, ps?.user_id);
@@ -101,11 +106,11 @@ class futurePositionServices {
                         await futurePositionModel.update({ pnl: usdt_pnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0], queue: false }, { where: { id: ps?.id } });
                     }
                     
-                    else if (ps?.direction === 'short') {
+                    else if (ps?.direction === 'short' ) {
                         // console.log(profitLoss,'===========profitLoss');
                         // console.log(tt,'============tt');
                         
-                        if (profitLoss) {
+                        if (profitLoss && Boolean(profitLoss?.isClose) == false) {
                             if (profitLoss?.trigger_profit > 0 && tt?.price <= profitLoss?.trigger_profit ) {
                                 console.log('=======here 1');
                                 
