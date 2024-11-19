@@ -77,8 +77,8 @@ class futurePositionDal {
         try {
             // ===============Get Active position================
 
-            console.log(payload,"=payload");
-            
+            console.log(payload, "=payload");
+
 
             let activePosition = await futurePositionModel.findAll({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
             // ==============Existing active position order==========
@@ -115,29 +115,29 @@ class futurePositionDal {
                     isDeleted: false,
                     status: false,
                 }
-            }); 
+            });
 
-            console.log(payload,"==payload");
-            console.log(totalMargin,"total margin");
-            
+            console.log(payload, "==payload");
+            console.log(totalMargin, "total margin");
+
 
             // Get rewards point by userid
             let reward: any = await userRewardTotalModel.findOne({ where: { user_id: payload?.user_id }, raw: true });
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
-            console.log("here",totalMargin);
-            console.log("margin_price",margin_price);
-            console.log(asset?.balance,"=asset?.balance");
-            
-            
+            console.log("here", totalMargin);
+            console.log("margin_price", margin_price);
+            console.log(asset?.balance, "=asset?.balance");
+
+
             // if assets and rewards point available than order margin divide in assets and rewards point
-            
+
             // if (asset?.balance > 0 && (asset?.balance - totalMargin) > margin_price) {
             if (asset?.balance > 0 && (asset?.balance > totalMargin)) {
-            
+
                 console.log("in this condition");
-                
+
                 if (reward && reward?.amount > 0 && reward?.amount > margin_price / 2) {
                     reward_point = margin_price / 2;
                     assets_price = margin_price / 2
@@ -148,7 +148,7 @@ class futurePositionDal {
             }
             else {
                 console.log("in else condition");
-                
+
                 // assets not available only rewards point available
                 if (reward && reward.amount > 0 && reward.amount > margin_price) {
                     reward_point = margin_price;
@@ -156,19 +156,19 @@ class futurePositionDal {
                 // when both assets and rewards not available then return insufficiant balance
                 else {
                     console.log("ya yha p");
-                    
+
                     return { message: 'Insufficient balance due to assets being reserved by open orders.' }
                 }
             }
             console.log("yha pahunch gya");
-            
+
             payload.assets_margin = assets_price;
-            
-            console.log(payload,"===payload");
-            
+
+            console.log(payload, "===payload");
+
 
             let res = await futurePositionModel.create(payload);
-            console.log(res,"==response");
+            console.log(res, "==response");
             if (res) {
                 // ================Fee Deduction from user and add to admin=================//
                 let futureProfit = 0;
@@ -207,11 +207,11 @@ class futurePositionDal {
                 //================ Update Assets =================
                 if (assets_price > 0) {
 
-                    console.log("here",assets_price);
-                    
+                    console.log("here", assets_price);
+
                     let newbal: number = preciseSubtraction(asset?.balance, Number(Number(assets_price) + Number(payload.realized_pnl)), 10);
-                    console.log(newbal,"==kjshdkjs");
-                    
+                    console.log(newbal, "==kjshdkjs");
+
 
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
                 }
@@ -221,7 +221,7 @@ class futurePositionDal {
                 }
             }
             console.log("in this");
-            
+
             return res;
         } catch (error: any) {
             console.log(error, '------------');
@@ -235,7 +235,7 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
 
-            console.log(payload,'================');
+            console.log(payload, '================');
             // return
 
             let newbal: number = 0;
@@ -347,13 +347,13 @@ class futurePositionDal {
                             //     console.log("new balace 2", newbal);
                         }
 
-                        if(activePosition.qty==payload.qty){
-                            newbal=asset?.balance
+                        if (activePosition.qty == payload.qty) {
+                            newbal = asset?.balance
                         }
 
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
 
-                        activePosition.qty= truncateNumber(activePosition.qty,4)
+                        activePosition.qty = truncateNumber(activePosition.qty, 4)
 
                         // console.log(payload.margin, '====== payload margin');
                         // subtractBalance = Number(activePosition.margin) + Number(payload.realized_pnl);
@@ -466,20 +466,19 @@ class futurePositionDal {
                     if (asset) {
                         let newBal = 0;
                         if (position?.direction === 'long' && global_token.price <= position.liq_price) {
-                            let balance=(global_token.price-position.liq_price)*position.qty
-                            console.log(balance,"===balance 1");
-                            
+                            let balance = (position.entry_price - position.liq_price) * position.qty
+                            console.log(balance, "===balance 1");
                             newBal = asset?.balance + position?.margin + preciseSubtraction(balance, position?.realized_pnl, 10);
-                          
+
                         }
                         else if (position?.direction === 'short' && global_token.price >= position.liq_price) {
-                            let balance=(position.liq_price-global_token.price)*position.qty
-                            console.log(balance,"===balance 2");
+                            let balance = (position.liq_price - position.entry_price) * position.qty
+                            console.log(balance, "===balance 2");
                             newBal = asset?.balance + position?.margin + preciseSubtraction(balance, position?.realized_pnl, 10);
-                          console.log(preciseSubtraction(balance, position?.realized_pnl, 10),"=preciseSubtraction(balance, position?.realized_pnl, 10)");
-                          
+                            console.log(preciseSubtraction(balance, position?.realized_pnl, 10), "=preciseSubtraction(balance, position?.realized_pnl, 10)");
+
                         }
-                        else{
+                        else {
 
                             newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
                         }
@@ -526,7 +525,7 @@ class futurePositionDal {
                             qty: position?.qty
                         }
                         await futurePositionHistoryModel.create(historyBody);
-                        await takeProfitStopLossModel.update({isClose:true },{where: { position_id: id }} );
+                        await takeProfitStopLossModel.update({ isClose: true }, { where: { position_id: id } });
 
                         return position;
                     }
