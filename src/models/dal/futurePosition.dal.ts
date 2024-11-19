@@ -466,21 +466,16 @@ class futurePositionDal {
                     if (asset) {
                         let newBal = 0;
                         if (position?.direction === 'long' && global_token.price <= position.liq_price) {
-                            let balance = (position.entry_price - position.liq_price) * position.qty
-                            console.log(balance, "===balance 1");
-                            newBal = asset?.balance + position?.margin + preciseSubtraction(balance, position?.realized_pnl, 10);
-
+                            newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
+                            console.log(newBal,"===balance 1 long");
                         }
                         else if (position?.direction === 'short' && global_token.price >= position.liq_price) {
-                            let balance = (position.liq_price - position.entry_price) * position.qty
-                            console.log(balance, "===balance 2");
-                            newBal = asset?.balance + position?.margin + preciseSubtraction(balance, position?.realized_pnl, 10);
-                            console.log(preciseSubtraction(balance, position?.realized_pnl, 10), "=preciseSubtraction(balance, position?.realized_pnl, 10)");
-
+                            newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
+                            console.log(newBal,"===balance 2 short" );
                         }
                         else {
-
                             newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
+                            console.log(newBal,'==================newBal default case');
                         }
 
                         // ================Fee Deduction from user and add to admin=================//
