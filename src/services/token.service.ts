@@ -90,29 +90,29 @@ class tokenServices {
             let data = await coinList.json();
 
 
-            // for await (const num of data) {
-            //     let symbol = num.code === 'BTC' ? 'BTCB' : num.code === 'BNB' ? 'BNBT' : num.code;
-            //     let exist: any = await globalTokensModel.findOne({ where: { symbol: symbol }, raw: true });
-            //     if (exist) {
-            //         let payload = {
-            //             id: exist?.id,
-            //             symbol: symbol,
-            //             fullName: num.name,
-            //             image: num.png32,
-            //             price: num.rate,
-            //             maxSupply: num.maxSupply,
-            //             totalSupply: num.totalSupply,
-            //             circulatingSupply: num.circulatingSupply,
-            //             marketcap: num?.cap,
-            //             volume: num?.volume,
-            //             rank: num.rank
-            //         }
-            //         await globalTokensModel.update(payload, { where: { id: exist?.id } });
-            //     }
-            // }
+            for await (const num of data) {
+                let symbol = num.code === 'BTC' ? 'BTCB' : num.code === 'BNB' ? 'BNBT' : num.code;
+                let exist: any = await globalTokensModel.findOne({ where: { symbol: symbol }, raw: true });
+                if (exist) {
+                    let payload = {
+                        id: exist?.id,
+                        symbol: symbol,
+                        fullName: num.name,
+                        image: num.png32,
+                        price: num.rate,
+                        maxSupply: num.maxSupply,
+                        totalSupply: num.totalSupply,
+                        circulatingSupply: num.circulatingSupply,
+                        marketcap: num?.cap,
+                        volume: num?.volume,
+                        rank: num.rank
+                    }
+                    await globalTokensModel.update(payload, { where: { id: exist?.id } });
+                }
+            }
 
-            // let position = await service.position.positionCron();
-            // let openOrder = await service.openorder.openOrderCron();
+            let position = await service.position.positionCron();
+            let openOrder = await service.openorder.openOrderCron();
 
         } catch (error) {
             console.log();
