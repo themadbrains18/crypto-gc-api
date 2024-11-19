@@ -465,7 +465,25 @@ class futurePositionDal {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
                         let newBal = 0;
-                        newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
+                        if (position?.direction === 'long' && global_token.price <= position.liq_price) {
+                            let balance=(global_token.price-position.liq_price)*position.qty
+                            console.log(balance,"===balance 1");
+                            
+                            newBal = asset?.balance + position?.margin + preciseSubtraction(balance, position?.realized_pnl, 10);
+                          
+                        }
+                        else if (position?.direction === 'short' && global_token.price >= position.liq_price) {
+                            let balance=(position.liq_price-global_token.price)*position.qty
+                            console.log(balance,"===balance 2");
+                            newBal = asset?.balance + position?.margin + preciseSubtraction(balance, position?.realized_pnl, 10);
+                          console.log(preciseSubtraction(balance, position?.realized_pnl, 10),"=preciseSubtraction(balance, position?.realized_pnl, 10)");
+                          
+                        }
+                        else{
+
+                            newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
+                        }
+
                         // ================Fee Deduction from user and add to admin=================//
                         let futureProfit = 0;
                         if (position?.pnl < 0) {

@@ -56,7 +56,7 @@ class futurePositionServices {
 
             if (positions) {
                 for await (let ps of positions) {
-                    console.log(positions,"===ps?.id");
+                    // console.log(positions,"===ps?.id");
                     
                     let profitLoss = await takeProfitStopLossModel.findOne({ where: { position_id: ps?.id }, raw: true });
                     await futurePositionModel.update({ queue: true }, { where: { id: ps?.id } });
@@ -85,7 +85,7 @@ class futurePositionServices {
                         }
                         //=========== USDT PnL ================
                         let usdt_pnl: any = scientificToDecimal(ps.qty * preciseSubtraction(tt?.price , ps?.entry_price,10));
-                        console.log(usdt_pnl,"==usdt pnl");
+                        // console.log(usdt_pnl,"==usdt pnl");
                         
                         // check if loss equal to position margin(user USDT assets) or less than margin than close position 
                         if (usdt_pnl < 0) {
@@ -129,7 +129,7 @@ class futurePositionServices {
                         }
                         //=========== USDT PnL ================
                         let usdt_pnl: any = scientificToDecimal(ps.qty * preciseSubtraction(ps?.entry_price , tt?.price,10));
-                        console.log(usdt_pnl,'============usdt_pnl2');
+                        // console.log(usdt_pnl,'============usdt_pnl2');
                         // console.log(ps,'========position');
                         
                         if (usdt_pnl < 0) {

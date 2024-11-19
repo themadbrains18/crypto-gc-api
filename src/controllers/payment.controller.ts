@@ -185,9 +185,13 @@ class paymentController extends BaseController {
       }
 
       let userpMethodResponse = await service.p_method.createUserPaymentMethod(uMethod);
+      // console.log(userpMethodResponse,"==userpMethodResponse");
+      
       super.ok<any>(res, {result: userpMethodResponse });
 
     } catch (error: any) {
+      // console.log(error,"==errrorrr");
+      
       super.fail(res, error.message)
     }
   }

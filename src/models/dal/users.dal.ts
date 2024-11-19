@@ -85,6 +85,9 @@ class userDal {
 
   login = async (payload: UserInput): Promise<any> => {
 
+    console.log(payload,"==payload");
+    
+
     let condition = {};
     let number = (payload.number === "string") ? "" : payload.number;
     let email = (payload.email === "string") ? "" : payload.email;
@@ -118,6 +121,8 @@ class userDal {
       },
       raw: true,
     });
+    console.log(users,"==users");
+    
 
     return users;
   };

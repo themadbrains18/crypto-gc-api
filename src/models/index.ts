@@ -60,8 +60,8 @@ let sequelize = new Sequelize(
     logging: false,
     dialect:
       "mysql" /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */,
-      dialectOptions: {
-        multipleStatements: true
+    dialectOptions: {
+      multipleStatements: true
     },
     timezone: "+05:30",
     pool: {
@@ -141,6 +141,17 @@ models.forEach((model) => model.initialize(sequelize));
       userModel.hasMany(lastLoginModel, { foreignKey: "user_id" });
       lastLoginModel.belongsTo(userModel, { foreignKey: "user_id" });
 
+
+// // Establish one-to-one association between User and Profile
+// userModel.hasOne(profileModel, { foreignKey: 'user_id', as: 'profile' });
+// profileModel.belongsTo(userModel, { foreignKey: 'user_id', as: 'user' });
+
+
+//       userModel.hasMany(userNotificationModel, { foreignKey: "user_id" });
+//       userNotificationModel.belongsTo(userModel, { foreignKey: "user_id" });
+
+  
+
       /**
        * Ads post table associate with User table
        */
@@ -167,7 +178,7 @@ models.forEach((model) => model.initialize(sequelize));
       userModel.hasMany(orderModel, { foreignKey: 'buy_user_id' });
 
       // In your order model file
-      orderModel.belongsTo(userModel, { foreignKey: 'sell_user_id'});
+      orderModel.belongsTo(userModel, { foreignKey: 'sell_user_id' });
       orderModel.belongsTo(userModel, { foreignKey: 'buy_user_id' });
 
       /**
