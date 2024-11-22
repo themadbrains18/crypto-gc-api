@@ -461,15 +461,20 @@ class futurePositionDal {
             if (position) {
                 let closeResponse = await futurePositionModel.update({ status: true, queue: true }, { where: { id: id } });
                 let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
+                let global_coin = await globalTokensModel.findOne({ where: { id: position?.coin_id }, raw: true });
                 if (global_token) {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
                         let newBal = 0;
-                        if (position?.direction === 'long' && global_token.price <= position.liq_price) {
+                        // console.log(global_token.price <= position.liq_price,"=============globaltoken");
+                        // console.log(global_token.price ,"global_token.price ");
+                        // console.log(position.liq_price ,"position.liq_price");
+                        
+                        if (global_coin && position?.direction === 'long' && global_coin.price <= position.liq_price) {
                             newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
                             console.log(newBal,"===balance 1 long");
                         }
-                        else if (position?.direction === 'short' && global_token.price >= position.liq_price) {
+                        else if (global_coin && position?.direction === 'short' && global_coin.price >= position.liq_price) {
                             newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
                             console.log(newBal,"===balance 2 short" );
                         }
