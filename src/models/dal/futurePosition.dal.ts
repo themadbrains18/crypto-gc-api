@@ -311,6 +311,9 @@ class futurePositionDal {
                 // ==================One way mode==================
                 else if (activePosition?.position_mode === 'oneWay') {
                     if (payload?.direction === activePosition.direction) {
+
+                   
+
                         let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
                         activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
@@ -322,6 +325,10 @@ class futurePositionDal {
                         newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
                     }
                     else {
+                        if (payload.leverage && activePosition?.leverage > payload?.leverage) {
+                            return { message:"The leverage in the active position is greater than the provided leverage. Please ensure the payload leverage is higher or equal to the active position leverage."};
+                        }
+                        
                         let size: any = activePosition.qty > payload.qty ? preciseSubtraction(activePosition.size, payload?.size, 10) : preciseSubtraction(payload?.size, activePosition.size, 10);
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
                         activePosition.size = size;
@@ -471,15 +478,18 @@ class futurePositionDal {
                         // console.log(position.liq_price ,"position.liq_price");
                         
                         if (global_coin && position?.direction === 'long' && global_coin.price <= position.liq_price) {
-                            newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
+                            // newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
+                            newBal = asset?.balance;
                             console.log(newBal,"===balance 1 long");
                         }
                         else if (global_coin && position?.direction === 'short' && global_coin.price >= position.liq_price) {
-                            newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
+                            // newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
+                            newBal = asset?.balance;
                             console.log(newBal,"===balance 2 short" );
                         }
                         else {
-                            newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
+                            // newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
+                            newBal = asset?.balance + position?.margin + position?.pnl;
                             console.log(newBal,'==================newBal default case');
                         }
 

@@ -13,8 +13,9 @@ class profitLossDal {
      */
     async createProfitLossPosition(payload: profitLossDto): Promise<profitLossOuput | any> {
         try {
+          let futurePosition=  await futurePositionModel.findOne({where:{id:payload?.position_id}, raw:true})
             let position = await takeProfitStopLossModel.findOne({ where: { position_id: payload?.position_id, isClose: false }, raw: true });
-            if (position) {
+            if (futurePosition && position) {
                 return await takeProfitStopLossModel.update({ profit_value: payload?.profit_value, loss_value: payload?.loss_value, trigger_profit: payload?.trigger_profit, trigger_loss: payload?.trigger_loss }, { where: { position_id: payload?.position_id, user_id: payload?.user_id } });
             }
             return await takeProfitStopLossModel.create(payload);

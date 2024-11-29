@@ -81,10 +81,11 @@ class futureOpenOrderServices {
                     let tt = token[0]?.dataValues;
 
                     if (Math.round(tt.price) <= Math.round(oo.price_usdt) && oo.side === 'open long') {
-// console.log(oo.price_usdt,"===price_usdt");
+                        // console.log(oo.price_usdt,"===price_usdt");
 
                         let value: any = (oo.qty * 0.055).toFixed(5);
-                        let releazedPnl: any = ((oo.price_usdt * value) / 100);
+                        // let releazedPnl: any = ((oo.price_usdt * value) / 100)
+                        let releazedPnl: any = 2*((oo.price_usdt * value) / 100);
                         console.log(oo,"===oo");
                         let body: futurePositionDto = {
                             symbol: oo.symbol,
@@ -143,7 +144,8 @@ class futureOpenOrderServices {
                     if (Math.round(tt.price) >= Math.round(oo.price_usdt) && oo.side === 'open short') {
 
                         let value: any = (oo.qty * 0.02).toFixed(5);
-                        let releazedPnl: any = ((oo.price_usdt * value) / 100);
+                        // let releazedPnl: any = ((oo.price_usdt * value) / 100);
+                        let releazedPnl: any = 2*((oo.price_usdt * value) / 100);
                             console.log(oo,"===oo");
                             
                         
