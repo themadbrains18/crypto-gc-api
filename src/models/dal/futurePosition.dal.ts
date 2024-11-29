@@ -311,9 +311,6 @@ class futurePositionDal {
                 // ==================One way mode==================
                 else if (activePosition?.position_mode === 'oneWay') {
                     if (payload?.direction === activePosition.direction) {
-
-                   
-
                         let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
                         activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
