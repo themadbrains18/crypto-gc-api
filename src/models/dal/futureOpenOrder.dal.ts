@@ -45,7 +45,7 @@ class futureOpenOrderDal extends BaseController {
             //=================== Get Token =================
             //================================================
 
-            console.log("here in section");
+            // console.log("here in section");
 
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
 
@@ -76,7 +76,7 @@ class futureOpenOrderDal extends BaseController {
 
                 
                 let margin_price: any = payload?.margin && payload?.margin + totalMargin;
-                console.log(margin_price, "===totalMargin");
+                // console.log(margin_price, "===totalMargin");
 
                 if (asset?.balance > 0) {
 

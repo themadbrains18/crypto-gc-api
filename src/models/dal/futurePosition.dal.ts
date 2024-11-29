@@ -77,7 +77,7 @@ class futurePositionDal {
         try {
             // ===============Get Active position================
 
-            console.log(payload, "=payload");
+            // console.log(payload, "=payload");
 
 
             let activePosition = await futurePositionModel.findAll({ where: { user_id: payload.user_id, coin_id: payload?.coin_id, status: false, isDeleted: false }, raw: true });
@@ -117,8 +117,8 @@ class futurePositionDal {
                 }
             });
 
-            console.log(payload, "==payload");
-            console.log(totalMargin, "total margin");
+            // console.log(payload, "==payload");
+            // console.log(totalMargin, "total margin");
 
 
             // Get rewards point by userid
@@ -126,9 +126,9 @@ class futurePositionDal {
             let margin_price: number = payload?.margin;
             let assets_price = 0;
             let reward_point = 0;
-            console.log("here", totalMargin);
-            console.log("margin_price", margin_price);
-            console.log(asset?.balance, "=asset?.balance");
+            // console.log("here", totalMargin);
+            // console.log("margin_price", margin_price);
+            // console.log(asset?.balance, "=asset?.balance");
 
 
             // if assets and rewards point available than order margin divide in assets and rewards point
@@ -136,7 +136,7 @@ class futurePositionDal {
             // if (asset?.balance > 0 && (asset?.balance - totalMargin) > margin_price) {
             if (asset?.balance > 0 && (asset?.balance > totalMargin)) {
 
-                console.log("in this condition");
+                // console.log("in this condition");
 
                 if (reward && reward?.amount > 0 && reward?.amount > margin_price / 2) {
                     reward_point = margin_price / 2;
@@ -147,7 +147,7 @@ class futurePositionDal {
                 }
             }
             else {
-                console.log("in else condition");
+                // console.log("in else condition");
 
                 // assets not available only rewards point available
                 if (reward && reward.amount > 0 && reward.amount > margin_price) {
@@ -155,20 +155,20 @@ class futurePositionDal {
                 }
                 // when both assets and rewards not available then return insufficiant balance
                 else {
-                    console.log("ya yha p");
+                    // console.log("ya yha p");
 
                     return { message: 'Insufficient balance due to assets being reserved by open orders.' }
                 }
             }
-            console.log("yha pahunch gya");
+            // console.log("yha pahunch gya");
 
             payload.assets_margin = assets_price;
 
-            console.log(payload, "===payload");
+            // console.log(payload, "===payload");
 
 
             let res = await futurePositionModel.create(payload);
-            console.log(res, "==response");
+            // console.log(res, "==response");
             if (res) {
                 // ================Fee Deduction from user and add to admin=================//
                 let futureProfit = 0;
@@ -207,10 +207,10 @@ class futurePositionDal {
                 //================ Update Assets =================
                 if (assets_price > 0) {
 
-                    console.log("here", assets_price);
+                    // console.log("here", assets_price);
 
                     let newbal: number = preciseSubtraction(asset?.balance, Number(Number(assets_price) + Number(payload.realized_pnl)), 10);
-                    console.log(newbal, "==kjshdkjs");
+                    // console.log(newbal, "==kjshdkjs");
 
 
                     await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
@@ -220,7 +220,7 @@ class futurePositionDal {
                     await userRewardTotalModel.update({ amount: newRewardBal, order_amount: reward_point }, { where: { user_id: payload.user_id } });
                 }
             }
-            console.log("in this");
+            // console.log("in this");
 
             return res;
         } catch (error: any) {
@@ -235,7 +235,7 @@ class futurePositionDal {
     async updateActivePosition(activePosition: any, payload: futurePositionDto) {
         try {
 
-            console.log(payload, '================');
+            // console.log(payload, '================');
             // return
 
             let newbal: number = 0;
@@ -388,7 +388,7 @@ class futurePositionDal {
                     }
                 }
                 //================ Update Assets =================
-                console.log(newbal, '=========update new balnce', activePosition.margin, '=======position margin', asset?.balance);
+                // console.log(newbal, '=========update new balnce', activePosition.margin, '=======position margin', asset?.balance);
 
                 await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
 
@@ -477,17 +477,17 @@ class futurePositionDal {
                         if (global_coin && position?.direction === 'long' && global_coin.price <= position.liq_price) {
                             // newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
                             newBal = asset?.balance;
-                            console.log(newBal,"===balance 1 long");
+                            // console.log(newBal,"===balance 1 long");
                         }
                         else if (global_coin && position?.direction === 'short' && global_coin.price >= position.liq_price) {
                             // newBal = preciseSubtraction(asset?.balance, position?.realized_pnl, 10);
                             newBal = asset?.balance;
-                            console.log(newBal,"===balance 2 short" );
+                            // console.log(newBal,"===balance 2 short" );
                         }
                         else {
                             // newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
                             newBal = asset?.balance + position?.margin + position?.pnl;
-                            console.log(newBal,'==================newBal default case');
+                            // console.log(newBal,'==================newBal default case');
                         }
 
                         // ================Fee Deduction from user and add to admin=================//

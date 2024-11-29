@@ -75,7 +75,7 @@ class cronMarketOrderService {
             }
         }
         if(count === orders.length){
-            console.log('========here======');
+            // console.log('========here======');
             return {message : 'Execution complete', status : true}
         }
     }
@@ -83,7 +83,6 @@ class cronMarketOrderService {
     async buyerCode(order: any): Promise<any> {
         try {
             let previous_seller: any = [];
-            console.log();
 
             let buyBids = await marketOrderModel.findAll({ where: { status: false, isCanceled: false, user_id: order?.user_id, token_id: order?.token_id, order_type: marketOrderEnum.buy, market_type: marektTypeEnum.limit, queue: false }, raw: true, order: [['createdAt', "DESC"]] });
             // if buyer not exist than return
@@ -125,7 +124,7 @@ class cronMarketOrderService {
                         isMatchFound = true;
                         // Both seller and buyer qty bid same 
                         if (sellerObj.token_amount === remainingAssets) {
-                            console.log('===========execution 1');
+                            // console.log('===========execution 1');
                             await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                             await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                             paid_usdt = truncateNumber((sellerObj.limit_usdt * sellerObj.token_amount), 10);
@@ -163,7 +162,7 @@ class cronMarketOrderService {
 
                         // Seller qty bid more than buyer qty bid
                         else if (sellerObj.token_amount > remainingAssets) {
-                            console.log('===========execution 2');
+                            // console.log('===========execution 2');
                             await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                             await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                             paid_usdt = truncateNumber((sellerObj.limit_usdt * remainingAssets), 10);
@@ -200,7 +199,7 @@ class cronMarketOrderService {
 
                         // Seller qty bid less than buyer qty bid
                         if (remainingAssets > sellerObj.token_amount) {
-                            console.log('===========execution 3');
+                            // console.log('===========execution 3');
                             await marketOrderModel.update({ queue: true }, { where: { id: buyerObj.id } });
                             await marketOrderModel.update({ queue: true }, { where: { id: sellerObj.id } });
                             paid_usdt = truncateNumber(sellerObj.limit_usdt * sellerObj.token_amount, 10);
@@ -467,7 +466,7 @@ class cronMarketOrderService {
                                 buyerFees = scientificToDecimal(Number(truncateNumber(buyerFees.toFixed(12), 10)));
                                 let sellerFees: any = (sellerObj.token_amount * sellerObj.limit_usdt * 0.001);
                                 sellerFees = scientificToDecimal(Number(truncateNumber(sellerFees.toFixed(12), 10)));
-                                console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
+                                // console.log(buyerFees, '========buyerFees=======', sellerFees, '===========sellerFees===========');
                                 await this.processBuyerExecution({ buyerObj, sellerObj, paid_usdt, sellerFees, buyerFees, remainingAssets, paid_to_admin });
                                 //======================================================
                                 //=============Create buyer market order history========

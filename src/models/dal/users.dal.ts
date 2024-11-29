@@ -85,7 +85,7 @@ class userDal {
 
   login = async (payload: UserInput): Promise<any> => {
 
-    console.log(payload,"==payload");
+    // console.log(payload,"==payload");
     
 
     let condition = {};
@@ -121,7 +121,7 @@ class userDal {
       },
       raw: true,
     });
-    console.log(users,"==users");
+    // console.log(users,"==users");
     
 
     return users;

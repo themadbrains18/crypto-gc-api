@@ -563,7 +563,7 @@ class marketService {
             if (buyerusdtmarket?.status === false || buyerusdtmarket?.status === 0) {
                 let asset = await service.assets.getUserAssetByTokenIdandWallet({ user_id: options.buyerObj.user_id, token_id: options.buyerObj.token_id });
                 if (asset) {
-                    console.log(parseFloat(asset.balance), '=======Buyer current usdt bal');
+                    // console.log(parseFloat(asset.balance), '=======Buyer current usdt bal');
                     let updatedBal = truncateNumber(Number(parseFloat(asset.balance) + options.buyerObj.token_amount), 8);
                     let realAmount = parseFloat(options.buyerObj.token_amount);
                     if (options.buyerObj.token_amount > options.remainingAssets) {
@@ -642,8 +642,8 @@ class marketService {
                 }
             }
             else if (options.remainingAssets > parseFloat(options.buyerObj.token_amount)) {
-                console.log(options.remainingAssets, "remaining assetes in seller");
-                console.log(options.buyerObj.token_amount, "token amount in seller");
+                // console.log(options.remainingAssets, "remaining assetes in seller");
+                // console.log(options.buyerObj.token_amount, "token amount in seller");
 
                 if (sellerOrder) {
                     await marketOrderModel.update({
