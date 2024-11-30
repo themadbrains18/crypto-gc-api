@@ -43,13 +43,15 @@ class routes {
   init(app: Application) {
     // field validation
 
-    // static file white path
-    app.use(`${apiBase}/`, express.static(process.cwd() + "/public"));
-
     // base url 
     app.use(`/`, (req,res)=>{
       res.status(200).send("Hello World API is running..")
      })
+    
+    // static file white path
+    app.use(`${apiBase}/`, express.static(process.cwd() + "/public"));
+
+
 
     app.use(`${apiBase}/user`, usersRoutes);
     app.use(`${apiBase}/assets`, assetsRoutes);
