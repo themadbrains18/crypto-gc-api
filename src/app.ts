@@ -56,7 +56,7 @@ export default class Server {
       customCss: ".swagger-ui .topbar { display: none }",
     };
     
-   app.use('/', function(req,res) { 
+   app.use('/tmbexchange', function(req,res) { 
      // console.log('dfgdhfghfj')
       res.json({'dfdjgfhdf':'sdfjshdgfsgdfghsdgf'})
    });
