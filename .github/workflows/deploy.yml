@@ -67,7 +67,6 @@ jobs:
     #   run: |
     #     ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no root@46.202.163.196 'cd /var/www/launchyourexchange.com/backend && tar -xzf deployment.tar.gz && rm deployment.tar.gz'
 
-
     # - name: Debug SCP Command 
     #   run: |
     #     echo "Checking current directory"
@@ -84,4 +83,4 @@ jobs:
 
     - name: Deploy to AWS
       run: |
-        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no root@46.202.163.196 'cd /var/www/launchyourexchange.com/backend && npm install && npm run build  && pm2 restart all' || exit 1
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no root@46.202.163.196 'cd /var/www/launchyourexchange.com/backend && npm install && npm run build && pm2 restart all' || exit 1
