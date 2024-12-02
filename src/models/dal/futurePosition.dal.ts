@@ -336,7 +336,7 @@ class futurePositionDal {
                         activePosition.direction = activePosition.qty > payload.qty ? activePosition.direction : payload.direction
                         activePosition.liq_price = activePosition.qty > payload.qty ? activePosition.liq_price : payload?.liq_price;
 
-                        // console.log(activePosition.margin, '======margin');
+                        console.log(activePosition, '======margin');
                         if (activePosition.qty > payload.qty) {
                             // console.log("here 1");
                             newbal = asset?.balance + Number(activePosition.margin) + Number(payload.realized_pnl)
@@ -352,7 +352,9 @@ class futurePositionDal {
                         }
 
                         if (activePosition.qty == payload.qty) {
-                            newbal = asset?.balance
+                            console.log("in this");
+                            
+                            newbal = asset?.balance+new_margin+activePosition?.pnl
                         }
 
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
@@ -367,7 +369,7 @@ class futurePositionDal {
 
                         // console.log(newbal,'===before');
                     }
-
+     
                     if (activePosition.qty !== 0) {
                         await futurePositionModel.update({
                             qty: activePosition.qty,
@@ -384,11 +386,12 @@ class futurePositionDal {
                     }
                     else {
                         newbal = newbal + activePosition.pnl;
+                        await takeProfitStopLossModel.update({ isClose: true }, { where: { position_id: activePosition?.id } });
                         await futurePositionModel.update({ status: true, isDeleted: true }, { where: { id: activePosition?.id } });
                     }
                 }
                 //================ Update Assets =================
-                // console.log(newbal, '=========update new balnce', activePosition.margin, '=======position margin', asset?.balance);
+                console.log(newbal, '=========update new balnce', activePosition.margin, '=======position margin', asset?.balance);
 
                 await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
 
@@ -470,6 +473,8 @@ class futurePositionDal {
                     let asset: any = await assetModel.findOne({ where: { user_id: userId, token_id: global_token?.id, walletTtype: 'future_wallet' }, raw: true });
                     if (asset) {
                         let newBal = 0;
+                        console.log("hererererer");
+                        
                         // console.log(global_token.price <= position.liq_price,"=============globaltoken");
                         // console.log(global_token.price ,"global_token.price ");
                         // console.log(position.liq_price ,"position.liq_price");
@@ -487,7 +492,7 @@ class futurePositionDal {
                         else {
                             // newBal = asset?.balance + position?.margin + preciseSubtraction(position?.pnl, position?.realized_pnl, 10);
                             newBal = asset?.balance + position?.margin + position?.pnl;
-                            // console.log(newBal,'==================newBal default case');
+                            console.log(newBal,'==================newBal default case');
                         }
 
                         // ================Fee Deduction from user and add to admin=================//
