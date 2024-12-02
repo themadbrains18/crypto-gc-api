@@ -29,7 +29,7 @@ let notify = new userNotificationController();
 let chat = new chatController();
 let profile = new profileController();
 
-const wss = new WebSocketServer({ port: 3001 });
+const wss = new WebSocketServer({ port: 3002 });
 
 wss.on('connection', (ws: WebSocket) => {
   // console.log('New client connected');
