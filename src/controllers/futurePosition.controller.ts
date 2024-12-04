@@ -41,6 +41,21 @@ class futurePositionController extends BaseController {
             next(error);
         }
     }
+    async updateLeverage(req: Request, res: Response, next: NextFunction) {
+        try {
+            console.log("herer");
+            
+            let { coinid } = req.params;
+            let payload= req?.body
+            // let pairs = await service.position.all();
+            let pairsPaginate = await service.position.updatePositionLeverage( coinid,payload);
+            super.ok<any>(res, { data: pairsPaginate,status: 200});
+        } catch (error: any) {
+            console.log(error,"=error");
+            
+            next(error);
+        }
+    }
 
     /**
      *

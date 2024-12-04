@@ -20,8 +20,9 @@ class futurePostionRoutes extends BaseController {
 
         this.router.get('/:userid', middleware.auth, tradePPosition.allPositionOrder);
         this.router.get('/:offset/:limit', middleware.auth, tradePPosition.allPositionByLimit);
+        this.router.put('/update-leverage/:coinid', middleware.auth, tradePPosition.updateLeverage);
 
-        /**
+        /*
          * Create new position 
         **/
         this.router.post('/create', middleware.auth, super.Validator(futurePositionSchema.create), tradePPosition.create);

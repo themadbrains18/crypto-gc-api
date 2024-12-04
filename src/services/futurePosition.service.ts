@@ -26,6 +26,9 @@ class futurePositionServices {
     async allByLimit(offset: any, limit: any): Promise<any> {
         return await futurePositionDal.allByLimit(offset, limit);
     }
+    async updatePositionLeverage(coinid:string, payload:any): Promise<any> {
+        return await futurePositionDal.updatePositionLeverage(coinid, payload);
+    }
 
     /**
      * 
