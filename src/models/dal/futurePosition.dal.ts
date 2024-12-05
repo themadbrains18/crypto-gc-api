@@ -412,7 +412,7 @@ class futurePositionDal {
                             newbal = asset?.balance + Number(activePosition.margin) + activePosition?.pnl;
                         }
                         else {
-                            newbal = asset?.balance + Number(activePosition.margin) + Number(activePosition.realized_pnl);
+                            newbal = asset?.balance + Number(activePosition.margin) + Number(activePosition.realized_pnl) +activePosition?.pnl;
                             newbal = newbal - (Number(marginValue) + Number(releazedPnl))
                         }
 
