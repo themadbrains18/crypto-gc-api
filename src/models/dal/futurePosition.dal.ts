@@ -50,26 +50,35 @@ class futurePositionDal {
 
     async updatePositionLeverage(coinid: string, payload: any): Promise<any> {
         try {
-            console.log(payload, "==payload");
+            // console.log(payload, "==payload");
 
             let trades = await futurePositionModel.findAll({
                 where: { user_id: payload?.user_id, coin_id: coinid, status: false, isDeleted: false }, raw: true
             });
-            console.log(trades, "=trades");
             let res;
             for await (let trade of trades) {
+                console.log(trade, "=trade");
+                let Liquidation_Price: any = (trade?.entry_price * (1 - 0.01)) / payload?.leverage;
+                if (trade.direction === "long") {
+                    Liquidation_Price = preciseSubtraction(trade?.entry_price, Liquidation_Price,10);
+                  }
+            
+                  // Liquidation Price for short case
+                  if (trade.direction === "short") {
+                    Liquidation_Price = trade?.entry_price + Liquidation_Price;
+                  }
                 let assets = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: 'f0c14cec-0003-45a1-84eb-0264b499d687', walletTtype: "future_wallet" }, raw: true })
-                console.log(assets, "=assets");
+                // console.log(assets, "=assets");
                 let margin = trade?.size / payload?.leverage
                 let balance = ((assets?.balance ? assets?.balance : 0) + trade?.margin)
-                console.log(balance, "==balance");
-                console.log(margin, "==balance");
+                // console.log(balance, "==balance");
+                // console.log(margin, "==balance");
 
                 balance = preciseSubtraction(balance, margin, 10)
-                console.log(balance, "==balance 2");
+                // console.log(balance, "==balance 2");
 
                 if (balance > 0) {
-                    res = await futurePositionModel.update({ margin: margin, leverage: payload?.leverage }, { where: { id: trade?.id } })
+                    res = await futurePositionModel.update({ margin: margin, leverage: payload?.leverage, liq_price:Liquidation_Price }, { where: { id: trade?.id } })
                     console.log(res, "==res");
                     await assetModel.update({ balance: balance }, { where: { user_id: payload?.user_id, token_id: 'f0c14cec-0003-45a1-84eb-0264b499d687', walletTtype: "future_wallet" } })
                 }
