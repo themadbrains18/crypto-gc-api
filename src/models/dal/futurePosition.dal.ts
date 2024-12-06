@@ -387,7 +387,13 @@ class futurePositionDal {
                          * set new realized PnL for update position
                          */
                         let value: any = truncateNumber((activePosition.qty * 0.055), 6);
-                        let releazedPnl: any = 2 * ((activePosition.market_price * value) / 100);
+                        console.log("value", value);
+                        
+                        console.log(activePosition.market_price ,"activePosition.market_price * value");
+                        console.log(activePosition.market_price * value,"activePosition.market_price * value");
+                        console.log((activePosition.market_price * value) / 100,"after division");
+                        
+                        let releazedPnl: any = 2 * ((payload.market_price * value) / 100);
 
                         /**
                          * set new margin value for update position
