@@ -351,7 +351,8 @@ class futurePositionDal {
                             entry_price: payload.entry_price,
                             market_price: payload.market_price,
                             leverage: payload.leverage,
-                            margin: activePosition.margin + (payload.margin - payload.realized_pnl),
+                            // margin: activePosition.margin + (payload.margin - payload.realized_pnl),
+                            margin: activePosition.margin + payload.margin ,
                             assets_margin: activePosition.assets_margin + Number(assets_price),
                             liq_price: payload?.liq_price
                         }, { where: { id: activePosition?.id, direction: payload.direction } });
@@ -369,7 +370,8 @@ class futurePositionDal {
                         activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 6);
                         activePosition.size = size;
                         activePosition.leverage = payload.leverage;
-                        activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
+                        // activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
+                        activePosition.margin = activePosition.margin + payload.margin ;
                         activePosition.assets_margin = activePosition.assets_margin + Number(assets_price);
                         activePosition.liq_price = payload?.liq_price;
                         newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
