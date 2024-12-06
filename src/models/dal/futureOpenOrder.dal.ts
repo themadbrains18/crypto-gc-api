@@ -102,7 +102,7 @@ class futureOpenOrderDal extends BaseController {
                         // super.fail(express.response,'Insufficiant Balance')
                         // // throw new Error('Insufficiant Balance');
 
-                        return { "error": 'Insufficient balance due to assets being reserved by open orders.' }
+                        return { "error": 'Insufficient balance due to assets being reserved by open orders or positions.' }
                     }
                 }
                 else {

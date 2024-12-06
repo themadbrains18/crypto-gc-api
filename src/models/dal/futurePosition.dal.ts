@@ -60,7 +60,7 @@ class futurePositionDal {
                 console.log(trade, "=trade");
                 let Liquidation_Price: any = (trade?.entry_price * (1 - 0.01)) / payload?.leverage;
                 if (trade.direction === "long") {
-                    Liquidation_Price = preciseSubtraction(trade?.entry_price, Liquidation_Price,10);
+                    Liquidation_Price = preciseSubtraction(trade?.entry_price, Liquidation_Price,6);
                   }
             
                   // Liquidation Price for short case
@@ -68,22 +68,22 @@ class futurePositionDal {
                     Liquidation_Price = trade?.entry_price + Liquidation_Price;
                   }
                 let assets = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: 'f0c14cec-0003-45a1-84eb-0264b499d687', walletTtype: "future_wallet" }, raw: true })
-                // console.log(assets, "=assets");
-                let margin = trade?.size / payload?.leverage
-                let balance = ((assets?.balance ? assets?.balance : 0) + trade?.margin)
-                // console.log(balance, "==balance");
-                // console.log(margin, "==balance");
+                console.log(assets, "=assets");
+                let margin = truncateNumber((trade?.size / payload?.leverage),6)
+                let balance = ((assets?.balance ? assets?.balance : 0) + truncateNumber(trade?.margin,6))
+                console.log(balance, "==balance");
+                console.log(margin, "==balance");
 
-                balance = preciseSubtraction(balance, margin, 10)
-                // console.log(balance, "==balance 2");
+                balance = preciseSubtraction(balance, margin, 6)
+                console.log(balance, "==balance 2");
 
-                if (balance > 0) {
+                if (balance >= 0) {
                     res = await futurePositionModel.update({ margin: margin, leverage: payload?.leverage, liq_price:Liquidation_Price }, { where: { id: trade?.id } })
                     console.log(res, "==res");
                     await assetModel.update({ balance: balance }, { where: { user_id: payload?.user_id, token_id: 'f0c14cec-0003-45a1-84eb-0264b499d687', walletTtype: "future_wallet" } })
                 }
                 else {
-                    return { message: 'Insufficient balance due to assets being reserved by open orders.' }
+                    return { message: 'Insufficient balance due to assets being reserved by open orders or positions.' }
                 }
             }
             return res
@@ -262,7 +262,7 @@ class futurePositionDal {
 
                     // console.log("here", assets_price);
 
-                    let newbal: number = preciseSubtraction(asset?.balance, Number(Number(assets_price) + Number(payload.realized_pnl)), 10);
+                    let newbal: number = preciseSubtraction(asset?.balance, Number(Number(assets_price) + Number(payload.realized_pnl)), 6);
                     // console.log(newbal, "==kjshdkjs");
 
 
@@ -364,9 +364,9 @@ class futurePositionDal {
                 // ==================One way mode==================
                 else if (activePosition?.position_mode === 'oneWay') {
                     if (payload?.direction === activePosition.direction) {
-                        let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 5);
-                        activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 5);
-                        activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 7);
+                        let size: any = truncateNumber((activePosition.size + Number(payload?.size)), 6);
+                        activePosition.qty = truncateNumber(activePosition.qty + payload.qty, 3);
+                        activePosition.realized_pnl = truncateNumber(activePosition.realized_pnl + Number(payload.realized_pnl), 6);
                         activePosition.size = size;
                         activePosition.leverage = payload.leverage;
                         activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
@@ -384,13 +384,13 @@ class futurePositionDal {
                         /**
                          * set new realized PnL for update position
                          */
-                        let value: any = truncateNumber((activePosition.qty * 0.055), 8);
+                        let value: any = truncateNumber((activePosition.qty * 0.055), 6);
                         let releazedPnl: any = 2 * ((activePosition.market_price * value) / 100);
 
                         /**
                          * set new margin value for update position
                          */
-                        let size: any = truncateNumber(activePosition.qty * payload.market_price, 8);
+                        let size: any = truncateNumber(activePosition.qty * payload.market_price, 6);
                         let marginValue = size / Number(payload.leverage);
                         activePosition.direction = activePosition.qty > payload.qty ? activePosition.direction : payload.direction
                         let Liquidation_Price: any = (payload.market_price * (1 - 0.01)) / Number(payload.leverage);
