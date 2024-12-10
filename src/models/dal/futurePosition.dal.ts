@@ -16,9 +16,9 @@ import profitLossDal from "./profitLoss.dal";
 class futurePositionDal {
 
     /**
-     * return all tokens data
-     * @returns
-     */
+        * return all tokens data
+        * @returns
+        */
     async all(userid: string): Promise<any> {
         try {
             let trades = await futurePositionModel.findAll({
@@ -60,17 +60,17 @@ class futurePositionDal {
                 console.log(trade, "=trade");
                 let Liquidation_Price: any = (trade?.entry_price * (1 - 0.01)) / payload?.leverage;
                 if (trade.direction === "long") {
-                    Liquidation_Price = preciseSubtraction(trade?.entry_price, Liquidation_Price,6);
-                  }
-            
-                  // Liquidation Price for short case
-                  if (trade.direction === "short") {
+                    Liquidation_Price = preciseSubtraction(trade?.entry_price, Liquidation_Price, 6);
+                }
+
+                // Liquidation Price for short case
+                if (trade.direction === "short") {
                     Liquidation_Price = trade?.entry_price + Liquidation_Price;
-                  }
+                }
                 let assets = await assetModel.findOne({ where: { user_id: payload?.user_id, token_id: 'f0c14cec-0003-45a1-84eb-0264b499d687', walletTtype: "future_wallet" }, raw: true })
                 console.log(assets, "=assets");
-                let margin = truncateNumber((trade?.size / payload?.leverage),6)
-                let balance = ((assets?.balance ? assets?.balance : 0) + truncateNumber(trade?.margin,6))
+                let margin = truncateNumber((trade?.size / payload?.leverage), 6)
+                let balance = ((assets?.balance ? assets?.balance : 0) + truncateNumber(trade?.margin, 6))
                 console.log(balance, "==balance");
                 console.log(margin, "==balance");
 
@@ -78,7 +78,7 @@ class futurePositionDal {
                 console.log(balance, "==balance 2");
 
                 if (balance >= 0) {
-                    res = await futurePositionModel.update({ margin: margin, leverage: payload?.leverage, liq_price:Liquidation_Price }, { where: { id: trade?.id } })
+                    res = await futurePositionModel.update({ margin: margin, leverage: payload?.leverage, liq_price: Liquidation_Price }, { where: { id: trade?.id } })
                     console.log(res, "==res");
                     await assetModel.update({ balance: balance }, { where: { user_id: payload?.user_id, token_id: 'f0c14cec-0003-45a1-84eb-0264b499d687', walletTtype: "future_wallet" } })
                 }
@@ -122,10 +122,10 @@ class futurePositionDal {
         }
     }
     /**
-     * create new Position
-     * @param payload
-     * @returns
-     */
+        * create new Position
+        * @param payload
+        * @returns
+        */
     async createPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
         try {
             // ===============Get Active position================
@@ -352,7 +352,7 @@ class futurePositionDal {
                             market_price: payload.market_price,
                             leverage: payload.leverage,
                             // margin: activePosition.margin + (payload.margin - payload.realized_pnl),
-                            margin: activePosition.margin + payload.margin ,
+                            margin: activePosition.margin + payload.margin,
                             assets_margin: activePosition.assets_margin + Number(assets_price),
                             liq_price: payload?.liq_price
                         }, { where: { id: activePosition?.id, direction: payload.direction } });
@@ -371,38 +371,33 @@ class futurePositionDal {
                         activePosition.size = size;
                         activePosition.leverage = payload.leverage;
                         // activePosition.margin = activePosition.margin + (payload.margin - Number(payload.realized_pnl));
-                        activePosition.margin = activePosition.margin + payload.margin ;
+                        activePosition.margin = activePosition.margin + payload.margin;
                         activePosition.assets_margin = activePosition.assets_margin + Number(assets_price);
                         activePosition.liq_price = payload?.liq_price;
                         newbal = asset?.balance - (Number(assets_price) + Number(payload.realized_pnl));
                     }
                     else {
                         /**
-                         * set qty for updated position
-                         */
+                            * set qty for updated position
+                            */
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
                         activePosition.qty = truncateNumber(activePosition.qty, 3)
 
                         /**
-                         * set new realized PnL for update position
-                         */
+                            * set new realized PnL for update position
+                            */
                         let value: any = truncateNumber((activePosition.qty * 0.055), 6);
-                        console.log("value", value);
-                        
-                        console.log(activePosition.market_price ,"activePosition.market_price * value");
-                        console.log(activePosition.market_price * value,"activePosition.market_price * value");
-                        console.log((activePosition.market_price * value) / 100,"after division");
-                        
-                        let releazedPnl: any = 2 * ((payload.market_price * value) / 100);
+
+                        let releazedPnl: any = truncateNumber(2 * ((payload.market_price * value) / 100), 6);
 
                         /**
-                         * set new margin value for update position
-                         */
+                            * set new margin value for update position
+                            */
                         let size: any = truncateNumber(activePosition.qty * payload.market_price, 6);
                         let marginValue = size / Number(payload.leverage);
                         activePosition.direction = activePosition.qty > payload.qty ? activePosition.direction : payload.direction
                         let Liquidation_Price: any = (payload.market_price * (1 - 0.01)) / Number(payload.leverage);
-                        
+
                         // Liquidation Price for long case
                         if (activePosition.direction === 'long') {
                             Liquidation_Price = Number(payload.market_price) - Number(Liquidation_Price);
@@ -414,20 +409,34 @@ class futurePositionDal {
                         }
 
                         /**
-                         * Assets balance update
-                         */
+                            * Assets balance update
+                            */
                         if (activePosition.qty == payload.qty) {
-                            newbal = asset?.balance + Number(activePosition.margin) + activePosition?.pnl;
+                            newbal = asset?.balance + Number(activePosition.margin) + truncateNumber(activePosition?.pnl, 6);
                         }
                         else {
-                            newbal = asset?.balance + Number(activePosition.margin) + Number(activePosition.realized_pnl) +activePosition?.pnl;
+
+                            // console.log(asset?.balance, '=========asset?.balance',
+                            //     releazedPnl, '======releazedPnl',
+                            //     Number(activePosition.margin), '====existing margin',
+                            //     Number(payload.margin), '====new margin',
+                            //     truncateNumber(activePosition?.pnl, 6), '=========activePosition?.pnl');
+
+                            newbal = asset?.balance + Number(activePosition.margin) + truncateNumber(activePosition?.pnl, 6);
+
+                            console.log(newbal,'======newbal after previous margin and PnL add' );
+                            
                             newbal = newbal - (Number(marginValue) + Number(releazedPnl))
+
+                            console.log(newbal,'======newbal after new margin and releazed pnl subtract' );
+
                         }
 
-                        console.log(marginValue, '=========marginValue', size, '=====size', 
-                            activePosition.qty, '=======qty', releazedPnl, '======releazedPnl', 
-                            payload.market_price, '====price', newbal, '======newbal',
-                             Liquidation_Price,'==========Liquidation Price');
+                        // console.log(marginValue, '=========marginValue', size, '=====size',
+                        //     activePosition.qty, '=======qty', releazedPnl, '======releazedPnl',
+                        //     payload.market_price, '====price', newbal, '======newbal',
+                        //     Liquidation_Price, '==========Liquidation Price',
+                        //     truncateNumber(activePosition?.pnl, 6), '=========activePosition?.pnl');
 
                         activePosition.size = size;
                         activePosition.leverage = payload.leverage;
@@ -436,8 +445,6 @@ class futurePositionDal {
                         activePosition.liq_price = Liquidation_Price;
                         activePosition.realized_pnl = Number(releazedPnl);
                     }
-
-                    console.log(activePosition, '============active Position');
 
                     if (activePosition.qty !== 0) {
                         await futurePositionModel.update({
@@ -454,13 +461,11 @@ class futurePositionDal {
                         }, { where: { id: activePosition?.id } });
                     }
                     else {
-                        newbal = newbal + activePosition.pnl;
+                        newbal = newbal + truncateNumber(activePosition?.pnl, 6);
                         await takeProfitStopLossModel.update({ isClose: true }, { where: { position_id: activePosition?.id } });
                         await futurePositionModel.update({ status: true, isDeleted: true }, { where: { id: activePosition?.id } });
                     }
                 }
-
-                
 
                 //================ Update Assets =================
                 await assetModel.update({ balance: newbal }, { where: { user_id: payload?.user_id, token_id: global_token?.id, walletTtype: 'future_wallet' } });
@@ -515,10 +520,10 @@ class futurePositionDal {
     }
 
     /**
-     * Edit Position
-     * @param payload 
-     * @returns 
-     */
+        * Edit Position
+        * @param payload 
+        * @returns 
+        */
     async editPosition(payload: futurePositionDto): Promise<futurePositionOuput | any> {
         try {
             return await futurePositionModel.update(payload, { where: { id: payload.id } });
@@ -528,8 +533,8 @@ class futurePositionDal {
     }
 
     /**
-     * close Position
-     */
+        * close Position
+        */
 
     async closePosition(id: string, userId: string): Promise<futurePositionOuput | any> {
         try {
@@ -637,10 +642,10 @@ class futurePositionDal {
     }
 
     /**
-     * Get user position history
-     * @param userid 
-     * @returns 
-     */
+        * Get user position history
+        * @param userid 
+        * @returns 
+        */
     async positionHistory(userid: string): Promise<any> {
         try {
             let trades = await futurePositionHistoryModel.findAll({
