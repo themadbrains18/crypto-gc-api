@@ -67,8 +67,13 @@ class futureOpenOrderServices {
 
     async openOrderCron(): Promise<futureOpenOrderOuput | any> {
         try {
+            // console.log("hererrr");
+            
             let allTokens = await service.token.all();
             let openOrders = await futureOpenOrderModel.findAll({ where: { status: false, isDeleted: false, type: 'limit' , queue:false }, raw: true });
+
+            // console.log(openOrders,"==open orders");
+            
 
             if (openOrders) {
                 for await (const oo of openOrders) {
@@ -80,10 +85,10 @@ class futureOpenOrderServices {
 
                     let tt = token[0]?.dataValues;
 
+                    // console.log(oo,"===price_usdt");
                     if (Math.round(tt.price) <= Math.round(oo.price_usdt) && oo.side === 'open long') {
-                        // console.log(oo.price_usdt,"===price_usdt");
 
-                        let value: any = (oo.qty * 0.055).toFixed(5);
+                        let value: any = (oo.qty * 0.055).toFixed(6);
                         // let releazedPnl: any = ((oo.price_usdt * value) / 100)
                         let releazedPnl: any = 2*((oo.price_usdt * value) / 100);
                         // console.log(oo,"===oo");
@@ -111,7 +116,7 @@ class futureOpenOrderServices {
                             assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             position_mode:oo.position_mode
                         }
-                        // console.log("in create position");
+                        console.log("in create position");
                         
                         let create = await futurePositionDal.createPosition(body)
                         // futurePositionModel.create(body);

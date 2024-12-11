@@ -340,9 +340,11 @@ class futurePositionDal {
                 })
             }
             activePosition = activePosition[0];
+            
             if (activePosition) {
                 // ==================Hedge mode==================== //
                 if (activePosition?.position_mode === 'Hedge') {
+                    
                     if (activePosition.direction === payload.direction) {
                         await futurePositionModel.update({
                             qty: activePosition.qty + payload.qty,

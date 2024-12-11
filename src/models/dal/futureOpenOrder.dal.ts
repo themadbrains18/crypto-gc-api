@@ -45,7 +45,7 @@ class futureOpenOrderDal extends BaseController {
             //=================== Get Token =================
             //================================================
 
-            // console.log("here in section");
+            // console.log("here in section", payload);
 
             let global_token = await globalTokensModel.findOne({ where: { symbol: 'USDT' }, raw: true });
 
