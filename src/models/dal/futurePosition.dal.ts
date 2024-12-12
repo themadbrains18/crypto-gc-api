@@ -382,6 +382,7 @@ class futurePositionDal {
                         /**
                             * set qty for updated position
                             */
+                        let activeQty =    activePosition.qty
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
                         activePosition.qty = truncateNumber(activePosition.qty, 3)
 
@@ -410,13 +411,16 @@ class futurePositionDal {
                             Liquidation_Price = Number(payload.market_price) + Number(Liquidation_Price);
                         }
 
+                        console.log("herer i am ",activePosition.qty == payload.qty);
+                        
                         /**
                             * Assets balance update
                             */
-                        if (activePosition.qty == payload.qty) {
+                        if (activeQty == payload.qty) {
                             newbal = asset?.balance + Number(activePosition.margin) + truncateNumber(activePosition?.pnl, 6);
                         }
                         else {
+console.log("in this");
 
                             // console.log(asset?.balance, '=========asset?.balance',
                             //     releazedPnl, '======releazedPnl',
