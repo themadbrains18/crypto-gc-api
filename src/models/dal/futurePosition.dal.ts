@@ -340,11 +340,10 @@ class futurePositionDal {
                 })
             }
             activePosition = activePosition[0];
-            
+            // console.log(activePosition, "=activeposition");
             if (activePosition) {
                 // ==================Hedge mode==================== //
                 if (activePosition?.position_mode === 'Hedge') {
-                    
                     if (activePosition.direction === payload.direction) {
                         await futurePositionModel.update({
                             qty: activePosition.qty + payload.qty,
@@ -382,7 +381,7 @@ class futurePositionDal {
                         /**
                             * set qty for updated position
                             */
-                        let activeQty =    activePosition.qty
+                        let activeQty = activePosition.qty
                         activePosition.qty = Math.abs(preciseSubtraction(activePosition.qty, payload.qty, 10));
                         activePosition.qty = truncateNumber(activePosition.qty, 3)
 
@@ -411,8 +410,8 @@ class futurePositionDal {
                             Liquidation_Price = Number(payload.market_price) + Number(Liquidation_Price);
                         }
 
-                        console.log("herer i am ",activePosition.qty == payload.qty);
-                        
+                        // console.log("herer i am ", activePosition.qty == payload.qty);
+
                         /**
                             * Assets balance update
                             */
@@ -420,7 +419,7 @@ class futurePositionDal {
                             newbal = asset?.balance + Number(activePosition.margin) + truncateNumber(activePosition?.pnl, 6);
                         }
                         else {
-console.log("in this");
+                            // console.log("in this");
 
                             // console.log(asset?.balance, '=========asset?.balance',
                             //     releazedPnl, '======releazedPnl',
@@ -430,11 +429,11 @@ console.log("in this");
 
                             newbal = asset?.balance + Number(activePosition.margin) + truncateNumber(activePosition?.pnl, 6);
 
-                            console.log(newbal,'======newbal after previous margin and PnL add' );
-                            
+                            // console.log(newbal, '======newbal after previous margin and PnL add');
+
                             newbal = newbal - (Number(marginValue) + Number(releazedPnl))
 
-                            console.log(newbal,'======newbal after new margin and releazed pnl subtract' );
+                            // console.log(newbal, '======newbal after new margin and releazed pnl subtract');
 
                         }
 

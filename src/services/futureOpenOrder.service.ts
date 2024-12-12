@@ -116,7 +116,7 @@ class futureOpenOrderServices {
                             assets_margin: oo.margin - releazedPnl.toString().match(/^-?\d+(?:\.\d{0,6})?/)[0],
                             position_mode:oo.position_mode
                         }
-                        console.log("in create position");
+                        // console.log("in create position");
                         
                         let create = await futurePositionDal.createPosition(body)
                         // futurePositionModel.create(body);
@@ -148,10 +148,10 @@ class futureOpenOrderServices {
 
                     if (Math.round(tt.price) >= Math.round(oo.price_usdt) && oo.side === 'open short') {
 
-                        let value: any = (oo.qty * 0.02).toFixed(5);
+                        let value: any = (oo.qty * 0.055).toFixed(6);
                         // let releazedPnl: any = ((oo.price_usdt * value) / 100);
                         let releazedPnl: any = 2*((oo.price_usdt * value) / 100);
-                            // console.log(oo,"===oo");
+                            // console.log(releazedPnl,"===oo");
                             
                         
                         let body: futurePositionDto = {
