@@ -111,8 +111,8 @@ class tokenServices {
                 }
             }
 
-            let position = await service.position.positionCron();
-            let openOrder = await service.openorder.openOrderCron();
+            // let position = await service.position.positionCron();
+            // let openOrder = await service.openorder.openOrderCron();
 
         } catch (error) {
             console.log();
